@@ -4,12 +4,12 @@
              xmlns:ui="clr-namespace:BladeControl.UI">
 
     <!-- The laptop: its picture and name, temperatures, fans and battery. -->
-    <Border Style="{StaticResource Card}" Padding="24,24,24,26">
+    <Border Style="{StaticResource Card}" Padding="20,22,20,24">
         <StackPanel>
-            <Image Source="{Binding Picture}" Height="165" Margin="0,0,0,22" RenderOptions.BitmapScalingMode="HighQuality"
+            <Image Source="{Binding Picture}" Height="140" Margin="0,0,0,18" RenderOptions.BitmapScalingMode="HighQuality"
                    Visibility="{Binding HasPicture, Converter={StaticResource Visible}}" />
 
-            <TextBlock Text="{Binding ModelTitle}" HorizontalAlignment="Center" FontSize="21" FontWeight="SemiBold"
+            <TextBlock Text="{Binding ModelTitle}" HorizontalAlignment="Center" FontSize="18" FontWeight="SemiBold"
                        Foreground="{StaticResource Brush.Accent}" TextAlignment="Center" TextWrapping="Wrap" />
             <TextBlock Text="{Binding ModelSubtitle}" HorizontalAlignment="Center" Margin="0,6,0,0" FontSize="14" FontWeight="SemiBold"
                        Foreground="{StaticResource Brush.TextMuted}" />
@@ -53,10 +53,10 @@
 
             <UniformGrid Columns="2">
                 <StackPanel>
-                    <Grid Width="116" Height="116">
+                    <Grid Width="100" Height="100">
                         <ui:RingGauge Fraction="{Binding CpuFraction}" Thickness="4" ArcBrush="{StaticResource Brush.Cool}" TrackBrush="{StaticResource Brush.Tile}" />
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="{Binding CpuText}" FontSize="26" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            <TextBlock Text="{Binding CpuText}" FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" />
                             <TextBlock Text="CPU" FontSize="14" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
                         </StackPanel>
                     </Grid>
@@ -66,10 +66,10 @@
                     </TextBlock>
                 </StackPanel>
                 <StackPanel>
-                    <Grid Width="116" Height="116">
+                    <Grid Width="100" Height="100">
                         <ui:RingGauge Fraction="{Binding GpuFraction}" Thickness="4" ArcBrush="{StaticResource Brush.Cool}" TrackBrush="{StaticResource Brush.Tile}" />
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="{Binding GpuText}" FontSize="26" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            <TextBlock Text="{Binding GpuText}" FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" />
                             <TextBlock Text="GPU" FontSize="14" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
                         </StackPanel>
                     </Grid>
