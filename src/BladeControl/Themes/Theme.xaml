@@ -10,8 +10,8 @@
     <!-- Colors. -->
     <Color x:Key="Color.Window">#FF202020</Color>
     <Color x:Key="Color.WindowTop">#FF242424</Color>
-    <Color x:Key="Color.Card">#FF1A1A1A</Color>
-    <Color x:Key="Color.CardTop">#FF1D1D1D</Color>
+    <Color x:Key="Color.Card">#FF141414</Color>
+    <Color x:Key="Color.CardTop">#FF171717</Color>
     <Color x:Key="Color.Tile">#FF262626</Color>
     <Color x:Key="Color.TileHover">#FF2E2E2E</Color>
     <Color x:Key="Color.TilePressed">#FF333333</Color>
