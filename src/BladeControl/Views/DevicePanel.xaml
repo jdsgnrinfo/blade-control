@@ -9,9 +9,9 @@
             <Image Source="{Binding Picture}" Height="120" Margin="0,0,0,16" RenderOptions.BitmapScalingMode="HighQuality"
                    Visibility="{Binding HasPicture, Converter={StaticResource Visible}}" />
 
-            <TextBlock Text="{Binding ModelTitle}" HorizontalAlignment="Center" FontSize="18" FontWeight="SemiBold"
+            <TextBlock Text="{Binding ModelTitle}" HorizontalAlignment="Center" FontSize="16" FontWeight="SemiBold"
                        Foreground="{StaticResource Brush.Accent}" TextAlignment="Center" TextWrapping="Wrap" />
-            <TextBlock Text="{Binding ModelSubtitle}" HorizontalAlignment="Center" Margin="0,6,0,0" FontSize="14" FontWeight="SemiBold"
+            <TextBlock Text="{Binding ModelSubtitle}" HorizontalAlignment="Center" Margin="0,6,0,0" FontSize="12" FontWeight="SemiBold"
                        Foreground="{StaticResource Brush.TextMuted}" />
 
             <Border Style="{StaticResource Separator}" Margin="0,28,0,24" />
@@ -20,10 +20,10 @@
             <StackPanel Visibility="{Binding HasBattery, Converter={StaticResource Visible}}">
                 <Grid Margin="0,0,0,12">
                     <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Battery', Caps=True}" VerticalAlignment="Center" />
-                    <TextBlock Text="{Binding BatteryText}" HorizontalAlignment="Right" FontSize="21" FontWeight="SemiBold"
+                    <TextBlock Text="{Binding BatteryText}" HorizontalAlignment="Right" FontSize="19" FontWeight="SemiBold"
                                Foreground="{StaticResource Brush.Accent}" />
                 </Grid>
-                <Grid Height="22">
+                <Grid Height="20">
                     <Border Background="{StaticResource Brush.Track}" CornerRadius="3" />
                     <Border x:Name="BatteryFill" Background="{StaticResource Brush.Accent}" CornerRadius="3" HorizontalAlignment="Left">
                         <Border.Width>
@@ -36,7 +36,7 @@
                     <Path Width="12" Height="14" Data="{StaticResource Icon.Bolt}" Fill="{StaticResource Brush.OnAccent}" Stretch="Uniform"
                           HorizontalAlignment="Center" Visibility="{Binding IsPluggedIn, Converter={StaticResource Visible}}" />
                 </Grid>
-                <TextBlock Text="{Binding PowerText}" Margin="0,8,0,0" FontSize="14" Foreground="{StaticResource Brush.Accent}" />
+                <TextBlock Text="{Binding PowerText}" Margin="0,8,0,0" FontSize="12" Foreground="{StaticResource Brush.Accent}" />
                 <Border Style="{StaticResource Separator}" Margin="0,24" />
             </StackPanel>
 
@@ -53,27 +53,27 @@
 
             <UniformGrid Columns="2">
                 <StackPanel>
-                    <Grid Width="84" Height="84">
+                    <Grid Width="80" Height="80">
                         <ui:RingGauge Fraction="{Binding CpuFraction}" Thickness="7" ArcBrush="{StaticResource Brush.Cool}" TrackBrush="{StaticResource Brush.Tile}" />
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="{Binding CpuText}" FontSize="19" FontWeight="SemiBold" HorizontalAlignment="Center" />
-                            <TextBlock Text="CPU" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
+                            <TextBlock Text="{Binding CpuText}" FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            <TextBlock Text="CPU" FontSize="11" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
                         </StackPanel>
                     </Grid>
-                    <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="14" Foreground="{StaticResource Brush.TextMuted}">
+                    <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource Brush.TextMuted}">
                         <Run Text="{ui:T 'Last 1 h avg.'}" />
                         <Run Text="{Binding CpuAverageText, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" FontWeight="SemiBold" />
                     </TextBlock>
                 </StackPanel>
                 <StackPanel>
-                    <Grid Width="84" Height="84">
+                    <Grid Width="80" Height="80">
                         <ui:RingGauge Fraction="{Binding GpuFraction}" Thickness="7" ArcBrush="{StaticResource Brush.Cool}" TrackBrush="{StaticResource Brush.Tile}" />
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="{Binding GpuText}" FontSize="19" FontWeight="SemiBold" HorizontalAlignment="Center" />
-                            <TextBlock Text="GPU" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
+                            <TextBlock Text="{Binding GpuText}" FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            <TextBlock Text="GPU" FontSize="11" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
                         </StackPanel>
                     </Grid>
-                    <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="14" Foreground="{StaticResource Brush.TextMuted}">
+                    <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource Brush.TextMuted}">
                         <Run Text="{ui:T 'Last 1 h avg.'}" />
                         <Run Text="{Binding GpuAverageText, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" FontWeight="SemiBold" />
                     </TextBlock>
@@ -87,11 +87,11 @@
                 <UniformGrid Columns="2">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Path Width="18" Height="18" Data="{StaticResource Icon.Fan}" Stroke="{StaticResource Brush.TextMuted}" StrokeThickness="1.6" Stretch="Uniform" Margin="0,0,8,0" />
-                        <TextBlock Text="{Binding CpuFanText}" FontSize="16" />
+                        <TextBlock Text="{Binding CpuFanText}" FontSize="14" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Path Width="18" Height="18" Data="{StaticResource Icon.Fan}" Stroke="{StaticResource Brush.TextMuted}" StrokeThickness="1.6" Stretch="Uniform" Margin="0,0,8,0" />
-                        <TextBlock Text="{Binding GpuFanText}" FontSize="16" />
+                        <TextBlock Text="{Binding GpuFanText}" FontSize="14" />
                     </StackPanel>
                 </UniformGrid>
             </StackPanel>

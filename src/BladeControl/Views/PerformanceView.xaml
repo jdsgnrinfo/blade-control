@@ -14,7 +14,7 @@
         <Border Style="{StaticResource Card}" VerticalAlignment="Top">
             <StackPanel>
                 <!-- In a narrow window the title wraps to two lines rather than run under the switch. -->
-                <Grid Margin="0,0,0,26" MinHeight="38">
+                <Grid Margin="0,0,0,26" MinHeight="34">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -98,7 +98,7 @@
         <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
             <StackPanel>
                 <!-- As tall as Power mode's header, so the two titles line up. -->
-                <Grid Margin="0,0,0,26" MinHeight="38">
+                <Grid Margin="0,0,0,26" MinHeight="34">
                     <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Battery health'}" VerticalAlignment="Center" />
                 </Grid>
 

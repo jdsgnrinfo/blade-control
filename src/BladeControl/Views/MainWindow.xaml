@@ -39,7 +39,7 @@
             <StackPanel Orientation="Horizontal" Margin="14,0,0,0">
                 <Path Width="16" Height="16" Data="{StaticResource Icon.Logo}" Fill="{StaticResource Brush.Accent}" Stretch="Uniform" />
                 <TextBlock Text="{ui:T 'Blade Control'}" Margin="8,0,0,1" VerticalAlignment="Center"
-                           FontSize="13" Foreground="{StaticResource Brush.TextMuted}" />
+                           FontSize="11" Foreground="{StaticResource Brush.TextMuted}" />
             </StackPanel>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
@@ -68,7 +68,7 @@
 
             <!-- What the last change did, for a few seconds. -->
             <TextBlock Grid.Column="1" Text="{Binding Status}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,20,0"
-                       FontSize="15" TextTrimming="CharacterEllipsis">
+                       FontSize="13" TextTrimming="CharacterEllipsis">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
@@ -85,7 +85,7 @@
                 <Button Style="{StaticResource IconButton}" Content="{StaticResource Icon.Refresh}" Command="{Binding RefreshCommand}"
                         ToolTip="{ui:T 'Read the laptop again'}" />
                 <RadioButton Style="{StaticResource IconTab}" Margin="6,0,0,0" IsChecked="{Binding IsSettings}" ToolTip="{ui:T 'Settings'}">
-                    <TextBlock Text="&#xE713;" FontFamily="{StaticResource Font.Symbols}" FontSize="14" />
+                    <TextBlock Text="&#xE713;" FontFamily="{StaticResource Font.Symbols}" FontSize="12" />
                 </RadioButton>
             </StackPanel>
         </Grid>

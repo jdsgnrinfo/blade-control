@@ -9,32 +9,32 @@
     <!-- ===== Text ===== -->
 
     <Style x:Key="Text.CardTitle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
     </Style>
 
     <Style x:Key="Text.Label" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontSize" Value="11" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
     </Style>
 
     <Style x:Key="Text.Body" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="17" />
+        <Setter Property="FontSize" Value="15" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
     <Style x:Key="Text.Hint" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
         <Setter Property="TextWrapping" Value="Wrap" />
-        <Setter Property="LineHeight" Value="22" />
+        <Setter Property="LineHeight" Value="20" />
     </Style>
 
     <Style x:Key="Text.Scale" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="11" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
     </Style>
@@ -80,7 +80,7 @@
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Line}" />
         <Setter Property="Tag" Value="{StaticResource Icon.Info}" />
         <Setter Property="ui:Note.IconBrush" Value="{StaticResource Brush.TextSoft}" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ContentControl">
@@ -98,7 +98,7 @@
                                 <ContentPresenter.Resources>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="TextWrapping" Value="Wrap" />
-                                        <Setter Property="LineHeight" Value="22" />
+                                        <Setter Property="LineHeight" Value="20" />
                                     </Style>
                                 </ContentPresenter.Resources>
                             </ContentPresenter>
@@ -168,8 +168,8 @@
 
     <!-- A square page button with a symbol, beside refresh: Settings. Green on a dark tile, solid green when open. -->
     <Style x:Key="IconTab" TargetType="RadioButton">
-        <Setter Property="Width" Value="34" />
-        <Setter Property="Height" Value="34" />
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
         <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
         <Setter Property="Cursor" Value="Hand" />
@@ -199,9 +199,9 @@
     <Style x:Key="SubTab" TargetType="RadioButton">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
-        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="11,3,11,4" />
+        <Setter Property="Padding" Value="10,2,10,3" />
         <Setter Property="Margin" Value="0,0,4,0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="GroupName" Value="SubTab" />
@@ -228,8 +228,8 @@
 
     <!-- A square button with a line icon: back, forward, refresh. Content is the icon's geometry. -->
     <Style x:Key="IconButton" TargetType="Button">
-        <Setter Property="Width" Value="34" />
-        <Setter Property="Height" Value="34" />
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
         <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
         <Setter Property="Cursor" Value="Hand" />
@@ -238,7 +238,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="Back" Background="{TemplateBinding Background}" CornerRadius="{StaticResource Radius.Control}">
-                        <Path Width="16" Height="16" Data="{TemplateBinding Content}" Style="{StaticResource LineIcon}" />
+                        <Path Width="14" Height="14" Data="{TemplateBinding Content}" Style="{StaticResource LineIcon}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -263,9 +263,9 @@
     <Style x:Key="Tile" TargetType="RadioButton">
         <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
         <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
-        <Setter Property="FontSize" Value="17" />
+        <Setter Property="FontSize" Value="15" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Height" Value="88" />
+        <Setter Property="Height" Value="80" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -321,15 +321,15 @@
 
     <!-- A performance mode: a tall tile with its icon in a disc above the name. Tag is the icon's geometry. -->
     <Style x:Key="ModeTile" TargetType="RadioButton" BasedOn="{StaticResource Tile}">
-        <Setter Property="Height" Value="186" />
-        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Height" Value="172" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
                     <StackPanel>
-                        <Border Width="64" Height="64" CornerRadius="32" HorizontalAlignment="Center" Margin="0,0,0,14"
+                        <Border Width="60" Height="60" CornerRadius="30" HorizontalAlignment="Center" Margin="0,0,0,14"
                                 Background="#26000000">
-                            <Path Width="28" Height="28" Style="{StaticResource IconPath}"
+                            <Path Width="26" Height="26" Style="{StaticResource IconPath}"
                                   Data="{Binding Tag, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
                         </Border>
                         <TextBlock Text="{Binding}" HorizontalAlignment="Center" />
@@ -342,9 +342,9 @@
     <!-- Two or three small choices in a dark strip, as in "Plugged In | On Battery". -->
     <Style x:Key="Segment" TargetType="RadioButton">
         <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="11,4,11,5" />
+        <Setter Property="Padding" Value="10,3,10,4" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
@@ -384,8 +384,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
-                    <Border x:Name="Track" Width="50" Height="26" CornerRadius="5" Background="{StaticResource Brush.Track}">
-                        <Border x:Name="Knob" Width="20" Height="20" CornerRadius="3" Background="{StaticResource Brush.TextMuted}"
+                    <Border x:Name="Track" Width="46" Height="24" CornerRadius="5" Background="{StaticResource Brush.Track}">
+                        <Border x:Name="Knob" Width="18" Height="18" CornerRadius="3" Background="{StaticResource Brush.TextMuted}"
                                 HorizontalAlignment="Left" Margin="3,0,0,0">
                             <Border.RenderTransform>
                                 <TranslateTransform x:Name="Slide" X="0" />
@@ -399,7 +399,7 @@
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="Slide" Storyboard.TargetProperty="X" To="24" Duration="0:0:0.16">
+                                        <DoubleAnimation Storyboard.TargetName="Slide" Storyboard.TargetProperty="X" To="22" Duration="0:0:0.16">
                                             <DoubleAnimation.EasingFunction>
                                                 <CubicEase EasingMode="EaseOut" />
                                             </DoubleAnimation.EasingFunction>
@@ -438,7 +438,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
                     <Border Background="Transparent">
-                        <Border Height="6" CornerRadius="3" Background="{TemplateBinding Background}" />
+                        <Border Height="5" CornerRadius="2.5" Background="{TemplateBinding Background}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -473,12 +473,12 @@
                                 <Thumb>
                                     <Thumb.Template>
                                         <ControlTemplate TargetType="Thumb">
-                                            <Canvas Width="20" Height="24">
-                                                <Border Width="20" Height="24" CornerRadius="3" Background="White" />
+                                            <Canvas Width="18" Height="22">
+                                                <Border Width="18" Height="22" CornerRadius="3" Background="White" />
                                                 <!-- The bubble: centred above the thumb. -->
-                                                <Border Canvas.Bottom="34" Background="{StaticResource Brush.TilePressed}" CornerRadius="3"
+                                                <Border Canvas.Bottom="32" Background="{StaticResource Brush.TilePressed}" CornerRadius="3"
                                                         Padding="10,4,10,5" MinWidth="54" ui:Centered.Horizontally="True">
-                                                    <TextBlock Foreground="{StaticResource Brush.Text}" FontSize="16" HorizontalAlignment="Center">
+                                                    <TextBlock Foreground="{StaticResource Brush.Text}" FontSize="14" HorizontalAlignment="Center">
                                                         <TextBlock.Text>
                                                             <MultiBinding Converter="{StaticResource Format}">
                                                                 <Binding Path="Value" RelativeSource="{RelativeSource AncestorType=Slider}" />
@@ -541,7 +541,7 @@
         <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FontFamily" Value="{StaticResource Font.Main}" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="Padding" Value="10,6" />
         <Setter Property="MaxWidth" Value="320" />
         <Setter Property="ContentTemplate">
