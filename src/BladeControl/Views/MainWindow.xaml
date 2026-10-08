@@ -13,9 +13,12 @@
         TextOptions.TextFormattingMode="Ideal"
         UseLayoutRounding="True">
 
-    <!-- A normal Windows window (taskbar, snap, resize) with the concept's own title bar drawn in it. -->
+    <!--
+        A normal Windows window (taskbar, snap, resize) with the concept's own title bar drawn in it.
+        The one-pixel glass frame keeps Windows' own shadow, thin border and rounded corners.
+    -->
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+        <WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0,0,0,1" CornerRadius="0" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
 
     <Grid x:Name="Root">
@@ -25,7 +28,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- ===== Title bar: mark, sections, settings and the window buttons ===== -->
+        <!-- ===== Title bar: mark, settings and the window buttons ===== -->
         <Grid Grid.Row="0" Background="{StaticResource Brush.TitleBar}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -37,11 +40,6 @@
                 <Path Width="26" Height="26" Data="{StaticResource Icon.Logo}" Fill="{StaticResource Brush.Accent}" Stretch="Uniform" />
                 <TextBlock Text="{ui:T 'Blade Control', Caps=True}" Margin="14,0,8,0" VerticalAlignment="Center"
                            FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}" />
-                <Border Width="1" Height="14" Background="{StaticResource Brush.Track}" Margin="8,0" />
-                <RadioButton Style="{StaticResource TopNav}" Content="{ui:T 'System', Caps=True}" IsChecked="{Binding IsSystem}" />
-                <RadioButton Style="{StaticResource TopNav}" Content="{ui:T 'Audio', Caps=True}" IsChecked="{Binding IsAudio}" />
-                <Border Width="1" Height="14" Background="{StaticResource Brush.Track}" Margin="8,0" />
-                <RadioButton Style="{StaticResource TopNav}" Content="{ui:T 'Optimize', Caps=True}" IsChecked="{Binding IsOptimize}" />
             </StackPanel>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,0,8,0" VerticalAlignment="Center">
@@ -55,7 +53,7 @@
             </StackPanel>
         </Grid>
 
-        <!-- ===== Page row: back, forward, the section's pages, and refresh ===== -->
+        <!-- ===== Page row: every page, the last change's message, and refresh ===== -->
         <Grid Grid.Row="1" Margin="24,16,24,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -64,22 +62,12 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal">
-                <Button Style="{StaticResource IconButton}" Content="{StaticResource Icon.Back}" Command="{Binding BackCommand}" ToolTip="{ui:T 'Back'}" />
-                <Button Style="{StaticResource IconButton}" Content="{StaticResource Icon.Forward}" Command="{Binding ForwardCommand}"
-                        Background="Transparent" Margin="4,0,32,0" ToolTip="{ui:T 'Forward'}" />
-
-                <StackPanel Orientation="Horizontal" Visibility="{Binding HasSubTabs, Converter={StaticResource Visible}}">
-                    <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Performance'}" IsChecked="{Binding IsPerformance}" />
-                    <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Lighting'}" IsChecked="{Binding IsLighting}" />
-                    <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Display'}" IsChecked="{Binding IsDisplay}" />
-                    <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Battery'}" IsChecked="{Binding IsBattery}" />
-                </StackPanel>
-
-                <!-- A section with a single page shows its name instead of tabs. -->
-                <Border Background="{StaticResource Brush.Accent}" CornerRadius="3" Padding="13,3,13,5"
-                        Visibility="{Binding HasSubTabs, Converter={StaticResource Hidden}}">
-                    <TextBlock Text="{Binding PageTitle}" FontSize="21" FontWeight="SemiBold" Foreground="{StaticResource Brush.OnAccent}" />
-                </Border>
+                <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Performance'}" IsChecked="{Binding IsPerformance}" />
+                <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Lighting'}" IsChecked="{Binding IsLighting}" />
+                <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Display'}" IsChecked="{Binding IsDisplay}" />
+                <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Battery'}" IsChecked="{Binding IsBattery}" />
+                <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Audio'}" IsChecked="{Binding IsAudio}" />
+                <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Optimize'}" IsChecked="{Binding IsOptimize}" />
             </StackPanel>
 
             <!-- What the last change did, for a few seconds. -->

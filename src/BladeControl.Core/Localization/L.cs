@@ -414,8 +414,6 @@ internal static class L
         ["Minimize"] = "Minimizar",
         ["Maximize"] = "Maximizar",
         ["Restore"] = "Restaurar",
-        ["Back"] = "Atrás",
-        ["Forward"] = "Adelante",
         ["Read the laptop again"] = "Volver a leer el portátil",
         ["This page is coming soon."] = "Esta página llegará pronto.",
 

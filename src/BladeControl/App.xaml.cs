@@ -25,7 +25,8 @@ public partial class App : Application
         // overwrite each other's settings file.
         _singleInstance = new Mutex(initiallyOwned: true, SingleInstanceMutexName, out var isFirstInstance);
 
-        if (!isFirstInstance)
+        // A screenshot run only looks, so it may run beside the open app.
+        if (!isFirstInstance && e.Args is not ["--screenshot", ..])
         {
             AppLog.Info("Another Blade Control is already running for this user; exiting.");
             Shutdown();
@@ -58,7 +59,7 @@ public partial class App : Application
         if (e.Args is ["--screenshot", var path, ..])
         {
             if (e.Args.Length > 2 && Enum.TryParse<AppPage>(e.Args[2], ignoreCase: true, out var page))
-                _viewModel.Open(page);
+                _viewModel.Page = page;
 
             ScreenshotThenClose(window, path);
         }

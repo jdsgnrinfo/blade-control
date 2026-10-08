@@ -20,8 +20,6 @@
     <Geometry x:Key="Icon.Logo">F0 M12,0 A12,12 0 1 1 11.99,0 Z M7,17.5 L15.5,5 L13.2,11 L17,11 L8.5,19 L10.8,13 L7,13 Z</Geometry>
 
     <!-- Small line icons, on a 24 grid, drawn with a stroke. -->
-    <Geometry x:Key="Icon.Back">M15,5 L8,12 L15,19</Geometry>
-    <Geometry x:Key="Icon.Forward">M9,5 L16,12 L9,19</Geometry>
     <Geometry x:Key="Icon.Refresh">M19,12 A7,7 0 1 1 16.95,7.05 M17,3 L17,7.2 L12.8,7.2</Geometry>
     <Geometry x:Key="Icon.Bolt">F1 M13,2 L4,14 L11,14 L10,22 L20,9 L13,9 Z</Geometry>
     <Geometry x:Key="Icon.Info">M12,11 L12,17 M12,7.5 L12,7.6 M12,2.5 A9.5,9.5 0 1 1 11.99,2.5 Z</Geometry>
