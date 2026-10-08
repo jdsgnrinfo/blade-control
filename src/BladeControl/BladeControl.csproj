@@ -11,6 +11,8 @@
     <Version>0.1.0</Version>
     <!-- Run on a newer .NET too if 10 is not installed. -->
     <RollForward>LatestMajor</RollForward>
+    <!-- Small heaps over speed: the app spends most of its time waiting in the tray. -->
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
     <ApplicationIcon>Assets\BladeControl.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -19,6 +21,11 @@
   <ItemGroup>
     <Using Remove="System.Windows.Forms" />
     <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The collector works harder to keep the heap compact (0 to 9). -->
+    <RuntimeHostConfigurationOption Include="System.GC.ConserveMemory" Value="5" />
   </ItemGroup>
 
   <ItemGroup>

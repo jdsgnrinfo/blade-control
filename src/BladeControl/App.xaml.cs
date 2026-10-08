@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Windows;
+using System.Windows.Threading;
 using BladeControl.Core.Diagnostics;
 using BladeControl.Core.Localization;
 using BladeControl.Core.Models;
@@ -26,6 +27,9 @@ public partial class App : Application
     private EventWaitHandle? _showWindow;
     private RegisteredWaitHandle? _showWindowWait;
     private bool _quitting;
+
+    // While the window is closed to the tray, what little the app touches is moved out of RAM now and then.
+    private readonly DispatcherTimer _trimTimer = new() { Interval = TimeSpan.FromMinutes(10) };
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -76,16 +80,14 @@ public partial class App : Application
         L.Current = L.Resolve(_services.Settings.Language, CultureInfo.CurrentUICulture);
 
         _viewModel = new MainViewModel(_services);
-        var window = new MainWindow { DataContext = _viewModel };
-        MainWindow = window;
-        window.Topmost = _services.Settings.AlwaysOnTop;
-        RestorePlacement(window, _services.Settings.Window);
 
         // A screenshot run leaves the size and the tray to the open app.
-        if (e.Args is not ["--screenshot", ..])
-            KeepInTray(window);
+        var screenshot = e.Args is ["--screenshot", ..];
 
-        window.Show();
+        if (!screenshot)
+            KeepInTray();
+
+        var window = OpenWindow(keepPlacement: !screenshot);
 
         _ = _viewModel.Performance.StartAsync();
         _viewModel.Device.Start();
@@ -119,22 +121,10 @@ public partial class App : Application
 
     // Closing the window leaves the app running in the tray; only Exit (the tray
     // menu) or a restart ends it. A second copy started asks this one to show its window.
-    private void KeepInTray(MainWindow window)
+    private void KeepInTray()
     {
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
         SessionEnding += (_, _) => _quitting = true;
-
-        window.Closing += (_, args) =>
-        {
-            _services!.UpdateSettings(settings => settings with { Window = PlacementOf(window) });
-
-            if (_quitting)
-                return;
-
-            args.Cancel = true;
-            window.Hide();
-            _viewModel!.SetWindowShown(false);
-        };
 
         _tray = new TrayIcon();
         _tray.OpenRequested += (_, _) => ShowMainWindow();
@@ -143,24 +133,70 @@ public partial class App : Application
 
         _showWindow = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
         _showWindowWait = ThreadPool.RegisterWaitForSingleObject(_showWindow, (_, _) => Dispatcher.BeginInvoke(ShowMainWindow), null, Timeout.Infinite, executeOnlyOnce: false);
+
+        _trimTimer.Tick += (_, _) => BackgroundMemory.Trim();
+    }
+
+    // The window is made each time it opens and let go when it closes to the
+    // tray: hidden, its pages, pictures and drawing surfaces would only hold memory.
+    private MainWindow OpenWindow(bool keepPlacement)
+    {
+        var window = new MainWindow { DataContext = _viewModel };
+        MainWindow = window;
+        window.Topmost = _services!.Settings.AlwaysOnTop;
+        RestorePlacement(window, _services.Settings.Window);
+
+        if (keepPlacement)
+        {
+            window.Closing += (_, _) => _services.UpdateSettings(settings => settings with { Window = PlacementOf(window) });
+            window.Closed += (_, _) => OnWindowClosed(window);
+        }
+
+        window.Show();
+        return window;
+    }
+
+    // Closed to the tray: nothing is read each second any more, and once the
+    // window has been let go the memory it held goes back to Windows.
+    private void OnWindowClosed(MainWindow window)
+    {
+        if (_quitting)
+            return;
+
+        if (MainWindow == window)
+            MainWindow = null;
+
+        window.DataContext = null;
+        _viewModel!.SetWindowShown(false);
+        _ = Dispatcher.BeginInvoke(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2));
+
+            if (MainWindow is null)
+            {
+                BackgroundMemory.Release();
+                _trimTimer.Start();
+            }
+        }, DispatcherPriority.ApplicationIdle);
     }
 
     /// <summary>Brings the window back from the tray, or to the front.</summary>
     private void ShowMainWindow()
     {
         if (MainWindow is not { } window)
+        {
+            _trimTimer.Stop();
+            OpenWindow(keepPlacement: true).Activate();
+            _viewModel?.SetWindowShown(true);
             return;
+        }
 
-        var wasHidden = !window.IsVisible;
         window.Show();
 
         if (window.WindowState == WindowState.Minimized)
             window.WindowState = WindowState.Normal;
 
         window.Activate();
-
-        if (wasHidden)
-            _viewModel?.SetWindowShown(true);
     }
 
     /// <summary>Ends the app: Exit in the tray menu, or a restart. The window closes for good and the tray icon goes.</summary>
