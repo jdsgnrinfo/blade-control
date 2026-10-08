@@ -518,7 +518,6 @@ internal static class L
         ["Picking one makes it the one Windows plays to. Each keeps its own equalizer."] = "Al elegir uno, Windows reproduce por él. Cada uno guarda su propio ecualizador.",
         ["Could not change the output device."] = "No se pudo cambiar el dispositivo de salida.",
         ["Back to flat"] = "Volver a plano",
-        ["Drag a band, or scroll over it. At the bottom it is cut off; a double click puts it back to 0."] =
-            "Arrastra una banda o usa la rueda sobre ella. Abajo del todo queda cortada; doble clic la devuelve a 0.",
+        ["Drag a band, or scroll over it. A double click puts it back to 0."] = "Arrastra una banda o usa la rueda sobre ella. Doble clic la devuelve a 0.",
     };
 }

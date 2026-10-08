@@ -54,7 +54,7 @@ public class EqualizerTests
 
         Assert.Equal(10, curve.BassBoost);
         Assert.Equal(0, curve.DynamicBoost);
-        Assert.Equal([12, -24, 1.5, 0, 0, 0, 0, 0, 0, 0], curve.Gains);
+        Assert.Equal([24, -24, 1.5, 0, 0, 0, 0, 0, 0, 0], curve.Gains);
     }
 
     [Fact]
@@ -72,18 +72,6 @@ public class EqualizerTests
         {
             Thread.CurrentThread.CurrentCulture = before;
         }
-    }
-
-    [Fact]
-    public void ABandAtTheBottom_IsCutOffAltogether()
-    {
-        var text = EqualizerApoConfig.Build(new Dictionary<string, AudioDeviceEq>
-        {
-            [Speakers] = new(true, null, [EqBands.MinGain, -12, 0, 0, 0, 0, 0, 0, 0, 0])
-        });
-
-        Assert.Contains("GraphicEQ: 31 -120; 62 -12; 125 0;", text);
-        Assert.Contains("Preamp: 0 dB", text);
     }
 
     [Fact]

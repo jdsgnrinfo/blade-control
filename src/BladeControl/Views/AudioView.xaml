@@ -82,7 +82,7 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- The ten bands: up to +12 dB, down to off. -->
+                <!-- The ten bands, from +24 to -24 dB. -->
                 <ui:EqualizerGraph Height="300" Margin="0,18,0,0" Gains="{Binding Gains}"
                                    Accent="{StaticResource Brush.Accent}" TrackBrush="{StaticResource Brush.Tile}"
                                    LineBrush="{StaticResource Brush.Line}" TextBrush="{StaticResource Brush.TextMuted}"
@@ -96,7 +96,7 @@
                 </ui:EqualizerGraph>
 
                 <TextBlock Style="{StaticResource Text.Hint}" Margin="0,10,0,0" TextWrapping="Wrap"
-                           Text="{ui:T 'Drag a band, or scroll over it. At the bottom it is cut off; a double click puts it back to 0.'}" />
+                           Text="{ui:T 'Drag a band, or scroll over it. A double click puts it back to 0.'}" />
             </StackPanel>
         </Border>
     </ui:AdaptiveColumns>

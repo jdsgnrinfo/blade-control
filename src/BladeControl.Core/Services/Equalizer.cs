@@ -11,14 +11,11 @@ internal static class EqBands
 
     public static int Count => Frequencies.Length;
 
-    /// <summary>How far a band lifts, in dB. More only clips, or costs as much volume in the preamp.</summary>
-    public const double MaxGain = 12;
+    /// <summary>How far a band lifts, in dB. Equalizer APO takes any gain; the preamp gives back as much volume as the highest lift.</summary>
+    public const double MaxGain = 24;
 
-    /// <summary>How far a band cuts, in dB; at the very bottom it is cut off altogether (see <see cref="CutGain"/>).</summary>
+    /// <summary>How far a band cuts, in dB.</summary>
     public const double MinGain = -24;
-
-    /// <summary>What a band at the bottom is written as: far enough down that nothing of it is heard.</summary>
-    public const double CutGain = -120;
 
     /// <summary>The smallest move, in dB.</summary>
     public const double Step = 0.5;
@@ -30,9 +27,6 @@ internal static class EqBands
     /// <summary>A gain kept on the band's range, on a whole step.</summary>
     public static double Snap(double gain) =>
         Math.Round(Math.Clamp(gain, MinGain, MaxGain) / Step, MidpointRounding.AwayFromZero) * Step;
-
-    /// <summary>A band pulled all the way down: off, not just quieter.</summary>
-    public static bool IsCut(double gain) => gain <= MinGain;
 
     public static double[] Flat() => new double[Count];
 }
@@ -201,7 +195,7 @@ internal static class EqualizerApoConfig
             text.AppendLine($"Device: {DeviceGuid(endpointId)}");
             text.AppendLine($"Preamp: {Number(-Preamp(curve) + 0.0)} dB"); // + 0.0: never "-0".
             text.AppendLine("GraphicEQ: " + string.Join("; ",
-                EqBands.Frequencies.Select((frequency, band) => $"{frequency} {Number(EqBands.IsCut(curve.Gains[band]) ? EqBands.CutGain : curve.Gains[band])}")));
+                EqBands.Frequencies.Select((frequency, band) => $"{frequency} {Number(curve.Gains[band])}")));
 
             foreach (var (filters, boost) in new[] { (EqBoosts.Bass, curve.BassBoost), (EqBoosts.Dynamic, curve.DynamicBoost), (EqBoosts.Clarity, curve.ClarityBoost) })
             {

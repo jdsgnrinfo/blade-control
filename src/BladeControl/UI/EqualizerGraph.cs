@@ -3,14 +3,13 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using BladeControl.Core.Localization;
 using BladeControl.Core.Services;
 
 namespace BladeControl.UI;
 
 /// <summary>
 /// The equalizer: a slider standing up for each band, its gain above it and
-/// its frequency below, on a grid from +12 dB down to the bottom, where the band is cut off, with a green curve
+/// its frequency below, on a grid from +24 to -24 dB, with a green curve
 /// through the thumbs and a faint fill between it and 0 dB. Drag a thumb (or
 /// anywhere in its column) to set the band; the mouse wheel moves the band
 /// under the pointer a step, and a double click puts it back to 0. With the
@@ -103,11 +102,11 @@ public sealed class EqualizerGraph : FrameworkElement
         // The column under the mouse takes clicks anywhere in it.
         context.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, ActualWidth, ActualHeight));
 
-        // The grid: +12, 0, -12 and the bottom, where a band is cut off; 0 a little stronger.
+        // The grid every 12 dB, 0 a little stronger.
         var dashed = Frozen(new Pen(lineBrush, 1) { DashStyle = new DashStyle([3, 4], 0) });
         var solidLine = Frozen(new Pen(lineBrush, 1));
 
-        foreach (var (gain, label) in new[] { (EqBands.MaxGain, "+12 dB"), (0.0, "0 dB"), (-12.0, "-12 dB"), (EqBands.MinGain, L.T("Off")) })
+        foreach (var (gain, label) in new[] { (24.0, "+24 dB"), (12.0, "+12 dB"), (0.0, "0 dB"), (-12.0, "-12 dB"), (-24.0, "-24 dB") })
         {
             var y = Math.Round(YOf(gain)) + 0.5;
             context.DrawLine(gain == 0 ? solidLine : dashed, new Point(ScaleWidth, y), new Point(ActualWidth, y));
@@ -339,7 +338,7 @@ public sealed class EqualizerGraph : FrameworkElement
     private double Clamp(double y) => Math.Clamp(y, Top, Bottom);
 
     private static string GainText(double gain) =>
-        EqBands.IsCut(gain) ? L.T("Off") : gain switch
+        gain switch
         {
             > 0 => "+" + gain.ToString("0.#", CultureInfo.InvariantCulture),
             < 0 => "−" + (-gain).ToString("0.#", CultureInfo.InvariantCulture),
