@@ -3,12 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="clr-namespace:BladeControl.UI">
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="16" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <!-- Two cards side by side, or one under the other in a narrow window. -->
+    <ui:AdaptiveColumns>
 
         <!-- ===== Memory and disk ===== -->
         <Border Style="{StaticResource Card}" VerticalAlignment="Top">
@@ -26,7 +22,7 @@
         </Border>
 
         <!-- ===== System: the dedicated GPU, hibernation and Razer's software ===== -->
-        <StackPanel Grid.Column="2">
+        <StackPanel>
             <Border Style="{StaticResource Card}" VerticalAlignment="Top">
                 <StackPanel>
                     <Grid Margin="0,0,0,12" MinHeight="34">
@@ -79,5 +75,5 @@
                 </StackPanel>
             </Border>
         </StackPanel>
-    </Grid>
+    </ui:AdaptiveColumns>
 </UserControl>

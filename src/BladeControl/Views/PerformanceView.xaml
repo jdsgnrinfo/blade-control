@@ -3,12 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="clr-namespace:BladeControl.UI">
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="16" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <!-- Two cards side by side, or one under the other in a narrow window. -->
+    <ui:AdaptiveColumns>
 
         <!-- ===== Power mode ===== -->
         <Border Style="{StaticResource Card}" VerticalAlignment="Top">
@@ -95,7 +91,7 @@
         </Border>
 
         <!-- ===== Battery health ===== -->
-        <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
             <StackPanel>
                 <!-- As tall as Power mode's header, so the two titles line up. -->
                 <Grid Margin="0,0,0,26" MinHeight="34">
@@ -134,5 +130,5 @@
                 <ContentControl Style="{StaticResource NoteBox}" Visibility="{Binding HasChargeLimit, Converter={StaticResource Hidden}}" Content="{ui:T 'This laptop\'s controller does not accept a charge limit. A BIOS update from Razer may add it.'}" />
             </StackPanel>
         </Border>
-    </Grid>
+    </ui:AdaptiveColumns>
 </UserControl>

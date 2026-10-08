@@ -11,12 +11,8 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="16" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <!-- Two cards side by side, or one under the other in a narrow window. -->
+    <ui:AdaptiveColumns>
 
         <!-- ===== System lighting: brightness and when the light goes off ===== -->
         <Border Style="{StaticResource Card}" VerticalAlignment="Top">
@@ -76,7 +72,7 @@
         </Border>
 
         <!-- ===== Lighting effects: keyboard, its color, and the logo ===== -->
-        <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
             <StackPanel>
                 <Grid Margin="0,0,0,18" MinHeight="34">
                     <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Lighting effects'}" VerticalAlignment="Center" />
@@ -136,5 +132,5 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>            </StackPanel>
         </Border>
-    </Grid>
+    </ui:AdaptiveColumns>
 </UserControl>

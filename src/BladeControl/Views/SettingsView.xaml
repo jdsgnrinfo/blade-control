@@ -3,12 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="clr-namespace:BladeControl.UI">
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="16" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <!-- Two cards side by side, or one under the other in a narrow window. -->
+    <ui:AdaptiveColumns>
 
         <!-- ===== General: language, start with Windows, stay on top ===== -->
         <Border Style="{StaticResource Card}" VerticalAlignment="Top">
@@ -61,7 +57,7 @@
         </Border>
 
         <!-- ===== Maintenance: Razer's drivers, the logs, the reset ===== -->
-        <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
             <StackPanel>
                 <Grid Margin="0,0,0,12" MinHeight="34">
                     <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Maintenance'}" VerticalAlignment="Center" />
@@ -113,5 +109,5 @@
                 <TextBlock Text="{Binding Version}" Style="{StaticResource Text.Scale}" Margin="0,18,0,0" />
             </StackPanel>
         </Border>
-    </Grid>
+    </ui:AdaptiveColumns>
 </UserControl>
