@@ -1,0 +1,170 @@
+<UserControl x:Class="BladeControl.Views.BatteryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BladeControl.UI">
+
+    <!-- Two columns, or one under the other in a narrow window. -->
+    <ui:AdaptiveColumns>
+
+        <!-- The charge now, and the last hour under it. -->
+        <StackPanel>
+            <!-- ===== Status ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <Grid Margin="0,0,0,18" MinHeight="34">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Battery status'}" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <ContentControl Style="{StaticResource NoteBox}" Content="{ui:T 'Windows did not report the battery'}"
+                                    Visibility="{Binding HasBattery, Converter={StaticResource Hidden}}" />
+
+                    <Grid Visibility="{Binding HasBattery, Converter={StaticResource Visible}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- The charge in a green ring, and what the charger is doing under it. -->
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <Grid Width="128" Height="128">
+                                <ui:RingGauge Fraction="{Binding ChargeFraction}" Thickness="9" ArcBrush="{StaticResource Brush.Accent}"
+                                              TrackBrush="{StaticResource Brush.Tile}" />
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock HorizontalAlignment="Center">
+                                        <Run Text="{Binding ChargeText, Mode=OneWay}" FontSize="28" FontWeight="SemiBold" />
+                                        <Run Text="%" FontSize="14" FontWeight="SemiBold" />
+                                    </TextBlock>
+                                    <Path Width="10" Height="13" Margin="0,2,0,0" Data="{StaticResource Icon.Bolt}" Fill="{StaticResource Brush.Accent}"
+                                          Stretch="Uniform" HorizontalAlignment="Center"
+                                          Visibility="{Binding IsPluggedIn, Converter={StaticResource Visible}}" />
+                                </StackPanel>
+                            </Grid>
+                            <TextBlock Text="{Binding StateText}" Margin="0,10,0,0" FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Brush.Accent}" HorizontalAlignment="Center" TextAlignment="Center"
+                                       MaxWidth="140" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <!-- Power, time, stored and voltage, two to a row. -->
+                        <ItemsControl Grid.Column="1" ItemsSource="{Binding Figures}" VerticalAlignment="Center" Margin="0,0,-8,-8">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="2" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource Brush.Tile}" CornerRadius="6" Padding="12,10" Margin="0,0,8,8">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Scale}" FontWeight="Normal" />
+                                            <TextBlock Text="{Binding Value}" Margin="0,4,0,0" FontSize="16" FontWeight="SemiBold"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding Caption}" Margin="0,2,0,0" FontSize="11" Foreground="{StaticResource Brush.TextMuted}"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== The last hour ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <Grid Margin="0,0,0,14" MinHeight="34">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Charge, last hour'}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center">
+                            <Run Text="{Binding HistoryChange, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" />
+                            <Run Text="{Binding HistorySpan, Mode=OneWay}" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" />
+                        </TextBlock>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="120" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- The scale at the left: 100, 50 and 0. -->
+                        <Grid Margin="0,0,10,0">
+                            <TextBlock Style="{StaticResource Text.Scale}" Text="100%" VerticalAlignment="Top" Margin="0,-6,0,0" HorizontalAlignment="Right" />
+                            <TextBlock Style="{StaticResource Text.Scale}" Text="50%" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                            <TextBlock Style="{StaticResource Text.Scale}" Text="0%" VerticalAlignment="Bottom" Margin="0,0,0,-6" HorizontalAlignment="Right" />
+                        </Grid>
+
+                        <ui:Sparkline Grid.Column="1" Points="{Binding HistoryPoints}" LineBrush="{StaticResource Brush.Accent}"
+                                      GuideBrush="{StaticResource Brush.Line}" />
+
+                        <Grid Grid.Row="1" Grid.Column="1" Margin="0,8,0,0">
+                            <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T '60 min ago'}" />
+                            <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Now'}" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- ===== Health ===== -->
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,18" MinHeight="34">
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Battery health'}" VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- What a full charge holds now against when new, colored by how worn it is. -->
+                <Grid Visibility="{Binding HasHealth, Converter={StaticResource Visible}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Width="96" Height="96" Margin="0,0,20,0">
+                        <ui:RingGauge Fraction="{Binding HealthFraction}" Thickness="8" ArcBrush="{Binding HealthBrush}"
+                                      TrackBrush="{StaticResource Brush.Tile}" />
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Run Text="{Binding HealthText, Mode=OneWay}" FontSize="22" FontWeight="SemiBold" />
+                            <Run Text="%" FontSize="12" FontWeight="SemiBold" />
+                        </TextBlock>
+                    </Grid>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding HealthVerdict}" FontSize="16" FontWeight="SemiBold" Foreground="{Binding HealthBrush}" />
+                        <TextBlock Text="{Binding HealthCaption}" Margin="0,4,0,0" FontSize="13" FontWeight="SemiBold" />
+                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0" TextWrapping="Wrap"
+                                   Text="{ui:T 'What a full charge holds now, against what it held when new. Batteries lose a little every year.'}" />
+                    </StackPanel>
+                </Grid>
+
+                <ContentControl Style="{StaticResource NoteBox}" Content="{ui:T 'Windows did not report these figures'}"
+                                Visibility="{Binding HasHealth, Converter={StaticResource Hidden}}" />
+
+                <Border Style="{StaticResource Separator}" Margin="0,20" />
+
+                <ItemsControl ItemsSource="{Binding Details}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="140" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Hint}" />
+                                <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <ContentControl Style="{StaticResource NoteBox}" Margin="0,18,0,0"
+                                Content="{ui:T 'The charge limit is on the Performance page, under Battery health.'}" />
+            </StackPanel>
+        </Border>
+    </ui:AdaptiveColumns>
+</UserControl>

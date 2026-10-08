@@ -115,6 +115,9 @@
                 <views:DisplayView DataContext="{Binding Display}"
                                    Visibility="{Binding DataContext.IsDisplay, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
+                <views:BatteryView DataContext="{Binding Battery}"
+                                   Visibility="{Binding DataContext.IsBattery, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
+
                 <views:OptimizeView DataContext="{Binding Optimize}"
                                     Visibility="{Binding DataContext.IsOptimize, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 

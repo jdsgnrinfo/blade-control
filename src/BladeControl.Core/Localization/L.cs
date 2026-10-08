@@ -489,5 +489,27 @@ internal static class L
         ["Resolution: {0}"] = "Resolución: {0}",
         ["Screen colors"] = "Colores de la pantalla",
         ["Warmer, cooler or with more contrast, on every screen."] = "Más cálidos, más fríos o con más contraste, en todas las pantallas.",
+
+        // Battery page.
+        ["Battery status"] = "Estado de la batería",
+        ["Charge, last hour"] = "Carga, última hora",
+        ["60 min ago"] = "Hace 60 min",
+        ["Now"] = "Ahora",
+        ["Good condition"] = "En buen estado",
+        ["Some wear"] = "Algo desgastada",
+        ["Worn"] = "Desgastada",
+        ["Not charging"] = "Sin cargar",
+        ["Fully charged"] = "Carga completa",
+        ["Stored"] = "Almacenada",
+        ["Chemistry"] = "Química",
+        ["Not reported"] = "No informado",
+        ["When new"] = "De fábrica",
+        ["Full charge now"] = "Carga completa hoy",
+        ["Gathering readings"] = "Reuniendo lecturas",
+        ["in {0}"] = "en {0}",
+        ["What a full charge holds now, against what it held when new. Batteries lose a little every year."] =
+            "Lo que guarda una carga completa hoy frente a cuando era nueva. Las baterías pierden un poco cada año.",
+        ["The charge limit is on the Performance page, under Battery health."] =
+            "El límite de carga está en la página Rendimiento, en Salud de la batería.",
     };
 }

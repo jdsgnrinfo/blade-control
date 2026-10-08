@@ -29,6 +29,7 @@ internal sealed partial class MainViewModel : ObservableObject
         Performance = new PerformanceViewModel(services, Report);
         Lighting = new LightingViewModel(services, Report);
         Display = new DisplayViewModel(services, Report);
+        Battery = new BatteryViewModel(services);
         Optimize = new OptimizeViewModel(services, Report);
         Settings = new SettingsViewModel(services, Report);
         Device = new DevicePanelViewModel(services);
@@ -48,6 +49,8 @@ internal sealed partial class MainViewModel : ObservableObject
 
     public DisplayViewModel Display { get; }
 
+    public BatteryViewModel Battery { get; }
+
     public OptimizeViewModel Optimize { get; }
 
     public SettingsViewModel Settings { get; }
@@ -60,7 +63,7 @@ internal sealed partial class MainViewModel : ObservableObject
     private AppPage _page = AppPage.Performance;
 
     /// <summary>The pages not built yet show that they are coming.</summary>
-    public bool ShowsComingSoon => Page is not (AppPage.Performance or AppPage.Lighting or AppPage.Display or AppPage.Optimize or AppPage.Settings);
+    public bool ShowsComingSoon => Page is not (AppPage.Performance or AppPage.Lighting or AppPage.Display or AppPage.Battery or AppPage.Optimize or AppPage.Settings);
 
     /// <summary>The open page's name, for the pages that are still to come.</summary>
     public string PageTitle => L.T(Page switch
@@ -94,6 +97,7 @@ internal sealed partial class MainViewModel : ObservableObject
     partial void OnPageChanged(AppPage value)
     {
         Lighting.SetPageOpen(value == AppPage.Lighting);
+        Battery.SetPageOpen(value == AppPage.Battery);
 
         if (value == AppPage.Performance)
             Performance.Monitor.Start();
@@ -120,6 +124,7 @@ internal sealed partial class MainViewModel : ObservableObject
     {
         AppPage.Display => RefreshDisplay(),
         AppPage.Lighting => Lighting.RefreshAsync(),
+        AppPage.Battery => Battery.RefreshAsync(),
         AppPage.Optimize => Optimize.RefreshAsync(),
         _ => Performance.RefreshAsync()
     };
