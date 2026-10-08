@@ -1,0 +1,100 @@
+<UserControl x:Class="BladeControl.Views.DevicePanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BladeControl.UI">
+
+    <!-- The laptop: its picture and name, temperatures, fans and battery. -->
+    <Border Style="{StaticResource Card}" Padding="28,30,28,30">
+        <StackPanel>
+            <Image Source="{Binding Picture}" Height="190" Margin="0,0,0,22" RenderOptions.BitmapScalingMode="HighQuality"
+                   Visibility="{Binding HasPicture, Converter={StaticResource Visible}}" />
+
+            <TextBlock Text="{Binding ModelTitle}" HorizontalAlignment="Center" FontSize="21" FontWeight="SemiBold"
+                       Foreground="{StaticResource Brush.Accent}" TextAlignment="Center" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding ModelSubtitle}" HorizontalAlignment="Center" Margin="0,6,0,0" FontSize="14" FontWeight="SemiBold"
+                       Foreground="{StaticResource Brush.TextMuted}" />
+
+            <Border Style="{StaticResource Separator}" Margin="0,28,0,24" />
+
+            <!-- Battery. -->
+            <StackPanel Visibility="{Binding HasBattery, Converter={StaticResource Visible}}">
+                <Grid Margin="0,0,0,12">
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Battery', Caps=True}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding BatteryText}" HorizontalAlignment="Right" FontSize="21" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.Accent}" />
+                </Grid>
+                <Grid Height="22">
+                    <Border Background="{StaticResource Brush.Track}" CornerRadius="3" />
+                    <Border x:Name="BatteryFill" Background="{StaticResource Brush.Accent}" CornerRadius="3" HorizontalAlignment="Left">
+                        <Border.Width>
+                            <MultiBinding Converter="{x:Static ui:FractionWidthConverter.Instance}">
+                                <Binding Path="BatteryFraction" />
+                                <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}" />
+                            </MultiBinding>
+                        </Border.Width>
+                    </Border>
+                    <Path Width="12" Height="14" Data="{StaticResource Icon.Bolt}" Fill="{StaticResource Brush.OnAccent}" Stretch="Uniform"
+                          HorizontalAlignment="Center" Visibility="{Binding IsPluggedIn, Converter={StaticResource Visible}}" />
+                </Grid>
+                <TextBlock Text="{Binding PowerText}" Margin="0,8,0,0" FontSize="14" Foreground="{StaticResource Brush.Accent}" />
+                <Border Style="{StaticResource Separator}" Margin="0,24" />
+            </StackPanel>
+
+            <!-- Temperatures. -->
+            <Grid Margin="0,0,0,18">
+                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Temperatures', Caps=True}" VerticalAlignment="Center" />
+                <Border Style="{StaticResource SegmentStrip}" Padding="2">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton Style="{StaticResource Segment}" GroupName="Unit" Padding="8,2,8,3" Content="&#x00B0;C" IsChecked="{Binding UseCelsius}" />
+                        <RadioButton Style="{StaticResource Segment}" GroupName="Unit" Padding="8,2,8,3" Content="&#x00B0;F" IsChecked="{Binding UseFahrenheit}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <UniformGrid Columns="2">
+                <StackPanel>
+                    <Grid Width="116" Height="116">
+                        <ui:RingGauge Fraction="{Binding CpuFraction}" Thickness="4" ArcBrush="{StaticResource Brush.Cool}" TrackBrush="{StaticResource Brush.Tile}" />
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding CpuText}" FontSize="26" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            <TextBlock Text="CPU" FontSize="14" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="14" Foreground="{StaticResource Brush.TextMuted}">
+                        <Run Text="{ui:T 'Last 1 h avg.'}" />
+                        <Run Text="{Binding CpuAverageText, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" FontWeight="SemiBold" />
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel>
+                    <Grid Width="116" Height="116">
+                        <ui:RingGauge Fraction="{Binding GpuFraction}" Thickness="4" ArcBrush="{StaticResource Brush.Cool}" TrackBrush="{StaticResource Brush.Tile}" />
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding GpuText}" FontSize="26" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            <TextBlock Text="GPU" FontSize="14" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="14" Foreground="{StaticResource Brush.TextMuted}">
+                        <Run Text="{ui:T 'Last 1 h avg.'}" />
+                        <Run Text="{Binding GpuAverageText, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" FontWeight="SemiBold" />
+                    </TextBlock>
+                </StackPanel>
+            </UniformGrid>
+
+            <!-- Fans, where the controller reports their speed. -->
+            <StackPanel Visibility="{Binding HasFanSpeeds, Converter={StaticResource Visible}}">
+                <Border Style="{StaticResource Separator}" Margin="0,24" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Fans', Caps=True}" Margin="0,0,0,14" />
+                <UniformGrid Columns="2">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Path Width="18" Height="18" Data="{StaticResource Icon.Fan}" Stroke="{StaticResource Brush.TextMuted}" StrokeThickness="1.6" Stretch="Uniform" Margin="0,0,8,0" />
+                        <TextBlock Text="{Binding CpuFanText}" FontSize="16" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Path Width="18" Height="18" Data="{StaticResource Icon.Fan}" Stroke="{StaticResource Brush.TextMuted}" StrokeThickness="1.6" Stretch="Uniform" Margin="0,0,8,0" />
+                        <TextBlock Text="{Binding GpuFanText}" FontSize="16" />
+                    </StackPanel>
+                </UniformGrid>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

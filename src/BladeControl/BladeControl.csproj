@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <Version>0.1.0</Version>
+    <!-- Run on a newer .NET too if 10 is not installed. -->
+    <RollForward>LatestMajor</RollForward>
+    <ApplicationIcon>Assets\BladeControl.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BladeControl.Core\BladeControl.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\BladeControl.ico" />
+    <!-- Titillium Web, inside the exe: nothing is installed in Windows. -->
+    <Resource Include="Assets\Fonts\*.ttf" />
+    <!-- The laptops' pictures for the device panel, by model (see LaptopPictureNames). -->
+    <Resource Include="Assets\Laptops\*.png" />
+    <!-- Its license (SIL OFL 1.1) travels beside the exe, as the license asks. -->
+    <None Include="Assets\Fonts\OFL.txt" Link="TitilliumWeb-OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

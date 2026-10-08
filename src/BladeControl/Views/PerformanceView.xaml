@@ -1,0 +1,129 @@
+<UserControl x:Class="BladeControl.Views.PerformanceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BladeControl.UI">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== Power mode ===== -->
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,26">
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Power mode', Caps=True}" VerticalAlignment="Center" />
+                    <Border Style="{StaticResource SegmentStrip}">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Style="{StaticResource Segment}" GroupName="Source" Content="{ui:T 'Plugged In'}" IsChecked="{Binding EditingPluggedIn}" />
+                            <RadioButton Style="{StaticResource Segment}" GroupName="Source" Content="{ui:T 'On Battery'}" IsChecked="{Binding EditingOnBattery}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <UniformGrid Columns="3">
+                    <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="0,0,8,0" Tag="{StaticResource Icon.Silent}"
+                                 Content="{ui:T 'Silent'}" IsChecked="{Binding IsSilent}" IsEnabled="{Binding SilentOffered}" />
+                    <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="4,0" Tag="{StaticResource Icon.Balanced}"
+                                 Content="{ui:T 'Balanced'}" IsChecked="{Binding IsBalanced}" IsEnabled="{Binding BalancedOffered}" />
+                    <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="8,0,0,0" Tag="{StaticResource Icon.Custom}"
+                                 Content="{ui:T 'Custom'}" IsChecked="{Binding IsCustom}" IsEnabled="{Binding CustomOffered}"
+                                 ToolTipService.ShowOnDisabled="True" ToolTip="{ui:T 'Custom is available when plugged in.'}" />
+                </UniformGrid>
+
+                <!-- Custom's levels: shown in Custom, changeable on the power source the laptop is on now. -->
+                <StackPanel Visibility="{Binding IsCustom, Converter={StaticResource Visible}}" Margin="0,30,0,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <Path Width="15" Height="15" Data="{StaticResource Icon.Cpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,8,0" />
+                        <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'CPU preset', Caps=True}" />
+                    </StackPanel>
+                    <UniformGrid Columns="4" IsEnabled="{Binding CanChangeLevels}">
+                        <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="0,0,6,0" Content="{ui:T 'Low'}" IsChecked="{Binding IsCpuLow}" />
+                        <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="3,0" Content="{ui:T 'Medium'}" IsChecked="{Binding IsCpuMedium}" />
+                        <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="3,0" Content="{ui:T 'High'}" IsChecked="{Binding IsCpuHigh}" />
+                        <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="6,0,0,0" Content="{ui:T 'Boost'}" IsChecked="{Binding IsCpuBoost}" />
+                    </UniformGrid>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,28,0,12">
+                        <Path Width="15" Height="15" Data="{StaticResource Icon.Gpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,8,0" />
+                        <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'GPU preset', Caps=True}" />
+                    </StackPanel>
+                    <UniformGrid Columns="4" IsEnabled="{Binding CanChangeLevels}">
+                        <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="0,0,6,0" Content="{ui:T 'Low'}" IsChecked="{Binding IsGpuLow}" />
+                        <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="3,0" Content="{ui:T 'Medium'}" IsChecked="{Binding IsGpuMedium}" />
+                        <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="3,0" Content="{ui:T 'High'}" IsChecked="{Binding IsGpuHigh}" />
+                    </UniformGrid>
+                </StackPanel>
+
+                <Border Style="{StaticResource Separator}" Margin="0,30,0,24" />
+
+                <!-- Max fan speed. -->
+                <Grid Visibility="{Binding HasMaxFan, Converter={StaticResource Visible}}" Margin="0,0,0,24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,24,0">
+                        <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Run maximum fan speed'}" />
+                        <TextBlock Style="{StaticResource Text.Hint}" Text="{Binding MaxFanHint}" Margin="0,6,0,0" />
+                    </StackPanel>
+                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding MaxFan}" IsEnabled="{Binding CanUseMaxFan}" />
+                </Grid>
+
+                <!-- Switching profile with the charger. -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,24,0">
+                        <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Switch profile with the charger'}" />
+                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0"
+                                   Text="{ui:T 'Plugging in or unplugging applies that power source\'s mode.'}" />
+                    </StackPanel>
+                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding AutoSwitchProfiles}" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- ===== Battery health ===== -->
+        <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Battery health', Caps=True}" Margin="0,0,0,26" />
+
+                <!-- A controller that takes a charge limit. -->
+                <StackPanel Visibility="{Binding HasChargeLimit, Converter={StaticResource Visible}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0">
+                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Optimize battery charging'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0"
+                                       Text="{ui:T 'Increase your battery\'s longevity by limiting its maximum charge.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding ChargeLimitOn}" />
+                    </Grid>
+
+                    <Border Style="{StaticResource Separator}" />
+
+                    <Slider x:Name="ChargeSlider" Style="{StaticResource ValueSlider}" IsEnabled="{Binding ChargeLimitOn}"
+                            Minimum="{Binding ChargeLimitMinimum, Mode=OneTime}" Maximum="{Binding ChargeLimitMaximum, Mode=OneTime}"
+                            Value="{Binding ChargeLimit}" PreviewMouseUp="ChargeSlider_Commit" KeyUp="ChargeSlider_Commit" />
+                    <Grid Margin="0,10,0,24">
+                        <TextBlock Style="{StaticResource Text.Scale}" Text="{Binding ChargeLimitMinimum, StringFormat={}{0}%}" />
+                        <TextBlock Style="{StaticResource Text.Scale}" Text="{Binding ChargeLimitMaximum, StringFormat={}{0}%}" HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <ContentControl Style="{StaticResource SuccessBox}" Tag="{StaticResource Icon.Bolt}" Content="{ui:T 'Keeping your battery charged below 100% puts it under less stress, which helps reduce battery aging.'}" />
+                </StackPanel>
+
+                <!-- A controller that only pretends to take one (the 2020 Blades). -->
+                <ContentControl Style="{StaticResource NoteBox}" Visibility="{Binding HasChargeLimit, Converter={StaticResource Hidden}}" Content="{ui:T 'This laptop\'s controller does not accept a charge limit. A BIOS update from Razer may add it.'}" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/BladeControl/BladeControl.csproj" />
+  <Project Path="src/BladeControl.Core/BladeControl.Core.csproj" />
+  <Project Path="tests/BladeControl.Core.Tests/BladeControl.Core.Tests.csproj" />
+</Solution>

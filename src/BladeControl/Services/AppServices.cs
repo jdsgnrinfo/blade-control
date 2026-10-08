@@ -1,0 +1,76 @@
+using BladeControl.Core.Diagnostics;
+using BladeControl.Core.Hardware;
+using BladeControl.Core.Models;
+using BladeControl.Core.Platform;
+using BladeControl.Core.Services;
+
+namespace BladeControl.Services;
+
+/// <summary>
+/// Everything the window talks to, made once at startup: one EC connection
+/// shared by every service that talks to the hardware, the power source, the
+/// laptop that was found and the saved settings.
+/// </summary>
+internal sealed class AppServices : IDisposable
+{
+    private readonly SettingsService _settingsService = new();
+    private readonly RazerHidTransport _transport = new();
+    private readonly PowerSourceService _powerSource = new();
+
+    public AppServices()
+    {
+        Settings = _settingsService.Load();
+        Model = new DeviceSupportService().TryGetPresentModel(out var model) ? model : null;
+        AppLog.Info(Model is null ? "No supported Razer Blade was found." : $"Found {Model.Name}.");
+
+        MaxFanMethod = Model?.MaxFan ?? MaxFanMethod.ControllerFlag;
+        Performance = new PerformanceService(_transport, MaxFanMethod);
+        FanTelemetry = new FanTelemetryService(_transport);
+        EcTemperatures = new EcTemperatureService(_transport);
+        ChargeLimit = new BatteryChargeLimitService(_transport);
+
+        // Silent keeps the CPU at its base frequency, always: on the Blade 15
+        // Base (2020) the EC's Silent alone runs hotter than Balanced, and it is
+        // the boost being off that quiets it. Balanced and Custom give it back.
+        SilentBoost = new SilentPlanOverride(
+            PowerPlanValue.BoostMode(),
+            0, // Boost off.
+            "CPU boost",
+            Settings.CpuBoostBeforeSilent,
+            saved => UpdateSettings(settings => settings with { CpuBoostBeforeSilent = saved }));
+    }
+
+    public AppSettings Settings { get; private set; }
+
+    /// <summary>The laptop found at startup, or null when none was.</summary>
+    public RazerLaptopModel? Model { get; }
+
+    public MaxFanMethod MaxFanMethod { get; }
+
+    public IPowerSource PowerSource => _powerSource;
+
+    public PerformanceService Performance { get; }
+
+    public FanTelemetryService FanTelemetry { get; }
+
+    public EcTemperatureService EcTemperatures { get; }
+
+    public IGpuTemperatureSource GpuTemperature { get; } = new D3dkmtGpuTemperature();
+
+    public BatteryChargeLimitService ChargeLimit { get; }
+
+    public SilentPlanOverride SilentBoost { get; }
+
+    /// <summary>Changes the settings and writes them to disk straight away.</summary>
+    public void UpdateSettings(Func<AppSettings, AppSettings> edit)
+    {
+        Settings = edit(Settings);
+        _settingsService.Save(Settings);
+    }
+
+    public void Dispose()
+    {
+        _powerSource.Dispose();
+        _transport.Dispose();
+    }
+}

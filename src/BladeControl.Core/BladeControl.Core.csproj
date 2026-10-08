@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Everything that talks to the laptop and to Windows, with no interface in it:
+       the Razer EC over HID, the sensors, power plans, settings and the log. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>BladeControl.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="10.0.12" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Win32.SystemEvents" Version="10.0.12" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Core types are internal; the app and the tests need to see them. -->
+    <InternalsVisibleTo Include="BladeControl" />
+    <InternalsVisibleTo Include="BladeControl.Core.Tests" />
+  </ItemGroup>
+
+</Project>

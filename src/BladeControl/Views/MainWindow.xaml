@@ -1,0 +1,124 @@
+<Window x:Class="BladeControl.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:BladeControl.UI"
+        xmlns:views="clr-namespace:BladeControl.Views"
+        Title="Blade Control"
+        Icon="pack://application:,,,/Assets/BladeControl.ico"
+        Width="1600" Height="1000" MinWidth="1180" MinHeight="700"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Brush.Window}"
+        Foreground="{StaticResource Brush.Text}"
+        FontFamily="{StaticResource Font.Main}"
+        TextOptions.TextFormattingMode="Ideal"
+        UseLayoutRounding="True">
+
+    <!-- A normal Windows window (taskbar, snap, resize) with the concept's own title bar drawn in it. -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Grid x:Name="Root">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- ===== Title bar: mark, sections, settings and the window buttons ===== -->
+        <Grid Grid.Row="0" Background="{StaticResource Brush.TitleBar}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Margin="22,0,0,0">
+                <Path Width="26" Height="26" Data="{StaticResource Icon.Logo}" Fill="{StaticResource Brush.Accent}" Stretch="Uniform" />
+                <TextBlock Text="{ui:T 'Blade Control', Caps=True}" Margin="14,0,8,0" VerticalAlignment="Center"
+                           FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}" />
+                <Border Width="1" Height="14" Background="{StaticResource Brush.Track}" Margin="8,0" />
+                <RadioButton Style="{StaticResource TopNav}" Content="{ui:T 'System', Caps=True}" IsChecked="{Binding IsSystem}" />
+                <RadioButton Style="{StaticResource TopNav}" Content="{ui:T 'Audio', Caps=True}" IsChecked="{Binding IsAudio}" />
+                <Border Width="1" Height="14" Background="{StaticResource Brush.Track}" Margin="8,0" />
+                <RadioButton Style="{StaticResource TopNav}" Content="{ui:T 'Optimize', Caps=True}" IsChecked="{Binding IsOptimize}" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,0,8,0" VerticalAlignment="Center">
+                <RadioButton Style="{StaticResource TopNav}" IsChecked="{Binding IsSettings}" ToolTip="{ui:T 'Settings'}" Padding="12,0">
+                    <TextBlock Text="&#xE713;" FontFamily="{StaticResource Font.Symbols}" FontSize="18" />
+                </RadioButton>
+                <Border Width="12" />
+                <Button Style="{StaticResource CaptionButton}" Content="&#xE921;" Click="Minimize_Click" ToolTip="{ui:T 'Minimize'}" />
+                <Button x:Name="MaximizeButton" Style="{StaticResource CaptionButton}" Content="&#xE922;" Click="Maximize_Click" />
+                <Button Style="{StaticResource CloseButton}" Content="&#xE8BB;" Click="Close_Click" ToolTip="{ui:T 'Close'}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- ===== Page row: back, forward, the section's pages, and refresh ===== -->
+        <Grid Grid.Row="1" Margin="24,16,24,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{StaticResource IconButton}" Content="{StaticResource Icon.Back}" Command="{Binding BackCommand}" ToolTip="{ui:T 'Back'}" />
+                <Button Style="{StaticResource IconButton}" Content="{StaticResource Icon.Forward}" Command="{Binding ForwardCommand}"
+                        Background="Transparent" Margin="4,0,32,0" ToolTip="{ui:T 'Forward'}" />
+
+                <StackPanel Orientation="Horizontal" Visibility="{Binding HasSubTabs, Converter={StaticResource Visible}}">
+                    <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Performance'}" IsChecked="{Binding IsPerformance}" />
+                    <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Lighting'}" IsChecked="{Binding IsLighting}" />
+                    <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Display'}" IsChecked="{Binding IsDisplay}" />
+                    <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Battery'}" IsChecked="{Binding IsBattery}" />
+                </StackPanel>
+
+                <!-- A section with a single page shows its name instead of tabs. -->
+                <Border Background="{StaticResource Brush.Accent}" CornerRadius="3" Padding="13,3,13,5"
+                        Visibility="{Binding HasSubTabs, Converter={StaticResource Hidden}}">
+                    <TextBlock Text="{Binding PageTitle}" FontSize="21" FontWeight="SemiBold" Foreground="{StaticResource Brush.OnAccent}" />
+                </Border>
+            </StackPanel>
+
+            <!-- What the last change did, for a few seconds. -->
+            <TextBlock Grid.Column="1" Text="{Binding Status}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,20,0"
+                       FontSize="15" TextTrimming="CharacterEllipsis">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding StatusIsError}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource Brush.Warm}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <Button Grid.Column="2" Style="{StaticResource IconButton}" Content="{StaticResource Icon.Refresh}" Command="{Binding RefreshCommand}"
+                    ToolTip="{ui:T 'Read the laptop again'}" />
+        </Grid>
+
+        <Border Grid.Row="1" VerticalAlignment="Bottom" Height="1" Background="{StaticResource Brush.Line}" />
+
+        <!-- ===== Content: the page's cards, and the laptop's panel at the right ===== -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,4,0">
+            <Grid Margin="24,24,20,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="400" />
+                </Grid.ColumnDefinitions>
+
+                <views:PerformanceView DataContext="{Binding Performance}"
+                                       Visibility="{Binding DataContext.IsPerformance, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
+
+                <views:ComingSoonView Visibility="{Binding IsPerformance, Converter={StaticResource Hidden}}" />
+
+                <views:DevicePanel Grid.Column="2" DataContext="{Binding Device}" VerticalAlignment="Top" />
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Window>
