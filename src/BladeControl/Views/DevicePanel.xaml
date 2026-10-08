@@ -6,7 +6,7 @@
     <!-- The laptop: its picture and name, temperatures, fans and battery. -->
     <Border Style="{StaticResource Card}" Padding="24,24,24,26">
         <StackPanel>
-            <Image Source="{Binding Picture}" Height="190" Margin="0,0,0,22" RenderOptions.BitmapScalingMode="HighQuality"
+            <Image Source="{Binding Picture}" Height="165" Margin="0,0,0,22" RenderOptions.BitmapScalingMode="HighQuality"
                    Visibility="{Binding HasPicture, Converter={StaticResource Visible}}" />
 
             <TextBlock Text="{Binding ModelTitle}" HorizontalAlignment="Center" FontSize="21" FontWeight="SemiBold"

@@ -451,7 +451,7 @@ internal static class L
         ["Not detected"] = "No detectado",
         ["Plugged in, fully charged"] = "Enchufado, carga completa",
         ["Temperatures"] = "Temperaturas",
-        ["Last 1 h avg."] = "Prom. última hora",
+        ["Last 1 h avg."] = "Prom. 1 h",
         ["Fans"] = "Ventiladores",
     };
 }
