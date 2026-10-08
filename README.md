@@ -55,7 +55,7 @@ Performance, Lighting, Display, Battery, Audio, Optimize or Settings.
 | `src/BladeControl` | The WPF window: themes, views and view models. |
 | `tests/BladeControl.Core.Tests` | The tests for the core, with a scripted EC so nothing touches the laptop. |
 
-Settings live in `%APPDATA%\BladeControl\settings.json` and the log in
+Settings live in `%LOCALAPPDATA%\BladeControl\settings.json` and the log in
 `%LOCALAPPDATA%\BladeControl\bladecontrol.log`.
 
 ## Credits and license
