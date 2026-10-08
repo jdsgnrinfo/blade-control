@@ -326,9 +326,9 @@
             <Setter.Value>
                 <DataTemplate>
                     <StackPanel>
-                        <Border Width="76" Height="76" CornerRadius="38" HorizontalAlignment="Center" Margin="0,0,0,14"
+                        <Border Width="64" Height="64" CornerRadius="32" HorizontalAlignment="Center" Margin="0,0,0,14"
                                 Background="#26000000">
-                            <Path Width="34" Height="34" Style="{StaticResource IconPath}"
+                            <Path Width="28" Height="28" Style="{StaticResource IconPath}"
                                   Data="{Binding Tag, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
                         </Border>
                         <TextBlock Text="{Binding}" HorizontalAlignment="Center" />
