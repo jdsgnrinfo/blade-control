@@ -481,5 +481,13 @@ internal static class L
         ["What Blade Control did and any errors, to share if something goes wrong."] = "Lo que hizo Blade Control y sus errores, para compartir si algo falla.",
         ["Clears your settings and puts the laptop back in Balanced. Asks first."] = "Borra tus ajustes y vuelve a poner el portátil en Equilibrado. Pregunta antes.",
         ["Blade Control could not restart itself. Please close it and open it again."] = "Blade Control no pudo reiniciarse solo. Ciérralo y vuelve a abrirlo.",
+
+        // Display page.
+        ["Auto"] = "Auto",
+        ["Auto uses {0} Hz plugged in and {1} Hz on battery, and waits while a fullscreen game has the screen."] =
+            "Auto usa {0} Hz enchufado y {1} Hz con batería, y espera mientras un juego a pantalla completa ocupa la pantalla.",
+        ["Resolution: {0}"] = "Resolución: {0}",
+        ["Screen colors"] = "Colores de la pantalla",
+        ["Warmer, cooler or with more contrast, on every screen."] = "Más cálidos, más fríos o con más contraste, en todas las pantallas.",
     };
 }

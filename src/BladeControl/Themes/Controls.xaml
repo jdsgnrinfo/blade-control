@@ -33,6 +33,19 @@
         <Setter Property="LineHeight" Value="20" />
     </Style>
 
+    <!-- A short warning in red under a setting, gone while there is nothing to say. -->
+    <Style x:Key="Text.Status" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.Warm}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Margin" Value="0,6,0,0" />
+        <Style.Triggers>
+            <Trigger Property="Text" Value="">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="Text.Scale" TargetType="TextBlock">
         <Setter Property="FontSize" Value="11" />
         <Setter Property="FontWeight" Value="SemiBold" />

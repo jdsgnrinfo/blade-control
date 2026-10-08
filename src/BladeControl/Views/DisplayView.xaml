@@ -1,0 +1,91 @@
+<UserControl x:Class="BladeControl.Views.DisplayView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BladeControl.UI">
+
+    <!-- Two columns, or one under the other in a narrow window. -->
+    <ui:AdaptiveColumns>
+
+        <!-- ===== Refresh rate ===== -->
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,18" MinHeight="34">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Refresh rate'}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="{Binding Resolution}" Style="{StaticResource Text.Hint}" VerticalAlignment="Center" />
+                </Grid>
+
+                <ItemsControl ItemsSource="{Binding RefreshChoices}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <RadioButton Style="{StaticResource Tile}" GroupName="RefreshRate" Height="64" Margin="0,0,8,0"
+                                         Content="{Binding Name}" IsChecked="{Binding IsSelected}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="{Binding RateStatus}" Style="{StaticResource Text.Status}" Margin="0,10,0,0" />
+
+                <ContentControl Style="{StaticResource NoteBox}" Margin="0,18,0,0" Content="{Binding AutoHint}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Color profile, and the panel's details under it. -->
+        <StackPanel>
+            <!-- ===== Color profile ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12" MinHeight="34">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Color profile'}" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Screen colors'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Warmer, cooler or with more contrast, on every screen.'}" />
+                            <TextBlock Text="{Binding ProfileStatus}" Style="{StaticResource Text.Status}" />
+                        </StackPanel>
+                        <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" MinWidth="140" VerticalAlignment="Center"
+                                  ItemsSource="{Binding ProfileNames}" SelectedIndex="{Binding ProfileIndex}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== The panel, as Windows reports it ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12" MinHeight="34">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Panel'}" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding PanelDetails}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Hint}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ui:AdaptiveColumns>
+</UserControl>

@@ -28,6 +28,7 @@ internal sealed partial class MainViewModel : ObservableObject
         Services = services;
         Performance = new PerformanceViewModel(services, Report);
         Lighting = new LightingViewModel(services, Report);
+        Display = new DisplayViewModel(services, Report);
         Optimize = new OptimizeViewModel(services, Report);
         Settings = new SettingsViewModel(services, Report);
         Device = new DevicePanelViewModel(services);
@@ -45,6 +46,8 @@ internal sealed partial class MainViewModel : ObservableObject
 
     public LightingViewModel Lighting { get; }
 
+    public DisplayViewModel Display { get; }
+
     public OptimizeViewModel Optimize { get; }
 
     public SettingsViewModel Settings { get; }
@@ -57,7 +60,7 @@ internal sealed partial class MainViewModel : ObservableObject
     private AppPage _page = AppPage.Performance;
 
     /// <summary>The pages not built yet show that they are coming.</summary>
-    public bool ShowsComingSoon => Page is not (AppPage.Performance or AppPage.Lighting or AppPage.Optimize or AppPage.Settings);
+    public bool ShowsComingSoon => Page is not (AppPage.Performance or AppPage.Lighting or AppPage.Display or AppPage.Optimize or AppPage.Settings);
 
     /// <summary>The open page's name, for the pages that are still to come.</summary>
     public string PageTitle => L.T(Page switch
@@ -97,7 +100,9 @@ internal sealed partial class MainViewModel : ObservableObject
         else
             Performance.Monitor.Stop();
 
-        if (value == AppPage.Optimize)
+        if (value == AppPage.Display)
+            Display.Refresh();
+        else if (value == AppPage.Optimize)
             _ = Optimize.RefreshAsync();
         else if (value == AppPage.Settings)
             Settings.Refresh();
@@ -113,10 +118,17 @@ internal sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private Task Refresh() => Page switch
     {
+        AppPage.Display => RefreshDisplay(),
         AppPage.Lighting => Lighting.RefreshAsync(),
         AppPage.Optimize => Optimize.RefreshAsync(),
         _ => Performance.RefreshAsync()
     };
+
+    private Task RefreshDisplay()
+    {
+        Display.Refresh();
+        return Task.CompletedTask;
+    }
 
     private void Report(string message, bool isError)
     {
