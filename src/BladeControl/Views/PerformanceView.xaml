@@ -117,10 +117,15 @@
     
                         <Border Style="{StaticResource Separator}" />
     
-                        <Slider x:Name="ChargeSlider" Style="{StaticResource ValueSlider}" IsEnabled="{Binding ChargeLimitOn}"
-                                Minimum="{Binding ChargeLimitMinimum, Mode=OneTime}" Maximum="{Binding ChargeLimitMaximum, Mode=OneTime}"
-                                Value="{Binding ChargeLimit}" PreviewMouseUp="ChargeSlider_Commit" KeyUp="ChargeSlider_Commit" />
-                        <Grid Margin="0,10,0,24">
+                        <!-- The limit's name, and its value beside it. -->
+                        <Grid Margin="0,0,0,6" IsEnabled="{Binding ChargeLimitOn}">
+                            <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Charge limit'}" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding ChargeLimit, StringFormat={}{0}%}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
+                        </Grid>
+                        <ui:SpringSlider IsEnabled="{Binding ChargeLimitOn}" Format="{}{0}%"
+                                         Minimum="{Binding ChargeLimitMinimum, Mode=OneTime}" Maximum="{Binding ChargeLimitMaximum, Mode=OneTime}"
+                                         Value="{Binding ChargeLimit}" Committed="ChargeSlider_Commit" />
+                        <Grid Margin="0,4,0,24">
                             <TextBlock Style="{StaticResource Text.Scale}" Text="{Binding ChargeLimitMinimum, StringFormat={}{0}%}" />
                             <TextBlock Style="{StaticResource Text.Scale}" Text="{Binding ChargeLimitMaximum, StringFormat={}{0}%}" HorizontalAlignment="Right" />
                         </Grid>

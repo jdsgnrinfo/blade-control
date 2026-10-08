@@ -4,15 +4,11 @@
              xmlns:ui="clr-namespace:BladeControl.UI">
 
     <UserControl.Resources>
-        <!-- A boost: its name, its slider from 0 (off) to 10, Off and 10 under it. -->
-        <Style x:Key="BoostSlider" TargetType="Slider" BasedOn="{StaticResource ValueSlider}">
+        <!-- A boost: from 0 (off) to 10, a step at a time. -->
+        <Style x:Key="BoostSlider" TargetType="ui:SpringSlider">
             <Setter Property="Minimum" Value="0" />
             <Setter Property="Maximum" Value="10" />
-            <Setter Property="IsSnapToTickEnabled" Value="True" />
-            <Setter Property="TickFrequency" Value="1" />
-            <Setter Property="SmallChange" Value="1" />
-            <Setter Property="LargeChange" Value="2" />
-            <Setter Property="Tag" Value="{}{0}" />
+            <Setter Property="Step" Value="1" />
         </Style>
     </UserControl.Resources>
 
@@ -133,30 +129,39 @@
                             </MultiBinding>
                         </StackPanel.IsEnabled>
 
-                        <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Bass enhancer'}" />
+                        <Grid>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Bass enhancer'}" />
+                            <TextBlock Text="{Binding BassBoost}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
+                        </Grid>
                         <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap" Text="{ui:T 'Lifts everything under about 120 Hz.'}" />
-                        <Slider Style="{StaticResource BoostSlider}" Margin="18,6,18,0" Value="{Binding BassBoost}" />
-                        <Grid Margin="0,8,0,0">
+                        <ui:SpringSlider Style="{StaticResource BoostSlider}" Margin="0,6,0,0" Value="{Binding BassBoost}" />
+                        <Grid Margin="0,4,0,0">
                             <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
                             <TextBlock Style="{StaticResource Text.Scale}" Text="10" HorizontalAlignment="Right" />
                         </Grid>
 
                         <Border Style="{StaticResource Separator}" Margin="0,18" />
 
-                        <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Dynamic boost'}" />
+                        <Grid>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Dynamic boost'}" />
+                            <TextBlock Text="{Binding DynamicBoost}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
+                        </Grid>
                         <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap" Text="{ui:T 'Brings out both ends, for a fuller, punchier sound.'}" />
-                        <Slider Style="{StaticResource BoostSlider}" Margin="18,6,18,0" Value="{Binding DynamicBoost}" />
-                        <Grid Margin="0,8,0,0">
+                        <ui:SpringSlider Style="{StaticResource BoostSlider}" Margin="0,6,0,0" Value="{Binding DynamicBoost}" />
+                        <Grid Margin="0,4,0,0">
                             <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
                             <TextBlock Style="{StaticResource Text.Scale}" Text="10" HorizontalAlignment="Right" />
                         </Grid>
 
                         <Border Style="{StaticResource Separator}" Margin="0,18" />
 
-                        <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Clarity'}" />
+                        <Grid>
+                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Clarity'}" />
+                            <TextBlock Text="{Binding ClarityBoost}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
+                        </Grid>
                         <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap" Text="{ui:T 'Lifts the mids and treble, for crisper voices and detail.'}" />
-                        <Slider Style="{StaticResource BoostSlider}" Margin="18,6,18,0" Value="{Binding ClarityBoost}" />
-                        <Grid Margin="0,8,0,0">
+                        <ui:SpringSlider Style="{StaticResource BoostSlider}" Margin="0,6,0,0" Value="{Binding ClarityBoost}" />
+                        <Grid Margin="0,4,0,0">
                             <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
                             <TextBlock Style="{StaticResource Text.Scale}" Text="10" HorizontalAlignment="Right" />
                         </Grid>

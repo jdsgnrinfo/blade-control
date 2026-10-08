@@ -21,10 +21,13 @@
                     <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'System lighting'}" VerticalAlignment="Center" />
                 </Grid>
 
-                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Keyboard brightness'}" />
-                <Slider Style="{StaticResource ValueSlider}" Minimum="0" Maximum="100" Value="{Binding KeyboardBrightness}"
-                        PreviewMouseUp="KeyboardBrightness_Commit" KeyUp="KeyboardBrightness_Commit" />
-                <Grid Margin="0,8,0,0">
+                <!-- The name, and the value beside it. -->
+                <Grid Margin="0,0,0,6">
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Keyboard brightness'}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding KeyboardBrightness, StringFormat={}{0}%}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
+                </Grid>
+                <ui:SpringSlider Minimum="0" Maximum="100" Format="{}{0}%" Value="{Binding KeyboardBrightness}" Committed="KeyboardBrightness_Commit" />
+                <Grid Margin="0,4,0,0">
                     <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
                     <TextBlock Style="{StaticResource Text.Scale}" Text="100%" HorizontalAlignment="Right" />
                 </Grid>

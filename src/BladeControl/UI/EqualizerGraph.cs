@@ -26,8 +26,7 @@ public sealed class EqualizerGraph : FrameworkElement
     private const double GridTop = 30;      // Room for the gains above.
     private const double GridBottomRoom = 30; // Room for the frequencies below.
     private const double ScaleWidth = 44;   // +12, 0 and -12 at the left.
-    private const double ThumbWidth = 22;
-    private const double ThumbHeight = 14;
+    private const double ThumbRadius = 8;
     private const double LargeStep = 3;
 
     public static readonly DependencyProperty GainsProperty = DependencyProperty.Register(
@@ -117,7 +116,7 @@ public sealed class EqualizerGraph : FrameworkElement
         // A track standing up for each band.
         var track = TrackBrush ?? Brushes.DimGray;
         for (var band = 0; band < EqBands.Count; band++)
-            context.DrawRoundedRectangle(track, null, new Rect(XOf(band) - 2, Top, 4, Bottom - Top), 2, 2);
+            context.DrawRoundedRectangle(track, null, new Rect(XOf(band) - 2.5, Top - 2.5, 5, Bottom - Top + 5), 2.5, 2.5);
 
         // The curve, through the thumbs, with a faint fill to 0 dB.
         var points = Enumerable.Range(0, EqBands.Count).Select(band => new Point(XOf(band), YOf(gains[band]))).ToList();
@@ -154,12 +153,25 @@ public sealed class EqualizerGraph : FrameworkElement
             var from = Math.Min(y, zero);
             var to = Math.Max(y, zero);
             if (to - from > 0.5)
-                context.DrawRectangle(accent, null, new Rect(x - 2, from, 4, to - from));
+                context.DrawRoundedRectangle(accent, null, new Rect(x - 2.5, from, 5, to - from), 2.5, 2.5);
 
-            var width = held ? ThumbWidth + 4 : ThumbWidth;
-            var height = held ? ThumbHeight + 2 : ThumbHeight;
-            context.DrawRoundedRectangle(IsEnabled ? Brushes.White : MutedBrush ?? Brushes.Gray, null,
-                new Rect(x - width / 2, y - height / 2, width, height), 3, 3);
+            // The thumb, as the sliders': a white disc with a soft shadow, grown while held,
+            // a faint green halo while dragged, a green ring when the keys move it.
+            var radius = band == _dragging ? ThumbRadius * 1.16 : ThumbRadius;
+            var center = new Point(x, y);
+
+            if (IsKeyboardFocused && band == _focusBand && _dragging < 0)
+            {
+                context.DrawEllipse(accent, null, center, radius + 4, radius + 4);
+                context.DrawEllipse(TryFindResource("Brush.Card") as Brush ?? Brushes.Black, null, center, radius + 2, radius + 2);
+            }
+            else if (band == _dragging)
+            {
+                context.DrawEllipse(Frozen(new SolidColorBrush(Color.FromArgb(46, accentColor.R, accentColor.G, accentColor.B))), null, center, radius + 3, radius + 3);
+            }
+
+            context.DrawEllipse(Frozen(new SolidColorBrush(Color.FromArgb(90, 0, 0, 0))), null, new Point(x, y + 1), radius, radius);
+            context.DrawEllipse(IsEnabled ? Brushes.White : MutedBrush ?? Brushes.Gray, null, center, radius, radius);
 
             var gain = Text(GainText(gains[band]), held ? accent : Brushes.White, 12, FontWeights.SemiBold);
             context.DrawText(gain, new Point(x - gain.Width / 2, Top - 14 - gain.Height / 2 - 4));
