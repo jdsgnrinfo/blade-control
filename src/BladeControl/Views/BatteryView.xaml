@@ -6,7 +6,7 @@
     <!-- Two columns, or one under the other in a narrow window. -->
     <ui:AdaptiveColumns>
 
-        <!-- The charge now, and the last hour under it. -->
+        <!-- The charge now, and the last 24 hours under it. -->
         <StackPanel>
             <!-- ===== Status ===== -->
             <Border Style="{StaticResource Card}" VerticalAlignment="Top">
@@ -69,45 +69,53 @@
                 </StackPanel>
             </Border>
 
-            <!-- ===== The last hour ===== -->
+            <!-- ===== The last 24 hours, from Windows' battery report ===== -->
             <Border Style="{StaticResource Card}" VerticalAlignment="Top">
                 <StackPanel>
-                    <Grid Margin="0,0,0,14" MinHeight="34">
+                    <Grid Margin="0,0,0,10" MinHeight="34">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Last charge'}" VerticalAlignment="Center" />
-                        <TextBlock Grid.Column="1" VerticalAlignment="Center">
-                            <Run Text="{Binding HistorySpan, Mode=OneWay}" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" />
-                        </TextBlock>
+                        <TextBlock Grid.Column="1" Text="{ui:T 'Last 24 hours'}" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" VerticalAlignment="Center" />
                     </Grid>
 
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="120" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                    <ContentControl Style="{StaticResource NoteBox}" Content="{ui:T 'Windows did not give its battery record.'}"
+                                    Visibility="{Binding HasDay, Converter={StaticResource Hidden}}" />
 
-                        <!-- The scale at the left: 100, 50 and 0. -->
-                        <Grid Margin="0,0,10,0">
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="100%" VerticalAlignment="Top" Margin="0,-6,0,0" HorizontalAlignment="Right" />
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="50%" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="0%" VerticalAlignment="Bottom" Margin="0,0,0,-6" HorizontalAlignment="Right" />
+                    <StackPanel Visibility="{Binding HasDay, Converter={StaticResource Visible}}">
+                        <ui:BatteryBarChart Height="230" Bars="{Binding DayBars}" Charging="{Binding DayCharging}" PlugIns="{Binding DayPlugIns}"
+                                            TickLabels="{Binding DayTicks}" BarTips="{Binding DayTips}"
+                                            Accent="{StaticResource Brush.Accent}" LineBrush="{StaticResource Brush.Track}"
+                                            TextBrush="{StaticResource Brush.TextMuted}" />
+
+                        <!-- How the day went, and what the charger is doing now. -->
+                        <Grid Margin="0,18,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{ui:T 'Screen on'}" FontSize="13" FontWeight="SemiBold" Margin="0,0,32,8" />
+                            <TextBlock Grid.Column="1" Text="{Binding ScreenOnText}" FontSize="13" Foreground="{StaticResource Brush.TextSoft}" />
+                            <TextBlock Grid.Row="1" Text="{ui:T 'Screen off'}" FontSize="13" FontWeight="SemiBold" Margin="0,0,32,8" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ScreenOffText}" FontSize="13" Foreground="{StaticResource Brush.TextSoft}" />
+                            <TextBlock Grid.Row="2" Text="{ui:T 'Asleep'}" FontSize="13" FontWeight="SemiBold" Margin="0,0,32,0" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding AsleepText}" FontSize="13" Foreground="{StaticResource Brush.TextSoft}" />
+
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                <TextBlock Text="{Binding StateText}" FontSize="13" Foreground="{StaticResource Brush.TextSoft}" />
+                                <Path Width="9" Height="12" Margin="6,1,0,0" Data="{StaticResource Icon.Bolt}" Fill="{StaticResource Brush.Accent}" Stretch="Uniform"
+                                      Visibility="{Binding IsPluggedIn, Converter={StaticResource Visible}}" />
+                            </StackPanel>
                         </Grid>
-
-                        <ui:Sparkline Grid.Column="1" Points="{Binding HistoryPoints}" LineBrush="{StaticResource Brush.Accent}"
-                                      GuideBrush="{StaticResource Brush.Line}" />
-
-                        <Grid Grid.Row="1" Grid.Column="1" Margin="0,8,0,0">
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T '60 min ago'}" />
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Now'}" HorizontalAlignment="Right" />
-                        </Grid>
-                    </Grid>
+                    </StackPanel>
                 </StackPanel>
             </Border>
         </StackPanel>

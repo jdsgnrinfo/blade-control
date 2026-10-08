@@ -493,7 +493,11 @@ internal static class L
         // Battery page.
         ["Battery status"] = "Estado de la batería",
         ["Last charge"] = "Última carga",
-        ["60 min ago"] = "Hace 60 min",
+        ["Last 24 hours"] = "Últimas 24 horas",
+        ["Screen on"] = "Pantalla encendida",
+        ["Screen off"] = "Pantalla apagada",
+        ["Asleep"] = "En suspensión",
+        ["Windows did not give its battery record."] = "Windows no entregó su registro de la batería.",
         ["Now"] = "Ahora",
         ["Good condition"] = "En buen estado",
         ["Some wear"] = "Algo desgastada",
@@ -505,7 +509,6 @@ internal static class L
         ["Not reported"] = "No informado",
         ["When new"] = "De fábrica",
         ["Full charge now"] = "Carga completa hoy",
-        ["Gathering readings"] = "Reuniendo lecturas",
         ["What a full charge holds now, against what it held when new. Batteries lose a little every year."] =
             "Lo que guarda una carga completa hoy frente a cuando era nueva. Las baterías pierden un poco cada año.",
         ["The charge limit is on the Performance page, under Battery health."] =

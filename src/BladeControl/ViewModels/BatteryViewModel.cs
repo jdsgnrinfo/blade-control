@@ -5,6 +5,7 @@ using System.Windows.Threading;
 using BladeControl.Core.Diagnostics;
 using BladeControl.Core.Hardware;
 using BladeControl.Core.Localization;
+using BladeControl.Core.Platform;
 using BladeControl.Core.Services;
 using BladeControl.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -16,37 +17,39 @@ internal sealed record BatteryFigure(string Name, string Value, string? Caption)
 
 /// <summary>
 /// The Battery page: the charge now and where it is going (power in or out,
-/// time left or to full), the last hour's charge as a line, and the battery's
-/// health (what a full charge holds against when it was new) with its
-/// details. All of it from Windows' battery driver, which only reads. The
-/// details are read every two seconds while the page is open; the charge is
-/// noted every half minute all the time, so the line has a past to show.
+/// time left or to full), the last 24 hours' charge as a bar an hour with
+/// the charger's stretches, and the battery's health (what a full charge
+/// holds against when it was new) with its details. The figures come from
+/// Windows' battery driver, read every two seconds while the page is open;
+/// the 24 hours from Windows' own battery report, which it keeps whether or
+/// not Blade Control runs, read every minute while the page is open. Both
+/// only read.
 /// </summary>
 internal sealed partial class BatteryViewModel : ObservableObject
 {
-    private static readonly TimeSpan HistoryWindow = TimeSpan.FromHours(1);
-
     private readonly AppServices _services;
     private readonly DispatcherTimer _readTimer = new() { Interval = TimeSpan.FromSeconds(2) };
-    private readonly DispatcherTimer _historyTimer = new() { Interval = TimeSpan.FromSeconds(30) };
-    private readonly Queue<(DateTime At, int Percent)> _history = new();
+    private readonly DispatcherTimer _dayTimer = new() { Interval = TimeSpan.FromMinutes(1) };
+    private BatteryDetails? _battery;
     private bool _reading;
+    private bool _readingDay;
 
     public BatteryViewModel(AppServices services)
     {
         _services = services;
 
         _readTimer.Tick += async (_, _) => await ReadAsync();
-        _historyTimer.Tick += (_, _) => NoteCharge();
+        _dayTimer.Tick += async (_, _) => await ReadDayAsync();
 
-        // A charger plugged in or out shows at once, not up to two seconds later.
+        // A charger plugged in or out shows at once, not up to a minute later.
         services.PowerSource.PowerSourceChanged += (_, _) =>
             Application.Current.Dispatcher.BeginInvoke(async () =>
             {
-                NoteCharge();
+                if (!_readTimer.IsEnabled)
+                    return;
 
-                if (_readTimer.IsEnabled)
-                    await ReadAsync();
+                await ReadAsync();
+                await ReadDayAsync();
             });
     }
 
@@ -75,14 +78,39 @@ internal sealed partial class BatteryViewModel : ObservableObject
     [ObservableProperty]
     private IReadOnlyList<BatteryFigure> _figures = [];
 
-    // ===== Last hour =====
+    // ===== Last 24 hours =====
+
+    /// <summary>Each hour's charge, 0 to 1, oldest first; NaN for an hour Windows has no record of.</summary>
+    [ObservableProperty]
+    private IReadOnlyList<double> _dayBars = [];
+
+    /// <summary>The charger's stretches: X from, Y to, as fractions of the chart's width.</summary>
+    [ObservableProperty]
+    private IReadOnlyList<Point> _dayCharging = [];
+
+    /// <summary>Where the charger went in, as fractions of the chart's width.</summary>
+    [ObservableProperty]
+    private IReadOnlyList<double> _dayPlugIns = [];
+
+    /// <summary>The times under the chart, every six hours.</summary>
+    [ObservableProperty]
+    private IReadOnlyList<string> _dayTicks = [];
 
     [ObservableProperty]
-    private IReadOnlyList<Point> _historyPoints = [];
+    private IReadOnlyList<string> _dayTips = [];
 
-    /// <summary>How long the line covers, "42 min".</summary>
     [ObservableProperty]
-    private string _historySpan = string.Empty;
+    private string _screenOnText = "-";
+
+    [ObservableProperty]
+    private string _screenOffText = "-";
+
+    [ObservableProperty]
+    private string _asleepText = "-";
+
+    /// <summary>False when Windows' battery report could not be read.</summary>
+    [ObservableProperty]
+    private bool _hasDay = true;
 
     // ===== Health =====
 
@@ -109,33 +137,32 @@ internal sealed partial class BatteryViewModel : ObservableObject
 
     // ===== Life cycle =====
 
-    /// <summary>At startup: the line starts with the charge now.</summary>
-    public void Start()
-    {
-        NoteCharge();
-        _historyTimer.Start();
-    }
-
-    /// <summary>The details are read only while the page shows them.</summary>
-    public void SetPageOpen(bool open)
+    /// <summary>The battery is read only while the page shows it.</summary>
+    public async void SetPageOpen(bool open)
     {
         if (open)
         {
-            _ = ReadAsync();
             _readTimer.Start();
+            _dayTimer.Start();
+            await RefreshAsync();
         }
         else
         {
             _readTimer.Stop();
+            _dayTimer.Stop();
         }
     }
 
-    public Task RefreshAsync() => ReadAsync();
+    public async Task RefreshAsync()
+    {
+        await ReadAsync();
+        await ReadDayAsync();
+    }
 
     public void Dispose()
     {
         _readTimer.Stop();
-        _historyTimer.Stop();
+        _dayTimer.Stop();
     }
 
     private async Task ReadAsync()
@@ -170,6 +197,7 @@ internal sealed partial class BatteryViewModel : ObservableObject
 
     private void Show(BatteryDetails? battery)
     {
+        _battery = battery;
         HasBattery = battery is not null;
 
         if (battery is null)
@@ -255,34 +283,56 @@ internal sealed partial class BatteryViewModel : ObservableObject
         return details;
     }
 
-    // ===== The last hour's line =====
+    // ===== The last 24 hours =====
 
-    private void NoteCharge()
+    private async Task ReadDayAsync()
     {
-        if (_services.PowerSource.BatteryPercent is not int percent)
+        if (_readingDay)
             return;
 
-        var now = DateTime.UtcNow;
-        _history.Enqueue((now, percent));
+        _readingDay = true;
 
-        while (_history.Count > 0 && now - _history.Peek().At > HistoryWindow)
-            _history.Dequeue();
-
-        HistoryPoints = [.. _history.Select(sample => new Point(
-            1 - (now - sample.At).TotalSeconds / HistoryWindow.TotalSeconds,
-            sample.Percent / 100.0))];
-
-        var firstAt = _history.Peek().At;
-        var minutes = (int)Math.Round((now - firstAt).TotalMinutes);
-
-        if (_history.Count < 2 || minutes < 1)
+        try
         {
-            HistorySpan = L.T("Gathering readings");
-            return;
-        }
+            var entries = await Task.Run(() => WindowsBatteryReport.Read() is { } xml ? BatteryUsage.Parse(xml) : null);
 
-        HistorySpan = BatteryDetailsText.Duration(minutes * 60);
+            HasDay = entries is not null;
+
+            if (entries is null)
+                return;
+
+            // 100% is what a full charge holds now, as the ring above counts it.
+            var full = _battery?.FullChargeMilliwattHours
+                ?? (entries.Count > 0 ? entries.Max(entry => entry.ChargeMilliwattHours) : 0);
+
+            ShowDay(BatteryUsage.Build(entries, DateTime.Now, _battery?.RemainingMilliwattHours, _battery?.PluggedIn, full));
+        }
+        finally
+        {
+            _readingDay = false;
+        }
     }
+
+    private void ShowDay(BatteryDay day)
+    {
+        var culture = CultureInfo.CurrentCulture;
+
+        DayBars = [.. day.Hours.Select(hour => hour.Fraction ?? double.NaN)];
+        DayCharging = [.. day.Charging.Select(span => new Point(span.From, span.To))];
+        DayPlugIns = [.. day.Charging.Where(span => span.StartsInside).Select(span => span.From)];
+        DayTicks = [.. Enumerable.Range(0, 5).Select(step => day.Start.AddHours(step * 6).ToString("t", culture))];
+        DayTips = [.. day.Hours.Select((hour, index) => hour.Fraction is double fraction
+            ? $"{(index == day.Hours.Count - 1 ? L.T("Now") : hour.Start.AddHours(1).ToString("t", culture))}  ·  {Math.Round(fraction * 100)}%"
+            : string.Empty)];
+
+        ScreenOnText = Span(day.ScreenOn);
+        ScreenOffText = Span(day.ScreenOff);
+        AsleepText = Span(day.Asleep);
+    }
+
+    // "6 h 7 min", or a dash for none, as Settings shows it.
+    private static string Span(TimeSpan time) =>
+        time < TimeSpan.FromMinutes(1) ? "-" : BatteryDetailsText.Duration((int)time.TotalSeconds);
 
     private static string WattHours(int milliwattHours) =>
         $"{(milliwattHours / 1000.0).ToString("0.0", CultureInfo.InvariantCulture)} Wh";

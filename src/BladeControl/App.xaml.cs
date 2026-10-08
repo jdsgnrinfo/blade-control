@@ -75,7 +75,6 @@ public partial class App : Application
 
         _ = _viewModel.Performance.StartAsync();
         _viewModel.Device.Start();
-        _viewModel.Battery.Start();
         _viewModel.Performance.Monitor.Start(); // The first page is Performance.
         // A screenshot run leaves the screen's rate and colors to the open app.
         if (e.Args is not ["--screenshot", ..])
