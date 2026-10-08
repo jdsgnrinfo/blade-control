@@ -28,6 +28,10 @@ internal sealed class AppServices : IDisposable
         FanTelemetry = new FanTelemetryService(_transport);
         EcTemperatures = new EcTemperatureService(_transport);
         ChargeLimit = new BatteryChargeLimitService(_transport);
+        Lighting = new LightingService(_transport, Model?.HasKeyboardColor == true);
+
+        // The keyboard goes dark with the screen (and when idle or low, if chosen) and comes back with it.
+        KeyboardLightsOff = new KeyboardScreenOffService(Lighting);
 
         // Silent keeps the CPU at its base frequency, always: on the Blade 15
         // Base (2020) the EC's Silent alone runs hotter than Balanced, and it is
@@ -58,6 +62,10 @@ internal sealed class AppServices : IDisposable
     public IGpuTemperatureSource GpuTemperature { get; } = new D3dkmtGpuTemperature();
 
     public BatteryChargeLimitService ChargeLimit { get; }
+
+    public LightingService Lighting { get; }
+
+    public KeyboardScreenOffService KeyboardLightsOff { get; }
 
     public SilentPlanOverride SilentBoost { get; }
 

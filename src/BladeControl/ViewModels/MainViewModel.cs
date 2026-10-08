@@ -27,6 +27,7 @@ internal sealed partial class MainViewModel : ObservableObject
     {
         Services = services;
         Performance = new PerformanceViewModel(services, Report);
+        Lighting = new LightingViewModel(services, Report);
         Device = new DevicePanelViewModel(services);
 
         _statusTimer.Tick += (_, _) =>
@@ -40,12 +41,17 @@ internal sealed partial class MainViewModel : ObservableObject
 
     public PerformanceViewModel Performance { get; }
 
+    public LightingViewModel Lighting { get; }
+
     public DevicePanelViewModel Device { get; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsPerformance), nameof(IsLighting), nameof(IsDisplay), nameof(IsBattery),
-        nameof(IsAudio), nameof(IsOptimize), nameof(IsSettings), nameof(PageTitle))]
+        nameof(IsAudio), nameof(IsOptimize), nameof(IsSettings), nameof(PageTitle), nameof(ShowsComingSoon))]
     private AppPage _page = AppPage.Performance;
+
+    /// <summary>The pages not built yet show that they are coming.</summary>
+    public bool ShowsComingSoon => Page is not (AppPage.Performance or AppPage.Lighting);
 
     /// <summary>The open page's name, for the pages that are still to come.</summary>
     public string PageTitle => L.T(Page switch
@@ -74,6 +80,9 @@ internal sealed partial class MainViewModel : ObservableObject
 
     public bool IsSettings { get => Page == AppPage.Settings; set { if (value) Page = AppPage.Settings; } }
 
+    // The Lighting page follows the Fn brightness keys only while it is open.
+    partial void OnPageChanged(AppPage value) => Lighting.SetPageOpen(value == AppPage.Lighting);
+
     [ObservableProperty]
     private string _status = string.Empty;
 
@@ -82,7 +91,7 @@ internal sealed partial class MainViewModel : ObservableObject
 
     /// <summary>Reads the laptop again: Fn keys or another program may have changed its mode.</summary>
     [RelayCommand]
-    private Task Refresh() => Performance.RefreshAsync();
+    private Task Refresh() => Page == AppPage.Lighting ? Lighting.RefreshAsync() : Performance.RefreshAsync();
 
     private void Report(string message, bool isError)
     {

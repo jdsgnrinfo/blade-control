@@ -1,0 +1,152 @@
+<UserControl x:Class="BladeControl.Views.LightingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BladeControl.UI">
+
+    <UserControl.Resources>
+        <!-- A line of the lights-off card: the words, a choice beside them when there is one, and the switch at the right. -->
+        <Style x:Key="OptionRow" TargetType="Grid">
+            <Setter Property="MinHeight" Value="40" />
+            <Setter Property="Margin" Value="0,4" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== System lighting: brightness and when the light goes off ===== -->
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,18" MinHeight="34">
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'System lighting'}" VerticalAlignment="Center" />
+                </Grid>
+
+                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Keyboard brightness', Caps=True}" />
+                <Slider Style="{StaticResource ValueSlider}" Minimum="0" Maximum="100" Value="{Binding KeyboardBrightness}"
+                        PreviewMouseUp="KeyboardBrightness_Commit" KeyUp="KeyboardBrightness_Commit" />
+                <Grid Margin="0,8,0,0">
+                    <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off', Caps=True}" />
+                    <TextBlock Style="{StaticResource Text.Scale}" Text="100%" HorizontalAlignment="Right" />
+                </Grid>
+
+                <Border Style="{StaticResource Separator}" Margin="0,22,0,14" />
+
+                <Grid Style="{StaticResource OptionRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,16,0"
+                               Text="{ui:T 'Turn off lighting when display is off'}" />
+                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding WithScreen}" />
+                </Grid>
+
+                <Grid Style="{StaticResource OptionRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,12,0"
+                               Text="{ui:T 'Turn off lighting when idle for:'}" />
+                    <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" ItemsSource="{Binding IdleMinuteTexts}"
+                              SelectedIndex="{Binding IdleMinutesIndex}" />
+                    <CheckBox Grid.Column="3" Style="{StaticResource Switch}" IsChecked="{Binding WhenIdle}" Margin="16,0,0,0" />
+                </Grid>
+
+                <Grid Style="{StaticResource OptionRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,12,0"
+                               Text="{ui:T 'Turn off lighting when battery is below:'}" />
+                    <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" ItemsSource="{Binding BatteryPercentTexts}"
+                              SelectedIndex="{Binding BatteryPercentIndex}" />
+                    <CheckBox Grid.Column="3" Style="{StaticResource Switch}" IsChecked="{Binding OnLowBattery}" Margin="16,0,0,0" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- ===== Lighting effects: keyboard, its color, and the logo ===== -->
+        <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,18" MinHeight="34">
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Lighting effects'}" VerticalAlignment="Center" />
+                </Grid>
+
+                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Keyboard effect', Caps=True}" HorizontalAlignment="Center" />
+                <ItemsControl ItemsSource="{Binding KeyboardEffects}" HorizontalAlignment="Center" Margin="0,10,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <RadioButton Style="{StaticResource EffectTile}" GroupName="KeyboardEffect" Content="{Binding Icon}"
+                                         IsChecked="{Binding IsSelected}" ToolTip="{Binding Name}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="{Binding EffectName}" HorizontalAlignment="Center" Margin="0,14,0,0" FontSize="15" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding EffectDescription}" Style="{StaticResource Text.Hint}" HorizontalAlignment="Center"
+                           TextAlignment="Center" Margin="0,4,0,0" />
+
+                <!-- Colors, on the models that show a chosen one. -->
+                <StackPanel Visibility="{Binding OffersColor, Converter={StaticResource Visible}}" Margin="0,18,0,0">
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Color', Caps=True}" HorizontalAlignment="Center" />
+                    <ItemsControl ItemsSource="{Binding Colors}" HorizontalAlignment="Center" Margin="0,8,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <RadioButton Style="{StaticResource Swatch}" GroupName="KeyboardColor" Background="{Binding Swatch}"
+                                             IsChecked="{Binding IsSelected}" ToolTip="{Binding Name}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <Border Style="{StaticResource Separator}" Margin="0,22,0,18" />
+
+                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Logo effect', Caps=True}" HorizontalAlignment="Center" />
+                <ItemsControl ItemsSource="{Binding LogoModes}" HorizontalAlignment="Center" Margin="0,10,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <RadioButton Style="{StaticResource EffectTile}" GroupName="LogoMode" Content="{Binding Icon}"
+                                         IsChecked="{Binding IsSelected}" ToolTip="{Binding Name}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- The logo's brightness, while it is lit. -->
+                <StackPanel Visibility="{Binding LogoLit, Converter={StaticResource Visible}}" Margin="0,14,0,0">
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Logo brightness', Caps=True}" />
+                    <Slider Style="{StaticResource ValueSlider}" Minimum="0" Maximum="100" Value="{Binding LogoBrightness}"
+                            PreviewMouseUp="LogoBrightness_Commit" KeyUp="LogoBrightness_Commit" />
+                    <Grid Margin="0,8,0,0">
+                        <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off', Caps=True}" />
+                        <TextBlock Style="{StaticResource Text.Scale}" Text="100%" HorizontalAlignment="Right" />
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

@@ -104,7 +104,10 @@
                 <views:PerformanceView DataContext="{Binding Performance}"
                                        Visibility="{Binding DataContext.IsPerformance, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
-                <views:ComingSoonView Visibility="{Binding IsPerformance, Converter={StaticResource Hidden}}" />
+                <views:LightingView DataContext="{Binding Lighting}"
+                                    Visibility="{Binding DataContext.IsLighting, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
+
+                <views:ComingSoonView Visibility="{Binding ShowsComingSoon, Converter={StaticResource Visible}}" />
 
                 <views:DevicePanel Grid.Column="2" DataContext="{Binding Device}" VerticalAlignment="Top" />
             </Grid>

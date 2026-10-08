@@ -453,5 +453,19 @@ internal static class L
         ["Temperatures"] = "Temperaturas",
         ["Last 1 h avg."] = "Prom. 1 h",
         ["Fans"] = "Ventiladores",
+
+        // Lighting page.
+        ["System lighting"] = "Iluminación del sistema",
+        ["Keyboard brightness"] = "Brillo del teclado",
+        ["Lighting effects"] = "Efectos de iluminación",
+        ["Keyboard effect"] = "Efecto del teclado",
+        ["Logo effect"] = "Efecto del logo",
+        ["Logo brightness"] = "Brillo del logo",
+        ["A steady light in the color you choose."] = "Una luz fija del color que elijas.",
+        ["A steady light in Razer green."] = "Una luz fija en verde Razer.",
+        ["The light fades in and out slowly."] = "La luz se enciende y se apaga despacio.",
+        ["Cycles smoothly through every color."] = "Recorre todos los colores suavemente.",
+        ["Animates all colors in a wave across the keyboard."] = "Todos los colores recorren el teclado en una onda.",
+        ["The keyboard backlight is off."] = "La luz del teclado está apagada.",
     };
 }

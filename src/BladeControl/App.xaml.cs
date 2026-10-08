@@ -109,6 +109,7 @@ public partial class App : Application
     protected override void OnExit(ExitEventArgs e)
     {
         _viewModel?.Performance.TurnOffMaxFanBeforeExit();
+        _viewModel?.Lighting.Shutdown();
         _viewModel?.Device.Stop();
         _services?.Dispose();
         _singleInstance?.Dispose();

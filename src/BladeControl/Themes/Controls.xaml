@@ -504,6 +504,184 @@
         </Setter>
     </Style>
 
+    <!-- ===== Lighting ===== -->
+
+    <LinearGradientBrush x:Key="Brush.Rainbow" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#FFFF3B3B" Offset="0" />
+        <GradientStop Color="#FFFFB52E" Offset="0.2" />
+        <GradientStop Color="#FFF5F03A" Offset="0.38" />
+        <GradientStop Color="#FF44D62C" Offset="0.55" />
+        <GradientStop Color="#FF2EB8FF" Offset="0.75" />
+        <GradientStop Color="#FFB44CFF" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- An effect's icon, drawn from its kind (EffectIcon). -->
+    <DataTemplate x:Key="EffectIconTemplate">
+        <Grid Width="22" Height="22">
+            <Ellipse x:Name="Static" Width="12" Height="12" Fill="{StaticResource Brush.Accent}" Visibility="Collapsed" />
+            <Grid x:Name="Breathing" Visibility="Collapsed">
+                <Ellipse Width="20" Height="20" Stroke="{StaticResource Brush.Accent}" StrokeThickness="1.6" Opacity="0.55" />
+                <Ellipse Width="9" Height="9" Fill="{StaticResource Brush.Accent}" />
+            </Grid>
+            <Ellipse x:Name="Spectrum" Width="18" Height="18" Fill="{StaticResource Brush.Rainbow}" Visibility="Collapsed" />
+            <Path x:Name="Wave" Data="M1,11 C4,3 8,3 11,11 S18,19 21,11" Stroke="{StaticResource Brush.Rainbow}" StrokeThickness="2.4"
+                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" Visibility="Collapsed" />
+            <Grid x:Name="Off" Visibility="Collapsed">
+                <Ellipse Width="18" Height="18" Stroke="{StaticResource Brush.Warm}" StrokeThickness="1.8" />
+                <Path Data="M5.2,5.2 L16.8,16.8" Stroke="{StaticResource Brush.Warm}" StrokeThickness="1.8" StrokeEndLineCap="Round" StrokeStartLineCap="Round" />
+            </Grid>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding}" Value="Static">
+                <Setter TargetName="Static" Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="Breathing">
+                <Setter TargetName="Breathing" Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="Spectrum">
+                <Setter TargetName="Spectrum" Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="Wave">
+                <Setter TargetName="Wave" Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="Off">
+                <Setter TargetName="Off" Property="Visibility" Value="Visible" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- A lighting effect as a small square with its icon; the chosen one framed in white, as in the concept. -->
+    <Style x:Key="EffectTile" TargetType="RadioButton">
+        <Setter Property="Width" Value="44" />
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="ContentTemplate" Value="{StaticResource EffectIconTemplate}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="Back" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="2"
+                            CornerRadius="{StaticResource Radius.Control}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TileHover}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Back" Property="BorderBrush" Value="White" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- A color to pick: a disc, ringed in white when chosen. Background is the color. -->
+    <Style x:Key="Swatch" TargetType="RadioButton">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="3" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid>
+                        <Ellipse x:Name="Ring" Stroke="Transparent" StrokeThickness="2" />
+                        <Ellipse Margin="4" Fill="{TemplateBinding Background}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Ring" Property="Stroke" Value="{StaticResource Brush.TextMuted}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Ring" Property="Stroke" Value="White" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===== Drop-down ===== -->
+
+    <Style x:Key="DropdownItem" TargetType="ComboBoxItem">
+        <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border x:Name="Back" Background="Transparent" Padding="{TemplateBinding Padding}" CornerRadius="3">
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TileHover}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- A dark box with the choice and a chevron; its list opens below. -->
+    <Style x:Key="Dropdown" TargetType="ComboBox">
+        <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="MinWidth" Value="96" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource DropdownItem}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <ToggleButton Focusable="False" ClickMode="Press"
+                                      IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border x:Name="Back" Background="{StaticResource Brush.Tile}" CornerRadius="{StaticResource Radius.Control}" />
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TileHover}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <ContentPresenter Margin="12,0,30,0" VerticalAlignment="Center" IsHitTestVisible="False"
+                                          Content="{TemplateBinding SelectionBoxItem}" />
+                        <Path Width="9" Height="5" Margin="0,0,12,0" HorizontalAlignment="Right" VerticalAlignment="Center" IsHitTestVisible="False"
+                              Data="M0,0 L4.5,4.5 L9,0" Stroke="{StaticResource Brush.TextSoft}" StrokeThickness="1.5" Stretch="Uniform" />
+                        <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True" Focusable="False"
+                               PopupAnimation="Fade" VerticalOffset="4">
+                            <Border Background="{StaticResource Brush.TilePressed}" CornerRadius="{StaticResource Radius.Control}" Padding="4"
+                                    MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="260">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.35" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ===== Scroll bars: thin and dark ===== -->
 
     <Style TargetType="ScrollBar">
