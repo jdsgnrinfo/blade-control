@@ -7,13 +7,32 @@ namespace BladeControl.Views;
 
 public partial class MainWindow : Window
 {
+    // How far the laptop's panel has moved down to stay in view.
+    private readonly System.Windows.Media.TranslateTransform _panelShift = new();
+
     public MainWindow()
     {
         InitializeComponent();
+        Panel.RenderTransform = _panelShift;
         StateChanged += (_, _) => ShowWindowState();
         SourceInitialized += (_, _) => RoundCorners();
         ShowWindowState();
         FitToScreen();
+    }
+
+    private void PageScroll_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e) => KeepPanelInView();
+
+    private void Panel_SizeChanged(object sender, SizeChangedEventArgs e) => KeepPanelInView();
+
+    // The laptop's panel is sticky: it moves down by as much as the page has
+    // scrolled, so it stays in view while the cards go by. A panel taller than
+    // the window first scrolls until its bottom shows, then sticks; and it
+    // never moves past the end of the page.
+    private void KeepPanelInView()
+    {
+        var overflow = Math.Max(0, Panel.ActualHeight - PageScroll.ViewportHeight + 32);
+        var room = Math.Max(0, PageScroll.ExtentHeight - Panel.ActualHeight - 32);
+        _panelShift.Y = Math.Clamp(PageScroll.VerticalOffset - overflow, 0, room);
     }
 
     private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;

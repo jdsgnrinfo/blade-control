@@ -69,7 +69,7 @@ public partial class App : Application
         _ = _viewModel.Performance.StartAsync();
         _viewModel.Device.Start();
 
-        // "--screenshot file.png [page] [width] [custom]": draws the window into a picture a few
+        // "--screenshot file.png [page] [width] [custom] [scrolled]": draws the window into a picture a few
         // seconds after it opens, then closes. For the README and for checking
         // the look without touching the screen.
         if (e.Args is ["--screenshot", var path, ..])
@@ -83,9 +83,12 @@ public partial class App : Application
 
             // "custom" after the width shows Custom with its levels, without
             // sending anything to the laptop.
-            var previewCustom = e.Args.Length > 4 && e.Args[4] == "custom";
+            var previewCustom = e.Args.Skip(4).Contains("custom");
 
-            ScreenshotThenClose(window, path, previewCustom ? _viewModel.Performance : null);
+            // "scrolled" scrolls the page to its end first, to see the sticky panel.
+            var scrolled = e.Args.Skip(4).Contains("scrolled");
+
+            ScreenshotThenClose(window, path, previewCustom ? _viewModel.Performance : null, scrolled);
         }
     }
 
@@ -95,12 +98,15 @@ public partial class App : Application
         ?? HibernationCommand.TryRun(args, WindowsHibernation.SetEnabled)
         ?? WindowsCachesCommand.TryRun(args, WindowsCaches.CleanElevated);
 
-    private static async void ScreenshotThenClose(Window window, string path, PerformanceViewModel? previewCustom)
+    private static async void ScreenshotThenClose(MainWindow window, string path, PerformanceViewModel? previewCustom, bool scrolled)
     {
         await Task.Delay(TimeSpan.FromSeconds(3));
 
         previewCustom?.Preview(new Core.Models.PerformanceState(
             Core.Models.PerformanceMode.Custom, Core.Models.CpuBoost.High, Core.Models.GpuBoost.Medium, MaxFan: false));
+        if (scrolled)
+            window.PageScroll.ScrollToEnd();
+
         await Task.Delay(TimeSpan.FromSeconds(1));
 
         var dpi = System.Windows.Media.VisualTreeHelper.GetDpi(window);
