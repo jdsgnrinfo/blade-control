@@ -90,45 +90,100 @@
             </StackPanel>
         </Border>
 
-        <!-- ===== Battery health ===== -->
-        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
-            <StackPanel>
-                <!-- As tall as Power mode's header, so the two titles line up. -->
-                <Grid Margin="0,0,0,26" MinHeight="34">
-                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Battery health'}" VerticalAlignment="Center" />
-                </Grid>
-
-                <!-- A controller that takes a charge limit. -->
-                <StackPanel Visibility="{Binding HasChargeLimit, Converter={StaticResource Visible}}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Margin="0,0,24,0">
-                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Optimize battery charging'}" />
-                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0"
-                                       Text="{ui:T 'Increase your battery\'s longevity by limiting its maximum charge.'}" />
-                        </StackPanel>
-                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding ChargeLimitOn}" />
+        <!-- Battery health, and the system monitor under it. -->
+        <StackPanel>
+            <!-- ===== Battery health ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <!-- As tall as Power mode's header, so the two titles line up. -->
+                    <Grid Margin="0,0,0,26" MinHeight="34">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Battery health'}" VerticalAlignment="Center" />
                     </Grid>
-
-                    <Border Style="{StaticResource Separator}" />
-
-                    <Slider x:Name="ChargeSlider" Style="{StaticResource ValueSlider}" IsEnabled="{Binding ChargeLimitOn}"
-                            Minimum="{Binding ChargeLimitMinimum, Mode=OneTime}" Maximum="{Binding ChargeLimitMaximum, Mode=OneTime}"
-                            Value="{Binding ChargeLimit}" PreviewMouseUp="ChargeSlider_Commit" KeyUp="ChargeSlider_Commit" />
-                    <Grid Margin="0,10,0,24">
-                        <TextBlock Style="{StaticResource Text.Scale}" Text="{Binding ChargeLimitMinimum, StringFormat={}{0}%}" />
-                        <TextBlock Style="{StaticResource Text.Scale}" Text="{Binding ChargeLimitMaximum, StringFormat={}{0}%}" HorizontalAlignment="Right" />
-                    </Grid>
-
-                    <ContentControl Style="{StaticResource SuccessBox}" Tag="{StaticResource Icon.Bolt}" Content="{ui:T 'Keeping your battery charged below 100% puts it under less stress, which helps reduce battery aging.'}" />
+    
+                    <!-- A controller that takes a charge limit. -->
+                    <StackPanel Visibility="{Binding HasChargeLimit, Converter={StaticResource Visible}}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Optimize battery charging'}" />
+                                <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0"
+                                           Text="{ui:T 'Increase your battery\'s longevity by limiting its maximum charge.'}" />
+                            </StackPanel>
+                            <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding ChargeLimitOn}" />
+                        </Grid>
+    
+                        <Border Style="{StaticResource Separator}" />
+    
+                        <Slider x:Name="ChargeSlider" Style="{StaticResource ValueSlider}" IsEnabled="{Binding ChargeLimitOn}"
+                                Minimum="{Binding ChargeLimitMinimum, Mode=OneTime}" Maximum="{Binding ChargeLimitMaximum, Mode=OneTime}"
+                                Value="{Binding ChargeLimit}" PreviewMouseUp="ChargeSlider_Commit" KeyUp="ChargeSlider_Commit" />
+                        <Grid Margin="0,10,0,24">
+                            <TextBlock Style="{StaticResource Text.Scale}" Text="{Binding ChargeLimitMinimum, StringFormat={}{0}%}" />
+                            <TextBlock Style="{StaticResource Text.Scale}" Text="{Binding ChargeLimitMaximum, StringFormat={}{0}%}" HorizontalAlignment="Right" />
+                        </Grid>
+    
+                        <ContentControl Style="{StaticResource SuccessBox}" Tag="{StaticResource Icon.Bolt}" Content="{ui:T 'Keeping your battery charged below 100% puts it under less stress, which helps reduce battery aging.'}" />
+                    </StackPanel>
+    
+                    <!-- A controller that only pretends to take one (the 2020 Blades). -->
+                    <ContentControl Style="{StaticResource NoteBox}" Visibility="{Binding HasChargeLimit, Converter={StaticResource Hidden}}" Content="{ui:T 'This laptop\'s controller does not accept a charge limit. A BIOS update from Razer may add it.'}" />
                 </StackPanel>
+            </Border>
 
-                <!-- A controller that only pretends to take one (the 2020 Blades). -->
-                <ContentControl Style="{StaticResource NoteBox}" Visibility="{Binding HasChargeLimit, Converter={StaticResource Hidden}}" Content="{ui:T 'This laptop\'s controller does not accept a charge limit. A BIOS update from Razer may add it.'}" />
-            </StackPanel>
-        </Border>
+            <!-- ===== System monitor: how busy the CPU, GPU and RAM are ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <Grid Margin="0,0,0,18" MinHeight="34">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'System monitor'}" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding Monitor.Gauges}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="3" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="6,0">
+                                    <!-- Three quarters of a circle filling in green, the percentage and the part inside. -->
+                                    <Grid Width="84" Height="84" HorizontalAlignment="Center">
+                                        <ui:RingGauge Fraction="{Binding Fraction}" Sweep="270" Thickness="6" TrackBrush="{StaticResource Brush.Tile}">
+                                            <ui:RingGauge.ArcBrush>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                    <GradientStop Color="#FF2A8A1A" Offset="0" />
+                                                    <GradientStop Color="{StaticResource Color.Accent}" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </ui:RingGauge.ArcBrush>
+                                        </ui:RingGauge>
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock HorizontalAlignment="Center">
+                                                <Run Text="{Binding PercentText, Mode=OneWay}" FontSize="19" FontWeight="SemiBold" />
+                                                <Run Text="%" FontSize="12" FontWeight="SemiBold" />
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Name}" FontSize="11" Foreground="{StaticResource Brush.TextMuted}"
+                                                       HorizontalAlignment="Center" Margin="0,-3,0,0" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Its two figures, label at the left and value at the right. -->
+                                    <Grid Margin="0,12,0,0">
+                                        <TextBlock Text="{Binding FirstLabel}" Style="{StaticResource Text.Scale}" FontWeight="Normal" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding First}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                                    </Grid>
+                                    <Grid Margin="0,6,0,0">
+                                        <TextBlock Text="{Binding SecondLabel}" Style="{StaticResource Text.Scale}" FontWeight="Normal" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Second}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                                    </Grid>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
     </ui:AdaptiveColumns>
 </UserControl>

@@ -75,6 +75,7 @@ public partial class App : Application
 
         _ = _viewModel.Performance.StartAsync();
         _viewModel.Device.Start();
+        _viewModel.Performance.Monitor.Start(); // The first page is Performance.
 
         // "--screenshot file.png [page] [width] [custom] [scrolled]": draws the window into a picture a few
         // seconds after it opens, then closes. For the README and for checking
@@ -181,6 +182,7 @@ public partial class App : Application
         _viewModel?.Performance.TurnOffMaxFanBeforeExit();
         _viewModel?.Lighting.Shutdown();
         _viewModel?.Optimize.Dispose();
+        _viewModel?.Performance.Monitor.Dispose();
         _viewModel?.Device.Stop();
         _services?.Dispose();
         _singleInstance?.Dispose();

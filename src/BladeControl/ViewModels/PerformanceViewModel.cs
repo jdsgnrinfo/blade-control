@@ -33,6 +33,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     {
         _services = services;
         _report = report;
+        Monitor = new SystemMonitorViewModel(services);
 
         _profiles = new Dictionary<bool, PowerProfile>
         {
@@ -51,6 +52,9 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         _silentTimer.Tick += (_, _) => _services.SilentBoost.Recheck();
         _silentTimer.Start();
     }
+
+    /// <summary>The system monitor, under Battery health.</summary>
+    public SystemMonitorViewModel Monitor { get; }
 
     // ===== What the page shows =====
 

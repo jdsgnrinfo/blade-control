@@ -26,9 +26,18 @@ public sealed class RingGauge : FrameworkElement
     public static readonly DependencyProperty ThicknessProperty = DependencyProperty.Register(
         nameof(Thickness), typeof(double), typeof(RingGauge), new FrameworkPropertyMetadata(4.0, FrameworkPropertyMetadataOptions.AffectsRender));
 
-    // The ring is open at the bottom: 300 degrees of it can fill.
-    private const double Sweep = 300;
-    private const double StartAngle = 120; // Bottom left, clockwise from three o'clock.
+    public static readonly DependencyProperty SweepProperty = DependencyProperty.Register(
+        nameof(Sweep), typeof(double), typeof(RingGauge), new FrameworkPropertyMetadata(300.0, FrameworkPropertyMetadataOptions.AffectsRender));
+
+    /// <summary>How much of the circle the ring covers, open at the bottom: 300 degrees by default, 270 for three quarters.</summary>
+    public double Sweep
+    {
+        get => (double)GetValue(SweepProperty);
+        set => SetValue(SweepProperty, value);
+    }
+
+    // Bottom left, clockwise from three o'clock, so the gap is centred at the bottom.
+    private double StartAngle => 90 + (360 - Sweep) / 2;
 
     public double Fraction
     {

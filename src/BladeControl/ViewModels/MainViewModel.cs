@@ -92,6 +92,11 @@ internal sealed partial class MainViewModel : ObservableObject
     {
         Lighting.SetPageOpen(value == AppPage.Lighting);
 
+        if (value == AppPage.Performance)
+            Performance.Monitor.Start();
+        else
+            Performance.Monitor.Stop();
+
         if (value == AppPage.Optimize)
             _ = Optimize.RefreshAsync();
         else if (value == AppPage.Settings)
