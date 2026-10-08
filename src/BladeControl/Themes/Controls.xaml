@@ -168,8 +168,8 @@
 
     <!-- A square page button with a symbol, beside refresh: Settings. Green on a dark tile, solid green when open. -->
     <Style x:Key="IconTab" TargetType="RadioButton">
-        <Setter Property="Width" Value="40" />
-        <Setter Property="Height" Value="40" />
+        <Setter Property="Width" Value="34" />
+        <Setter Property="Height" Value="34" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
         <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
         <Setter Property="Cursor" Value="Hand" />
@@ -202,7 +202,7 @@
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Padding" Value="11,3,11,4" />
-        <Setter Property="Margin" Value="0,0,12,0" />
+        <Setter Property="Margin" Value="0,0,4,0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="GroupName" Value="SubTab" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -228,8 +228,8 @@
 
     <!-- A square button with a line icon: back, forward, refresh. Content is the icon's geometry. -->
     <Style x:Key="IconButton" TargetType="Button">
-        <Setter Property="Width" Value="40" />
-        <Setter Property="Height" Value="40" />
+        <Setter Property="Width" Value="34" />
+        <Setter Property="Height" Value="34" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
         <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
         <Setter Property="Cursor" Value="Hand" />
