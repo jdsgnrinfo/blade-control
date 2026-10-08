@@ -113,10 +113,7 @@ internal sealed partial class MainViewModel : ObservableObject
             Audio.Flush();
 
         if (value == AppPage.Performance)
-        {
             Performance.Monitor.Start();
-            Performance.Plan.Refresh();
-        }
         else
             Performance.Monitor.Stop();
 

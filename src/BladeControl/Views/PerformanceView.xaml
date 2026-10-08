@@ -6,7 +6,7 @@
     <!-- Two cards side by side, or one under the other in a narrow window. -->
     <ui:AdaptiveColumns>
 
-        <!-- Power mode, and Windows' power plan under it. -->
+        <!-- Power mode. -->
         <StackPanel>
             <!-- ===== Power mode ===== -->
             <Border Style="{StaticResource Card}" VerticalAlignment="Top">
@@ -92,34 +92,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- ===== Windows' power plan ===== -->
-            <Border Style="{StaticResource Card}" VerticalAlignment="Top" DataContext="{Binding Plan}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,0,16,0" VerticalAlignment="Center">
-                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Power plan'}" />
-                        <TextBlock Text="{Binding Hint}" Margin="0,4,0,0" TextWrapping="Wrap">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Hint}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding HintIsError}" Value="True">
-                                            <Setter Property="Foreground" Value="{StaticResource Brush.Warm}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </StackPanel>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Style="{StaticResource ActionButton}" Margin="0,0,8,0" Content="{ui:T 'Install Razer Blade plan'}"
-                                Command="{Binding InstallCommand}" Visibility="{Binding CanInstall, Converter={StaticResource Visible}}" />
-                        <ComboBox Style="{StaticResource Dropdown}" MinWidth="170" ItemsSource="{Binding PlanNames}" SelectedIndex="{Binding PlanIndex}" />
-                    </StackPanel>
-                </Grid>
-            </Border>
         </StackPanel>
 
         <!-- Battery health, and the system monitor under it. -->

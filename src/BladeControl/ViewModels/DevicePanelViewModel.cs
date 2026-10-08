@@ -47,6 +47,9 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
 
     public bool HasPicture => Picture is not null;
 
+    /// <summary>Windows' power plan, under the battery.</summary>
+    public PowerPlanViewModel Plan { get; } = new();
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CpuText), nameof(CpuFraction), nameof(CpuAverageText), nameof(CpuArcStart), nameof(CpuArcEnd))]
     private double? _cpuCelsius;
@@ -117,6 +120,9 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
     {
         _ = ReadAsync();
         _timer.Start();
+
+        // The plan may have been changed in Windows while the window was away.
+        Plan.Refresh();
     }
 
     /// <summary>Stops reading while the window is hidden: nothing would show it.</summary>

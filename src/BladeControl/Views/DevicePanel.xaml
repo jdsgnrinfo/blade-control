@@ -28,6 +28,16 @@
                                    Foreground="{StaticResource Brush.Accent}" />
                     </StackPanel>
                 </Grid>
+
+                <!-- Windows' power plan: the one in use, and the Razer Blade plan to add while it is missing. -->
+                <StackPanel Margin="0,18,0,0" DataContext="{Binding Plan}">
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Power plan'}" Margin="0,0,0,8" />
+                    <ComboBox Style="{StaticResource Dropdown}" ItemsSource="{Binding PlanNames}" SelectedIndex="{Binding PlanIndex}" />
+                    <Button Style="{StaticResource ActionButton}" Margin="0,8,0,0" HorizontalAlignment="Stretch" Content="{ui:T 'Install Razer Blade plan'}"
+                            Command="{Binding InstallCommand}" Visibility="{Binding CanInstall, Converter={StaticResource Visible}}" />
+                    <TextBlock Text="{Binding Hint}" Margin="0,8,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{StaticResource Brush.Warm}"
+                               Visibility="{Binding HintIsError, Converter={StaticResource Visible}}" />
+                </StackPanel>
                 <Border Style="{StaticResource Separator}" Margin="0,24" />
             </StackPanel>
 
