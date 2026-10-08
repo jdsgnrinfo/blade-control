@@ -163,11 +163,21 @@
                                         </StackPanel>
                                     </Grid>
 
-                                    <!-- Its two figures, each with its name just above its value, at the left under the ring. -->
-                                    <TextBlock Text="{Binding FirstLabel}" Style="{StaticResource Text.Scale}" FontWeight="Normal" Margin="0,12,0,0" />
-                                    <TextBlock Text="{Binding First}" FontSize="13" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding SecondLabel}" Style="{StaticResource Text.Scale}" FontWeight="Normal" Margin="0,8,0,0" />
-                                    <TextBlock Text="{Binding Second}" FontSize="13" FontWeight="SemiBold" />
+                                    <!-- Its two figures under the ring, each name and its value on one line, the values lined up. -->
+                                    <Grid Margin="0,12,0,0" Grid.IsSharedSizeScope="True">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="FigureName" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="{Binding FirstLabel}" Style="{StaticResource Text.Scale}" FontWeight="Normal" VerticalAlignment="Center" Margin="0,0,10,0" />
+                                        <TextBlock Grid.Column="1" Text="{Binding First}" FontSize="13" FontWeight="SemiBold" />
+                                        <TextBlock Grid.Row="1" Text="{Binding SecondLabel}" Style="{StaticResource Text.Scale}" FontWeight="Normal" VerticalAlignment="Center" Margin="0,6,10,0" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Second}" FontSize="13" FontWeight="SemiBold" Margin="0,6,0,0" />
+                                    </Grid>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
