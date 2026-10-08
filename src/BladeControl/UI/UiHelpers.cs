@@ -6,18 +6,6 @@ using System.Windows.Media;
 
 namespace BladeControl.UI;
 
-/// <summary>A width that is a fraction (first value, 0 to 1) of another (second value): a bar's fill.</summary>
-public sealed class FractionWidthConverter : IMultiValueConverter
-{
-    public static FractionWidthConverter Instance { get; } = new();
-
-    public object Convert(object[] values, Type targetType, object? parameter, CultureInfo culture) =>
-        values is [double fraction, double width] ? Math.Clamp(fraction, 0, 1) * width : 0.0;
-
-    public object[] ConvertBack(object value, Type[] targetTypes, object? parameter, CultureInfo culture) =>
-        throw new NotSupportedException();
-}
-
 /// <summary>True becomes false and false true: a control enabled while something is not under way.</summary>
 public sealed class NotConverter : IValueConverter
 {

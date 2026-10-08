@@ -9,7 +9,6 @@
 
     <!-- Colors. -->
     <Color x:Key="Color.Window">#FF202020</Color>
-    <Color x:Key="Color.WindowTop">#FF242424</Color>
     <Color x:Key="Color.Card">#FF141414</Color>
     <Color x:Key="Color.CardTop">#FF171717</Color>
     <Color x:Key="Color.Tile">#FF262626</Color>
@@ -30,10 +29,8 @@
     <Color x:Key="Color.Warning">#FFF0C43C</Color>
 
     <!-- Brushes. -->
-    <LinearGradientBrush x:Key="Brush.Window" StartPoint="0,0" EndPoint="0.6,1">
-        <GradientStop Color="{StaticResource Color.WindowTop}" Offset="0" />
-        <GradientStop Color="{StaticResource Color.Window}" Offset="1" />
-    </LinearGradientBrush>
+    <!-- The window: one flat color. -->
+    <SolidColorBrush x:Key="Brush.Window" Color="{StaticResource Color.Window}" />
     <LinearGradientBrush x:Key="Brush.Card" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="{StaticResource Color.CardTop}" Offset="0" />
         <GradientStop Color="{StaticResource Color.Card}" Offset="1" />

@@ -18,25 +18,17 @@
 
             <!-- Battery. -->
             <StackPanel Visibility="{Binding HasBattery, Converter={StaticResource Visible}}">
-                <Grid Margin="0,0,0,12">
+                <!-- Its name, and the battery icon beside the percentage. -->
+                <Grid>
                     <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Battery'}" VerticalAlignment="Center" />
-                    <TextBlock Text="{Binding BatteryText}" HorizontalAlignment="Right" FontSize="19" FontWeight="SemiBold"
-                               Foreground="{StaticResource Brush.Accent}" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <ui:BatteryIcon Width="40" Height="19" Margin="0,0,10,0" VerticalAlignment="Center"
+                                        Fraction="{Binding BatteryFraction}" IsPluggedIn="{Binding IsPluggedIn}" Accent="{StaticResource Brush.Accent}" />
+                        <TextBlock Text="{Binding BatteryText}" FontSize="19" FontWeight="SemiBold" VerticalAlignment="Center"
+                                   Foreground="{StaticResource Brush.Accent}" />
+                    </StackPanel>
                 </Grid>
-                <Grid Height="20">
-                    <Border Background="{StaticResource Brush.Track}" CornerRadius="3" />
-                    <Border x:Name="BatteryFill" Background="{StaticResource Brush.Accent}" CornerRadius="3" HorizontalAlignment="Left">
-                        <Border.Width>
-                            <MultiBinding Converter="{x:Static ui:FractionWidthConverter.Instance}">
-                                <Binding Path="BatteryFraction" />
-                                <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}" />
-                            </MultiBinding>
-                        </Border.Width>
-                    </Border>
-                    <Path Width="12" Height="14" Data="{StaticResource Icon.Bolt}" Fill="{StaticResource Brush.OnAccent}" Stretch="Uniform"
-                          HorizontalAlignment="Center" Visibility="{Binding IsPluggedIn, Converter={StaticResource Visible}}" />
-                </Grid>
-                <TextBlock Text="{Binding PowerText}" Margin="0,8,0,0" FontSize="12" Foreground="{StaticResource Brush.Accent}" />
+                <TextBlock Text="{Binding PowerText}" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource Brush.Accent}" />
                 <Border Style="{StaticResource Separator}" Margin="0,24" />
             </StackPanel>
 
