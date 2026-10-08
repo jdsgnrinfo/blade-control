@@ -25,11 +25,11 @@
                     <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'System lighting'}" VerticalAlignment="Center" />
                 </Grid>
 
-                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Keyboard brightness', Caps=True}" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Keyboard brightness'}" />
                 <Slider Style="{StaticResource ValueSlider}" Minimum="0" Maximum="100" Value="{Binding KeyboardBrightness}"
                         PreviewMouseUp="KeyboardBrightness_Commit" KeyUp="KeyboardBrightness_Commit" />
                 <Grid Margin="0,8,0,0">
-                    <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off', Caps=True}" />
+                    <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
                     <TextBlock Style="{StaticResource Text.Scale}" Text="100%" HorizontalAlignment="Right" />
                 </Grid>
 
@@ -82,7 +82,7 @@
                     <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Lighting effects'}" VerticalAlignment="Center" />
                 </Grid>
 
-                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Keyboard effect', Caps=True}" HorizontalAlignment="Center" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Keyboard effect'}" HorizontalAlignment="Center" />
                 <ItemsControl ItemsSource="{Binding KeyboardEffects}" HorizontalAlignment="Center" Margin="0,10,0,0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -103,7 +103,7 @@
 
                 <!-- Colors, on the models that show a chosen one. -->
                 <StackPanel Visibility="{Binding OffersColor, Converter={StaticResource Visible}}" Margin="0,18,0,0">
-                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Color', Caps=True}" HorizontalAlignment="Center" />
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Color'}" HorizontalAlignment="Center" />
                     <ItemsControl ItemsSource="{Binding Colors}" HorizontalAlignment="Center" Margin="0,8,0,0">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -121,7 +121,7 @@
 
                 <Border Style="{StaticResource Separator}" Margin="0,22,0,18" />
 
-                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Logo effect', Caps=True}" HorizontalAlignment="Center" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Logo effect'}" HorizontalAlignment="Center" />
                 <ItemsControl ItemsSource="{Binding LogoModes}" HorizontalAlignment="Center" Margin="0,10,0,0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -134,19 +134,7 @@
                                          IsChecked="{Binding IsSelected}" ToolTip="{Binding Name}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <!-- The logo's brightness, while it is lit. -->
-                <StackPanel Visibility="{Binding LogoLit, Converter={StaticResource Visible}}" Margin="0,14,0,0">
-                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Logo brightness', Caps=True}" />
-                    <Slider Style="{StaticResource ValueSlider}" Minimum="0" Maximum="100" Value="{Binding LogoBrightness}"
-                            PreviewMouseUp="LogoBrightness_Commit" KeyUp="LogoBrightness_Commit" />
-                    <Grid Margin="0,8,0,0">
-                        <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off', Caps=True}" />
-                        <TextBlock Style="{StaticResource Text.Scale}" Text="100%" HorizontalAlignment="Right" />
-                    </Grid>
-                </StackPanel>
-            </StackPanel>
+                </ItemsControl>            </StackPanel>
         </Border>
     </Grid>
 </UserControl>

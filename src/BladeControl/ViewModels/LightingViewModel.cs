@@ -151,10 +151,6 @@ internal sealed partial class LightingViewModel : ObservableObject
     [ObservableProperty]
     private string _effectDescription = string.Empty;
 
-    /// <summary>The logo's brightness only matters while it is lit.</summary>
-    [ObservableProperty]
-    private bool _logoLit = true;
-
     // ===== Brightness =====
 
     private int _keyboardBrightness;
@@ -177,26 +173,6 @@ internal sealed partial class LightingViewModel : ObservableObject
     {
         var value = _keyboardBrightness;
         _ = ApplyAsync(() => _services.Lighting.SetKeyboardBrightnessAsync(value), L.T("Could not change the keyboard brightness."));
-    }
-
-    private int _logoBrightness;
-
-    public int LogoBrightness
-    {
-        get => _logoBrightness;
-        set
-        {
-            if (!SetProperty(ref _logoBrightness, value) || _showing)
-                return;
-
-            _ = ApplyAsync(() => _services.Lighting.SetLogoBrightnessAsync(value), L.T("Could not change the logo brightness."), readBack: false);
-        }
-    }
-
-    public void CommitLogoBrightness()
-    {
-        var value = _logoBrightness;
-        _ = ApplyAsync(() => _services.Lighting.SetLogoBrightnessAsync(value), L.T("Could not change the logo brightness."));
     }
 
     // ===== When the light goes off =====
@@ -440,7 +416,6 @@ internal sealed partial class LightingViewModel : ObservableObject
 
         _showing = true;
         KeyboardBrightness = state.KeyboardBrightness ?? _keyboardBrightness;
-        LogoBrightness = state.LogoBrightness ?? _logoBrightness;
         _showing = false;
 
         ShowSelections();
@@ -466,7 +441,6 @@ internal sealed partial class LightingViewModel : ObservableObject
         var shown = KeyboardEffects.FirstOrDefault(choice => choice.Value == _state.Keyboard);
         EffectName = shown?.Name ?? string.Empty;
         EffectDescription = shown?.Description ?? string.Empty;
-        LogoLit = _state.Logo != LogoMode.Off;
     }
 
     // ===== Lights off =====

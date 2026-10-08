@@ -19,7 +19,7 @@
             <!-- Battery. -->
             <StackPanel Visibility="{Binding HasBattery, Converter={StaticResource Visible}}">
                 <Grid Margin="0,0,0,12">
-                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Battery', Caps=True}" VerticalAlignment="Center" />
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Battery'}" VerticalAlignment="Center" />
                     <TextBlock Text="{Binding BatteryText}" HorizontalAlignment="Right" FontSize="19" FontWeight="SemiBold"
                                Foreground="{StaticResource Brush.Accent}" />
                 </Grid>
@@ -42,7 +42,7 @@
 
             <!-- Temperatures. -->
             <Grid Margin="0,0,0,18">
-                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Temperatures', Caps=True}" VerticalAlignment="Center" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Temperatures'}" VerticalAlignment="Center" />
                 <Border Style="{StaticResource SegmentStrip}" Padding="2">
                     <StackPanel Orientation="Horizontal">
                         <RadioButton Style="{StaticResource Segment}" GroupName="Unit" Padding="8,2,8,3" Content="&#x00B0;C" IsChecked="{Binding UseCelsius}" />
@@ -83,7 +83,7 @@
             <!-- Fans, where the controller reports their speed. -->
             <StackPanel Visibility="{Binding HasFanSpeeds, Converter={StaticResource Visible}}">
                 <Border Style="{StaticResource Separator}" Margin="0,24" />
-                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Fans', Caps=True}" Margin="0,0,0,14" />
+                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Fans'}" Margin="0,0,0,14" />
                 <UniformGrid Columns="2">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Path Width="18" Height="18" Data="{StaticResource Icon.Fan}" Stroke="{StaticResource Brush.TextMuted}" StrokeThickness="1.6" Stretch="Uniform" Margin="0,0,8,0" />

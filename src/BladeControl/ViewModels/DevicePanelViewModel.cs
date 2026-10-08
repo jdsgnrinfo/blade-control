@@ -7,7 +7,6 @@ using BladeControl.Core.Diagnostics;
 using BladeControl.Core.Localization;
 using BladeControl.Core.Services;
 using BladeControl.Services;
-using BladeControl.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BladeControl.ViewModels;
@@ -32,8 +31,8 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
         _services = services;
 
         var (title, subtitle) = SplitName(services.Model?.Name);
-        ModelTitle = T.Spread(title);
-        ModelSubtitle = T.Spread(subtitle ?? (services.Model is null ? L.T("Not detected") : string.Empty));
+        ModelTitle = title;
+        ModelSubtitle = subtitle ?? (services.Model is null ? L.T("Not detected") : string.Empty);
         Picture = LoadPicture(services.Model?.Name);
         HasFanSpeeds = services.Model?.HasFanSpeeds == true;
 

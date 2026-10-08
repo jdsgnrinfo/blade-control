@@ -506,31 +506,58 @@
 
     <!-- ===== Lighting ===== -->
 
-    <LinearGradientBrush x:Key="Brush.Rainbow" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#FFFF3B3B" Offset="0" />
-        <GradientStop Color="#FFFFB52E" Offset="0.2" />
-        <GradientStop Color="#FFF5F03A" Offset="0.38" />
-        <GradientStop Color="#FF44D62C" Offset="0.55" />
-        <GradientStop Color="#FF2EB8FF" Offset="0.75" />
-        <GradientStop Color="#FFB44CFF" Offset="1" />
+    <!-- The effects' rainbow, corner to corner, as the reference's icons are painted. -->
+    <LinearGradientBrush x:Key="Brush.EffectRainbow" StartPoint="0,1" EndPoint="1,0">
+        <GradientStop Color="#FFFF2D95" Offset="0" />
+        <GradientStop Color="#FFFF7A1A" Offset="0.25" />
+        <GradientStop Color="#FFFFE53B" Offset="0.45" />
+        <GradientStop Color="#FF3BE26B" Offset="0.62" />
+        <GradientStop Color="#FF20C8FF" Offset="0.8" />
+        <GradientStop Color="#FF8B5CFF" Offset="1" />
     </LinearGradientBrush>
 
-    <!-- An effect's icon, drawn from its kind (EffectIcon). -->
+    <!-- The prism's shaded face. -->
+    <LinearGradientBrush x:Key="Brush.EffectRainbowDark" StartPoint="0,1" EndPoint="1,0">
+        <GradientStop Color="#FF20C8FF" Offset="0" />
+        <GradientStop Color="#FF6E5BFF" Offset="0.5" />
+        <GradientStop Color="#FFD14BFF" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="Brush.EffectOff" StartPoint="0,1" EndPoint="1,0">
+        <GradientStop Color="#FFFF3B6B" Offset="0" />
+        <GradientStop Color="#FFFF7A3B" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- An effect's icon, drawn from its kind (EffectIcon), on a 24 grid. -->
     <DataTemplate x:Key="EffectIconTemplate">
-        <Grid Width="22" Height="22">
-            <Ellipse x:Name="Static" Width="12" Height="12" Fill="{StaticResource Brush.Accent}" Visibility="Collapsed" />
-            <Grid x:Name="Breathing" Visibility="Collapsed">
-                <Ellipse Width="20" Height="20" Stroke="{StaticResource Brush.Accent}" StrokeThickness="1.6" Opacity="0.55" />
-                <Ellipse Width="9" Height="9" Fill="{StaticResource Brush.Accent}" />
-            </Grid>
-            <Ellipse x:Name="Spectrum" Width="18" Height="18" Fill="{StaticResource Brush.Rainbow}" Visibility="Collapsed" />
-            <Path x:Name="Wave" Data="M1,11 C4,3 8,3 11,11 S18,19 21,11" Stroke="{StaticResource Brush.Rainbow}" StrokeThickness="2.4"
-                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" Visibility="Collapsed" />
-            <Grid x:Name="Off" Visibility="Collapsed">
-                <Ellipse Width="18" Height="18" Stroke="{StaticResource Brush.Warm}" StrokeThickness="1.8" />
-                <Path Data="M5.2,5.2 L16.8,16.8" Stroke="{StaticResource Brush.Warm}" StrokeThickness="1.8" StrokeEndLineCap="Round" StrokeStartLineCap="Round" />
-            </Grid>
-        </Grid>
+        <Viewbox Width="26" Height="26">
+            <Canvas Width="24" Height="24">
+                <!-- Static: a prism, its lit face and its shaded face. -->
+                <Canvas x:Name="Static" Visibility="Collapsed">
+                    <Path Data="M12,2 L3,18.5 L12,22 Z" Fill="{StaticResource Brush.EffectRainbow}" />
+                    <Path Data="M12,2 L21,18.5 L12,22 Z" Fill="{StaticResource Brush.EffectRainbowDark}" />
+                </Canvas>
+                <!-- Breathing: a ring round a dot. -->
+                <Canvas x:Name="Breathing" Visibility="Collapsed">
+                    <Ellipse Canvas.Left="2.5" Canvas.Top="2.5" Width="19" Height="19" Stroke="{StaticResource Brush.EffectRainbow}" StrokeThickness="2.2" />
+                    <Ellipse Canvas.Left="8" Canvas.Top="8" Width="8" Height="8" Fill="{StaticResource Brush.EffectRainbow}" />
+                </Canvas>
+                <!-- Spectrum: three stacked rings, the colors cycling. -->
+                <Canvas x:Name="Spectrum" Visibility="Collapsed">
+                    <Ellipse Canvas.Left="2.5" Canvas.Top="3.5" Width="19" Height="6" Stroke="{StaticResource Brush.EffectRainbow}" StrokeThickness="2" />
+                    <Ellipse Canvas.Left="2.5" Canvas.Top="9" Width="19" Height="6" Stroke="{StaticResource Brush.EffectRainbow}" StrokeThickness="2" />
+                    <Ellipse Canvas.Left="2.5" Canvas.Top="14.5" Width="19" Height="6" Stroke="{StaticResource Brush.EffectRainbow}" StrokeThickness="2" />
+                </Canvas>
+                <!-- Wave: a breaking wave. -->
+                <Path x:Name="Wave" Visibility="Collapsed" Fill="{StaticResource Brush.EffectRainbow}"
+                      Data="M2,20 C2,11.5 7,5 13.5,5 C18.5,5 21.5,8.2 21.5,11.6 C21.5,14.2 19.6,15.8 17.6,15.8 C15.6,15.8 14.5,14.3 15.2,12.6 C12.6,12.9 11,15 11,17.2 C11,18.6 11.6,19.6 12.4,20 L22,20 L22,22 L2,22 Z" />
+                <!-- Off: a circle struck through. -->
+                <Canvas x:Name="Off" Visibility="Collapsed">
+                    <Ellipse Canvas.Left="3" Canvas.Top="3" Width="18" Height="18" Stroke="{StaticResource Brush.EffectOff}" StrokeThickness="2.2" />
+                    <Path Data="M6.4,6.4 L17.6,17.6" Stroke="{StaticResource Brush.EffectOff}" StrokeThickness="2.2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                </Canvas>
+            </Canvas>
+        </Viewbox>
         <DataTemplate.Triggers>
             <DataTrigger Binding="{Binding}" Value="Static">
                 <Setter TargetName="Static" Property="Visibility" Value="Visible" />
@@ -550,12 +577,12 @@
         </DataTemplate.Triggers>
     </DataTemplate>
 
-    <!-- A lighting effect as a small square with its icon; the chosen one framed in white, as in the concept. -->
+    <!-- A lighting effect as a black square with its icon; the chosen one framed in white, as in the reference. -->
     <Style x:Key="EffectTile" TargetType="RadioButton">
-        <Setter Property="Width" Value="44" />
-        <Setter Property="Height" Value="44" />
+        <Setter Property="Width" Value="48" />
+        <Setter Property="Height" Value="48" />
         <Setter Property="Margin" Value="4" />
-        <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
+        <Setter Property="Background" Value="#FF070707" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="ContentTemplate" Value="{StaticResource EffectIconTemplate}" />
@@ -563,12 +590,12 @@
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
                     <Border x:Name="Back" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="2"
-                            CornerRadius="{StaticResource Radius.Control}">
+                            CornerRadius="6">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TileHover}" />
+                            <Setter TargetName="Back" Property="BorderBrush" Value="#FF3A3A3A" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Back" Property="BorderBrush" Value="White" />

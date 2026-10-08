@@ -460,7 +460,6 @@ internal static class L
         ["Lighting effects"] = "Efectos de iluminación",
         ["Keyboard effect"] = "Efecto del teclado",
         ["Logo effect"] = "Efecto del logo",
-        ["Logo brightness"] = "Brillo del logo",
         ["A steady light in the color you choose."] = "Una luz fija del color que elijas.",
         ["A steady light in Razer green."] = "Una luz fija en verde Razer.",
         ["The light fades in and out slowly."] = "La luz se enciende y se apaga despacio.",

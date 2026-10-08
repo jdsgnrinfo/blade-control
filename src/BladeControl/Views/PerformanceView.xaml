@@ -43,7 +43,7 @@
                 <StackPanel Visibility="{Binding IsCustom, Converter={StaticResource Visible}}" Margin="0,30,0,0">
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                         <Path Width="15" Height="15" Data="{StaticResource Icon.Cpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,8,0" />
-                        <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'CPU preset', Caps=True}" />
+                        <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'CPU preset'}" />
                     </StackPanel>
                     <UniformGrid Columns="4" IsEnabled="{Binding CanChangeLevels}">
                         <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="0,0,6,0" Content="{ui:T 'Low'}" IsChecked="{Binding IsCpuLow}" />
@@ -54,7 +54,7 @@
 
                     <StackPanel Orientation="Horizontal" Margin="0,28,0,12">
                         <Path Width="15" Height="15" Data="{StaticResource Icon.Gpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,8,0" />
-                        <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'GPU preset', Caps=True}" />
+                        <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'GPU preset'}" />
                     </StackPanel>
                     <UniformGrid Columns="4" IsEnabled="{Binding CanChangeLevels}">
                         <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="0,0,6,0" Content="{ui:T 'Low'}" IsChecked="{Binding IsGpuLow}" />

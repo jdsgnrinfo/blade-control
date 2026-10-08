@@ -11,7 +11,4 @@ public partial class LightingView : UserControl
     // A drag only sends; letting go reads the laptop back once.
     private void KeyboardBrightness_Commit(object sender, RoutedEventArgs e) =>
         (DataContext as LightingViewModel)?.CommitKeyboardBrightness();
-
-    private void LogoBrightness_Commit(object sender, RoutedEventArgs e) =>
-        (DataContext as LightingViewModel)?.CommitLogoBrightness();
 }
