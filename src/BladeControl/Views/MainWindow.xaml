@@ -37,7 +37,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" Margin="14,0,0,0">
-                <Path Width="16" Height="16" Data="{StaticResource Icon.Logo}" Fill="{StaticResource Brush.Accent}" Stretch="Uniform" />
+                <Image Width="16" Height="16" Source="pack://application:,,,/Assets/Logo.png" RenderOptions.BitmapScalingMode="HighQuality" />
                 <TextBlock Text="{ui:T 'Blade Control'}" Margin="8,0,0,1" VerticalAlignment="Center"
                            FontSize="11" Foreground="{StaticResource Brush.TextMuted}" />
             </StackPanel>

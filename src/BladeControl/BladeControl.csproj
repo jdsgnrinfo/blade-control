@@ -52,6 +52,8 @@
 
   <ItemGroup>
     <Resource Include="Assets\BladeControl.ico" />
+    <!-- The logo in the title bar. -->
+    <Resource Include="Assets\Logo.png" />
     <!-- Titillium Web, inside the exe: nothing is installed in Windows. -->
     <Resource Include="Assets\Fonts\*.ttf" />
     <!-- The laptops' pictures for the device panel, by model (see LaptopPictureNames). -->
