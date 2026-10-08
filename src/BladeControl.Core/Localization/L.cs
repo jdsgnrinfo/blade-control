@@ -513,5 +513,14 @@ internal static class L
             "Lo que guarda una carga completa hoy frente a cuando era nueva. Las baterías pierden un poco cada año.",
         ["The charge limit is on the Performance page, under Battery health."] =
             "El límite de carga está en la página Rendimiento, en Salud de la batería.",
+
+        // Audio page.
+        ["Sound boosts"] = "Mejoras de sonido",
+        ["Drag a band, or scroll over it. A double click puts it back to 0."] = "Arrastra una banda o usa la rueda sobre ella. Doble clic la devuelve a 0.",
+        ["Picking one makes it the one Windows plays to. Each keeps its own equalizer."] = "Al elegir uno, Windows reproduce por él. Cada uno guarda su propio ecualizador.",
+        ["Lifts everything under about 120 Hz."] = "Realza todo lo que está por debajo de unos 120 Hz.",
+        ["Brings out both ends, for a fuller, punchier sound."] = "Realza graves y agudos, para un sonido más lleno y con más pegada.",
+        ["Lifts the mids and treble, for crisper voices and detail."] = "Realza medios y agudos, para voces y detalles más nítidos.",
+        ["Could not change the output device."] = "No se pudo cambiar el dispositivo de salida.",
     };
 }

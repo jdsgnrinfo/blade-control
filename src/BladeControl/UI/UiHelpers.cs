@@ -45,6 +45,17 @@ public sealed class NotConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture) => value is not true;
 }
 
+/// <summary>True when every value is true: a control enabled only while all its conditions hold.</summary>
+public sealed class AllTrueConverter : IMultiValueConverter
+{
+    public static AllTrueConverter Instance { get; } = new();
+
+    public object Convert(object[] values, Type targetType, object? parameter, CultureInfo culture) => values.All(value => value is true);
+
+    public object[] ConvertBack(object value, Type[] targetTypes, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>True hides, false shows: the other side of BooleanToVisibilityConverter.</summary>
 public sealed class InverseVisibilityConverter : IValueConverter
 {

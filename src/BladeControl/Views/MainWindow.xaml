@@ -118,6 +118,9 @@
                 <views:BatteryView DataContext="{Binding Battery}"
                                    Visibility="{Binding DataContext.IsBattery, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
+                <views:AudioView DataContext="{Binding Audio}"
+                                 Visibility="{Binding DataContext.IsAudio, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
+
                 <views:OptimizeView DataContext="{Binding Optimize}"
                                     Visibility="{Binding DataContext.IsOptimize, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 

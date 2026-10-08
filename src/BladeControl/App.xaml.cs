@@ -187,6 +187,7 @@ public partial class App : Application
         _viewModel?.Optimize.Dispose();
         _viewModel?.Display.Dispose();
         _viewModel?.Battery.Dispose();
+        _viewModel?.Audio.Flush();
         _viewModel?.Performance.Monitor.Dispose();
         _viewModel?.Device.Stop();
         _services?.Dispose();

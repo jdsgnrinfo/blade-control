@@ -166,7 +166,7 @@ internal sealed record AudioDeviceEq(bool Enabled, string? Preset, double[] Gain
 internal static class EqualizerApoConfig
 {
     /// <summary>The first line of a file the app wrote, which tells it from the user's own.</summary>
-    public const string Marker = "# Written by RazerHelper.";
+    public const string Marker = "# Written by Blade Control.";
 
     /// <summary>The id Equalizer APO knows a device by: the last part of Windows' endpoint id, "{0.0.0.00000000}.{guid}".</summary>
     public static string DeviceGuid(string endpointId)
@@ -217,7 +217,7 @@ internal static class EqualizerApoConfig
 /// </summary>
 internal sealed class EqualizerApoWriter(string configFolder)
 {
-    public const string BackupName = "config.before-RazerHelper.txt";
+    public const string BackupName = "config.before-BladeControl.txt";
 
     private string ConfigPath => Path.Combine(configFolder, "config.txt");
 
