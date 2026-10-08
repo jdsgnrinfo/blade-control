@@ -321,7 +321,7 @@
     <!-- A performance mode: a tall tile with its icon in a disc above the name. Tag is the icon's geometry. -->
     <Style x:Key="ModeTile" TargetType="RadioButton" BasedOn="{StaticResource Tile}">
         <Setter Property="Height" Value="186" />
-        <Setter Property="FontSize" Value="21" />
+        <Setter Property="FontSize" Value="16" />
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -331,9 +331,7 @@
                             <Path Width="34" Height="34" Style="{StaticResource IconPath}"
                                   Data="{Binding Tag, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
                         </Border>
-                        <!-- The three modes share one size, taken from the tile's width. -->
-                        <TextBlock Text="{Binding}" HorizontalAlignment="Center"
-                                   FontSize="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=RadioButton}, Converter={x:Static ui:WidthToFontSizeConverter.Instance}, ConverterParameter='8.2,14,21'}" />
+                        <TextBlock Text="{Binding}" HorizontalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>
             </Setter.Value>
