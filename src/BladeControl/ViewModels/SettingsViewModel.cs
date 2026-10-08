@@ -149,7 +149,7 @@ internal sealed partial class SettingsViewModel : ObservableObject
     {
         if (AppRestart.Relaunch())
         {
-            Application.Current.Shutdown();
+            App.Quit();
             return;
         }
 

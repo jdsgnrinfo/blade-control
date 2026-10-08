@@ -11,8 +11,8 @@ namespace BladeControl.UI;
 
 /// <summary>
 /// The app's slider, as Razer Helper's: a round-ended track filling in green,
-/// a dot at each step when there are few, and a round white thumb with a
-/// soft shadow. It moves on springs: the thumb follows the pointer exactly
+/// a dot at each step when there are few, and a white rounded-square thumb
+/// with a soft shadow. It moves on springs: the thumb follows the pointer exactly
 /// and grows a little while held; a click on the track sends it over from
 /// where it was; a release with speed carries it at most a step further
 /// before it settles; past either end it gives like rubber; a key at an end
@@ -28,7 +28,9 @@ namespace BladeControl.UI;
 /// </remarks>
 public sealed class SpringSlider : RangeBase
 {
-    private const double ThumbRadius = 9;
+    private const double ThumbRadius = 9;   // Half the thumb's width; it is 18 by 22, as before.
+    private const double ThumbHalfHeight = 11;
+    private const double ThumbCorner = 3;
     private const double TrackHeight = 6;
     private const double Inset = 16;       // Room at each end for the grown thumb and its stretch.
     private const double Stretch = 5;      // How far past an end the thumb can be pulled.
@@ -374,24 +376,25 @@ public sealed class SpringSlider : RangeBase
             }
         }
 
-        // The thumb: a soft halo while pointed at, a green ring after a key, a shadow, and the white disc.
-        var radius = ThumbRadius * _lift.Position;
+        // The thumb: a soft halo while pointed at, a green ring after a key, a shadow, and the white rounded square.
+        var halfWidth = ThumbRadius * _lift.Position;
+        var halfHeight = ThumbHalfHeight * _lift.Position;
         var center = new Point(thumbX, y);
 
         if (_keyFocus && IsKeyboardFocused)
         {
-            context.DrawEllipse(accent, null, center, radius + 4, radius + 4);
-            context.DrawEllipse(Resource("Brush.Card", Brushes.Black) is SolidColorBrush card ? card : CardFallback, null, center, radius + 2, radius + 2);
+            Thumb(context, accent, center, halfWidth + 4, halfHeight + 4);
+            Thumb(context, Resource("Brush.Card", Brushes.Black) is SolidColorBrush card ? card : CardFallback, center, halfWidth + 2, halfHeight + 2);
         }
         else if (live && (_hovered || _dragging))
         {
-            context.DrawEllipse(Halo, null, center, radius + 3, radius + 3);
+            Thumb(context, Halo, center, halfWidth + 3, halfHeight + 3);
         }
 
-        context.DrawEllipse(Shadow, null, new Point(center.X, center.Y + 1), radius, radius);
-        context.DrawEllipse(live ? Brushes.White : DisabledThumb, null, center, radius, radius);
+        Thumb(context, Shadow, new Point(center.X, center.Y + 1), halfWidth, halfHeight);
+        Thumb(context, live ? Brushes.White : DisabledThumb, center, halfWidth, halfHeight);
 
-        DrawBubble(context, accent, thumbX, y - radius - 4);
+        DrawBubble(context, accent, thumbX, y - halfHeight - 4);
     }
 
     // A green pill with the value in dark text and a small point down to the thumb, springing up as it appears.
@@ -437,6 +440,13 @@ public sealed class SpringSlider : RangeBase
         context.Pop();
         context.Pop();
         context.Pop();
+    }
+
+    // The thumb's shape at a size: a rounded square, its corners growing with its rings.
+    private static void Thumb(DrawingContext context, Brush brush, Point center, double halfWidth, double halfHeight)
+    {
+        var corner = ThumbCorner + (halfHeight - ThumbHalfHeight > 0 ? (halfHeight - ThumbHalfHeight) * 0.5 : 0);
+        context.DrawRoundedRectangle(brush, null, new Rect(center.X - halfWidth, center.Y - halfHeight, 2 * halfWidth, 2 * halfHeight), corner, corner);
     }
 
     private static void Pill(DrawingContext context, Brush brush, Rect bounds)

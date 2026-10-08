@@ -106,25 +106,25 @@
                     <ColumnDefinition Width="280" />
                 </Grid.ColumnDefinitions>
 
-                <views:PerformanceView DataContext="{Binding Performance}"
+                <views:PerformanceView ui:Reveal.OnShow="True" DataContext="{Binding Performance}"
                                        Visibility="{Binding DataContext.IsPerformance, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
-                <views:LightingView DataContext="{Binding Lighting}"
+                <views:LightingView ui:Reveal.OnShow="True" DataContext="{Binding Lighting}"
                                     Visibility="{Binding DataContext.IsLighting, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
-                <views:DisplayView DataContext="{Binding Display}"
+                <views:DisplayView ui:Reveal.OnShow="True" DataContext="{Binding Display}"
                                    Visibility="{Binding DataContext.IsDisplay, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
-                <views:BatteryView DataContext="{Binding Battery}"
+                <views:BatteryView ui:Reveal.OnShow="True" DataContext="{Binding Battery}"
                                    Visibility="{Binding DataContext.IsBattery, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
-                <views:AudioView DataContext="{Binding Audio}"
+                <views:AudioView ui:Reveal.OnShow="True" DataContext="{Binding Audio}"
                                  Visibility="{Binding DataContext.IsAudio, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
-                <views:OptimizeView DataContext="{Binding Optimize}"
+                <views:OptimizeView ui:Reveal.OnShow="True" DataContext="{Binding Optimize}"
                                     Visibility="{Binding DataContext.IsOptimize, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
-                <views:SettingsView DataContext="{Binding Settings}"
+                <views:SettingsView ui:Reveal.OnShow="True" DataContext="{Binding Settings}"
                                     Visibility="{Binding DataContext.IsSettings, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
                 <views:ComingSoonView Visibility="{Binding ShowsComingSoon, Converter={StaticResource Visible}}" />

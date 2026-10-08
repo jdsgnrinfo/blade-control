@@ -16,9 +16,16 @@ public partial class App : Application
     // Session-local, so each signed-in user can run their own copy.
     private const string SingleInstanceMutexName = @"Local\BladeControl.SingleInstance";
 
+    // A second copy sets this, so the first shows its window (from the tray) instead.
+    private const string ShowWindowEventName = @"Local\BladeControl.ShowWindow";
+
     private Mutex? _singleInstance;
     private AppServices? _services;
     private MainViewModel? _viewModel;
+    private TrayIcon? _tray;
+    private EventWaitHandle? _showWindow;
+    private RegisteredWaitHandle? _showWindowWait;
+    private bool _quitting;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -44,7 +51,14 @@ public partial class App : Application
         // A screenshot run only looks, so it may run beside the open app.
         if (!isFirstInstance && e.Args is not ["--screenshot", ..])
         {
-            AppLog.Info("Another Blade Control is already running for this user; exiting.");
+            AppLog.Info("Another Blade Control is already running for this user; showing it and exiting.");
+
+            if (EventWaitHandle.TryOpenExisting(ShowWindowEventName, out var showFirst))
+            {
+                using (showFirst)
+                    showFirst.Set();
+            }
+
             Shutdown();
             return;
         }
@@ -67,9 +81,9 @@ public partial class App : Application
         window.Topmost = _services.Settings.AlwaysOnTop;
         RestorePlacement(window, _services.Settings.Window);
 
-        // A screenshot run leaves the size the user left alone.
+        // A screenshot run leaves the size and the tray to the open app.
         if (e.Args is not ["--screenshot", ..])
-            window.Closing += (_, _) => _services.UpdateSettings(settings => settings with { Window = PlacementOf(window) });
+            KeepInTray(window);
 
         window.Show();
 
@@ -101,6 +115,63 @@ public partial class App : Application
 
             ScreenshotThenClose(window, path, previewCustom ? _viewModel.Performance : null, scrolled);
         }
+    }
+
+    // Closing the window leaves the app running in the tray; only Exit (the tray
+    // menu) or a restart ends it. A second copy started asks this one to show its window.
+    private void KeepInTray(MainWindow window)
+    {
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        SessionEnding += (_, _) => _quitting = true;
+
+        window.Closing += (_, args) =>
+        {
+            _services!.UpdateSettings(settings => settings with { Window = PlacementOf(window) });
+
+            if (_quitting)
+                return;
+
+            args.Cancel = true;
+            window.Hide();
+            _viewModel!.SetWindowShown(false);
+        };
+
+        _tray = new TrayIcon();
+        _tray.OpenRequested += (_, _) => ShowMainWindow();
+        _tray.MenuRequested += (_, _) => TrayMenuWindow.ShowAtPointer(ShowMainWindow, Quit);
+        _viewModel!.Performance.ModeChanged += (_, mode) => Dispatcher.BeginInvoke(() => _tray?.ShowMode(mode));
+
+        _showWindow = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
+        _showWindowWait = ThreadPool.RegisterWaitForSingleObject(_showWindow, (_, _) => Dispatcher.BeginInvoke(ShowMainWindow), null, Timeout.Infinite, executeOnlyOnce: false);
+    }
+
+    /// <summary>Brings the window back from the tray, or to the front.</summary>
+    private void ShowMainWindow()
+    {
+        if (MainWindow is not { } window)
+            return;
+
+        var wasHidden = !window.IsVisible;
+        window.Show();
+
+        if (window.WindowState == WindowState.Minimized)
+            window.WindowState = WindowState.Normal;
+
+        window.Activate();
+
+        if (wasHidden)
+            _viewModel?.SetWindowShown(true);
+    }
+
+    /// <summary>Ends the app: Exit in the tray menu, or a restart. The window closes for good and the tray icon goes.</summary>
+    public static void Quit()
+    {
+        if (Current is not App app)
+            return;
+
+        app._quitting = true;
+        app.MainWindow?.Close();
+        app.Shutdown();
     }
 
     // The window where it was left, as big as it was, if that is still on a screen
@@ -190,6 +261,9 @@ public partial class App : Application
         _viewModel?.Audio.Flush();
         _viewModel?.Performance.Monitor.Dispose();
         _viewModel?.Device.Stop();
+        _showWindowWait?.Unregister(null);
+        _showWindow?.Dispose();
+        _tray?.Dispose();
         _services?.Dispose();
         _singleInstance?.Dispose();
         AppLog.Info("Blade Control exiting.");

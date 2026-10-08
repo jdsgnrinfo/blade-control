@@ -26,7 +26,8 @@ public sealed class EqualizerGraph : FrameworkElement
     private const double GridTop = 30;      // Room for the gains above.
     private const double GridBottomRoom = 30; // Room for the frequencies below.
     private const double ScaleWidth = 44;   // +12, 0 and -12 at the left.
-    private const double ThumbRadius = 8;
+    private const double ThumbHalfWidth = 11; // The thumb is 22 by 14, as before.
+    private const double ThumbHalfHeight = 7;
     private const double LargeStep = 3;
 
     public static readonly DependencyProperty GainsProperty = DependencyProperty.Register(
@@ -155,23 +156,25 @@ public sealed class EqualizerGraph : FrameworkElement
             if (to - from > 0.5)
                 context.DrawRoundedRectangle(accent, null, new Rect(x - 2.5, from, 5, to - from), 2.5, 2.5);
 
-            // The thumb, as the sliders': a white disc with a soft shadow, grown while held,
+            // The thumb, as the sliders': a white rounded square with a soft shadow, grown while held,
             // a faint green halo while dragged, a green ring when the keys move it.
-            var radius = band == _dragging ? ThumbRadius * 1.16 : ThumbRadius;
+            var grow = band == _dragging ? 1.16 : 1.0;
+            var halfWidth = ThumbHalfWidth * grow;
+            var halfHeight = ThumbHalfHeight * grow;
             var center = new Point(x, y);
 
             if (IsKeyboardFocused && band == _focusBand && _dragging < 0)
             {
-                context.DrawEllipse(accent, null, center, radius + 4, radius + 4);
-                context.DrawEllipse(TryFindResource("Brush.Card") as Brush ?? Brushes.Black, null, center, radius + 2, radius + 2);
+                Thumb(context, accent, center, halfWidth + 4, halfHeight + 4);
+                Thumb(context, TryFindResource("Brush.Card") as Brush ?? Brushes.Black, center, halfWidth + 2, halfHeight + 2);
             }
             else if (band == _dragging)
             {
-                context.DrawEllipse(Frozen(new SolidColorBrush(Color.FromArgb(46, accentColor.R, accentColor.G, accentColor.B))), null, center, radius + 3, radius + 3);
+                Thumb(context, Frozen(new SolidColorBrush(Color.FromArgb(46, accentColor.R, accentColor.G, accentColor.B))), center, halfWidth + 3, halfHeight + 3);
             }
 
-            context.DrawEllipse(Frozen(new SolidColorBrush(Color.FromArgb(90, 0, 0, 0))), null, new Point(x, y + 1), radius, radius);
-            context.DrawEllipse(IsEnabled ? Brushes.White : MutedBrush ?? Brushes.Gray, null, center, radius, radius);
+            Thumb(context, Frozen(new SolidColorBrush(Color.FromArgb(90, 0, 0, 0))), new Point(x, y + 1), halfWidth, halfHeight);
+            Thumb(context, IsEnabled ? Brushes.White : MutedBrush ?? Brushes.Gray, center, halfWidth, halfHeight);
 
             var gain = Text(GainText(gains[band]), held ? accent : Brushes.White, 12, FontWeights.SemiBold);
             context.DrawText(gain, new Point(x - gain.Width / 2, Top - 14 - gain.Height / 2 - 4));
@@ -324,6 +327,12 @@ public sealed class EqualizerGraph : FrameworkElement
             var second = new Point(to.X - (after.X - from.X) / 6, Clamp(to.Y - (after.Y - from.Y) / 6));
             draw.BezierTo(first, second, to, stroked, isSmoothJoin: true);
         }
+    }
+
+    private static void Thumb(DrawingContext context, Brush brush, Point center, double halfWidth, double halfHeight)
+    {
+        var corner = 3 + Math.Max(0, halfHeight - ThumbHalfHeight) * 0.5;
+        context.DrawRoundedRectangle(brush, null, new Rect(center.X - halfWidth, center.Y - halfHeight, 2 * halfWidth, 2 * halfHeight), corner, corner);
     }
 
     private double Clamp(double y) => Math.Clamp(y, Top, Bottom);

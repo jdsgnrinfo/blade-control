@@ -555,9 +555,6 @@
                         <ContentPresenter />
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsHighlighted" Value="True">
-                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TileHover}" />
-                        </Trigger>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
                         </Trigger>
@@ -576,6 +573,7 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="ItemContainerStyle" Value="{StaticResource DropdownItem}" />
+        <Setter Property="ui:DropdownMotion.IsEnabled" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBox">
@@ -593,16 +591,21 @@
                                 </ControlTemplate>
                             </ToggleButton.Template>
                         </ToggleButton>
-                        <ContentPresenter Margin="12,0,30,0" VerticalAlignment="Center" IsHitTestVisible="False"
+                        <ContentPresenter x:Name="Choice" Margin="12,0,30,0" VerticalAlignment="Center" IsHitTestVisible="False"
                                           Content="{TemplateBinding SelectionBoxItem}" />
-                        <Path Width="9" Height="5" Margin="0,0,12,0" HorizontalAlignment="Right" VerticalAlignment="Center" IsHitTestVisible="False"
+                        <Path x:Name="Chevron" Width="9" Height="5" Margin="0,0,12,0" HorizontalAlignment="Right" VerticalAlignment="Center" IsHitTestVisible="False"
                               Data="M0,0 L4.5,4.5 L9,0" Stroke="{StaticResource Brush.TextSoft}" StrokeThickness="1.5" Stretch="Uniform" />
                         <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True" Focusable="False"
-                               PopupAnimation="Fade" VerticalOffset="4">
-                            <Border Background="{StaticResource Brush.TilePressed}" CornerRadius="{StaticResource Radius.Control}" Padding="4"
+                               PopupAnimation="None" VerticalOffset="4">
+                            <!-- DropdownMotion scales it in, fades the items in and glides the highlight. -->
+                            <Border x:Name="Menu" Background="{StaticResource Brush.TilePressed}" CornerRadius="{StaticResource Radius.Control}" Padding="4"
                                     MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="260">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                    <ItemsPresenter />
+                                    <Grid x:Name="HighlightHost">
+                                        <Border x:Name="Highlight" Background="{StaticResource Brush.TileHover}" CornerRadius="3" Opacity="0"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False" />
+                                        <ItemsPresenter />
+                                    </Grid>
                                 </ScrollViewer>
                             </Border>
                         </Popup>

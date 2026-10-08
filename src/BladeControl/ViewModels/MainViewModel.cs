@@ -97,7 +97,29 @@ internal sealed partial class MainViewModel : ObservableObject
 
     // The Lighting page follows the Fn brightness keys only while it is open;
     // Optimize and Settings read again what may have changed since.
-    partial void OnPageChanged(AppPage value)
+    partial void OnPageChanged(AppPage value) => OpenPage(value);
+
+    /// <summary>
+    /// The window closed to the tray, or back from it: while it is hidden nothing
+    /// is read once a second; shown again, the open page starts over.
+    /// </summary>
+    public void SetWindowShown(bool shown)
+    {
+        if (shown)
+        {
+            Device.Start();
+            OpenPage(Page);
+            return;
+        }
+
+        Device.Stop();
+        Performance.Monitor.Stop();
+        Lighting.SetPageOpen(false);
+        Battery.SetPageOpen(false);
+        Audio.Flush();
+    }
+
+    private void OpenPage(AppPage value)
     {
         Lighting.SetPageOpen(value == AppPage.Lighting);
         Battery.SetPageOpen(value == AppPage.Battery);

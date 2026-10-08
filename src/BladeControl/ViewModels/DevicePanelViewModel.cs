@@ -48,11 +48,11 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
     public bool HasPicture => Picture is not null;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CpuText), nameof(CpuFraction), nameof(CpuAverageText))]
+    [NotifyPropertyChangedFor(nameof(CpuText), nameof(CpuFraction), nameof(CpuAverageText), nameof(CpuArcStart), nameof(CpuArcEnd))]
     private double? _cpuCelsius;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(GpuText), nameof(GpuFraction), nameof(GpuAverageText))]
+    [NotifyPropertyChangedFor(nameof(GpuText), nameof(GpuFraction), nameof(GpuAverageText), nameof(GpuArcStart), nameof(GpuArcEnd))]
     private double? _gpuCelsius;
 
     [ObservableProperty]
@@ -73,6 +73,19 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
     public double CpuFraction => Fraction(CpuCelsius);
 
     public double GpuFraction => Fraction(GpuCelsius);
+
+    /// <summary>
+    /// The ring's colors by how hot it is: blue under 60 °C; above, its tip turns
+    /// towards red, red by 85 °C, and from 72 °C its start follows, so a hot
+    /// ring is a gradient from blue to red and a very hot one all red.
+    /// </summary>
+    public Brush CpuArcStart => HeatBrush(CpuCelsius, tip: false);
+
+    public Brush CpuArcEnd => HeatBrush(CpuCelsius, tip: true);
+
+    public Brush GpuArcStart => HeatBrush(GpuCelsius, tip: false);
+
+    public Brush GpuArcEnd => HeatBrush(GpuCelsius, tip: true);
 
     public string CpuAverageText => Degrees(Average(_cpuHistory.Select(sample => sample.Cpu)));
 
@@ -192,6 +205,24 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
     private string Degrees(double? celsius) => celsius is double value
         ? $"{Math.Round(UseFahrenheit ? value * 9 / 5 + 32 : value)}°"
         : "--";
+
+    private const double CoolBelow = 60;
+    private const double RedFrom = 85;
+
+    private static readonly Color Cool = Color.FromRgb(0x4A, 0x8F, 0xE0);
+    private static readonly Color Hot = Color.FromRgb(0xE0, 0x57, 0x4A);
+
+    private static Brush HeatBrush(double? celsius, bool tip)
+    {
+        var heat = celsius is double value ? Math.Clamp((value - CoolBelow) / (RedFrom - CoolBelow), 0, 1) : 0;
+        var amount = tip ? heat : Math.Max(0, 2 * heat - 1);
+        var brush = new SolidColorBrush(Color.FromRgb(
+            (byte)Math.Round(Cool.R + (Hot.R - Cool.R) * amount),
+            (byte)Math.Round(Cool.G + (Hot.G - Cool.G) * amount),
+            (byte)Math.Round(Cool.B + (Hot.B - Cool.B) * amount)));
+        brush.Freeze();
+        return brush;
+    }
 
     private static double Fraction(double? celsius) =>
         celsius is double value ? Math.Clamp((value - 20) / 80, 0, 1) : 0;

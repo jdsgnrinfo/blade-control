@@ -54,7 +54,7 @@
             <UniformGrid Columns="2">
                 <StackPanel>
                     <Grid Width="80" Height="80">
-                        <ui:RingGauge Fraction="{Binding CpuFraction}" Thickness="7" ArcBrush="{StaticResource Brush.Cool}" TrackBrush="{StaticResource Brush.Tile}" />
+                        <ui:RingGauge Fraction="{Binding CpuFraction}" Thickness="7" ArcBrush="{Binding CpuArcStart}" ArcEndBrush="{Binding CpuArcEnd}" TrackBrush="{StaticResource Brush.Tile}" />
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{Binding CpuText}" FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center" />
                             <TextBlock Text="CPU" FontSize="11" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
@@ -67,7 +67,7 @@
                 </StackPanel>
                 <StackPanel>
                     <Grid Width="80" Height="80">
-                        <ui:RingGauge Fraction="{Binding GpuFraction}" Thickness="7" ArcBrush="{StaticResource Brush.Cool}" TrackBrush="{StaticResource Brush.Tile}" />
+                        <ui:RingGauge Fraction="{Binding GpuFraction}" Thickness="7" ArcBrush="{Binding GpuArcStart}" ArcEndBrush="{Binding GpuArcEnd}" TrackBrush="{StaticResource Brush.Tile}" />
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{Binding GpuText}" FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center" />
                             <TextBlock Text="GPU" FontSize="11" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
