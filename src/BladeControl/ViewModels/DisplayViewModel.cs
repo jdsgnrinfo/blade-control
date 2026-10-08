@@ -45,7 +45,8 @@ internal sealed record PanelDetail(string Name, string Value);
 /// (Auto follows the charger: the fastest plugged in, 60 Hz on battery, and
 /// waits while a fullscreen game has the screen), its color profile, and what
 /// Windows says about the panel. The saved rate and profile are put back at
-/// startup, and the profile again whenever Windows may have reset it.
+/// startup, and the profile again whenever Windows may have reset it; it
+/// stays on the screens after the app closes.
 /// </summary>
 internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
 {
@@ -192,14 +193,16 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         PanelDetails = ReadPanelDetails();
     }
 
-    /// <summary>As the app exits: the screens' colors as they were.</summary>
+    /// <summary>
+    /// As the app exits. The color profile stays on the screens: it is the
+    /// user's choice, not something the app borrows while it runs.
+    /// </summary>
     public void Dispose()
     {
         SystemEvents.DisplaySettingsChanged -= OnDisplayChanged;
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
         _retryTimer.Stop();
         _reapplyTimer.Stop();
-        _colors.Restore();
     }
 
     // ===== Picking a rate =====
