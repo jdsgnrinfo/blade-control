@@ -397,41 +397,11 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
-                    <Border x:Name="Track" Width="46" Height="24" CornerRadius="5" Background="{StaticResource Brush.Track}">
-                        <Border x:Name="Knob" Width="18" Height="18" CornerRadius="3" Background="{StaticResource Brush.TextMuted}"
-                                HorizontalAlignment="Left" Margin="3,0,0,0">
-                            <Border.RenderTransform>
-                                <TranslateTransform x:Name="Slide" X="0" />
-                            </Border.RenderTransform>
-                        </Border>
-                    </Border>
+                    <!-- Drawn and moved by SwitchVisual: the knob stretches while pressed and glides across on a spring. -->
+                    <ui:SwitchVisual IsOn="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}"
+                                     IsPressed="{TemplateBinding IsPressed}" IsHovered="{TemplateBinding IsMouseOver}"
+                                     HasKeyboardFocus="{TemplateBinding IsKeyboardFocused}" />
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Track" Property="Background" Value="{StaticResource Brush.Accent}" />
-                            <Setter TargetName="Knob" Property="Background" Value="White" />
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="Slide" Storyboard.TargetProperty="X" To="22" Duration="0:0:0.16">
-                                            <DoubleAnimation.EasingFunction>
-                                                <CubicEase EasingMode="EaseOut" />
-                                            </DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="Slide" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.16">
-                                            <DoubleAnimation.EasingFunction>
-                                                <CubicEase EasingMode="EaseOut" />
-                                            </DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.35" />
                             <Setter Property="Cursor" Value="Arrow" />
