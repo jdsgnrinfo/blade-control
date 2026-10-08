@@ -427,6 +427,16 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         RefreshAll();
     }
 
+    /// <summary>
+    /// Shows a state without sending anything to the laptop or touching the
+    /// power plan: for screenshots of a mode the laptop is not in.
+    /// </summary>
+    public void Preview(PerformanceState state)
+    {
+        _state = state;
+        RefreshAll();
+    }
+
     /// <summary>Raised with the mode the laptop is in after every confirmed change.</summary>
     public event EventHandler<PerformanceMode?>? ModeChanged;
 

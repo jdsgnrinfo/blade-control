@@ -53,7 +53,7 @@ public partial class App : Application
         _ = _viewModel.Performance.StartAsync();
         _viewModel.Device.Start();
 
-        // "--screenshot file.png [page] [width]": draws the window into a picture a few
+        // "--screenshot file.png [page] [width] [custom]": draws the window into a picture a few
         // seconds after it opens, then closes. For the README and for checking
         // the look without touching the screen.
         if (e.Args is ["--screenshot", var path, ..])
@@ -65,13 +65,21 @@ public partial class App : Application
             if (e.Args.Length > 3 && double.TryParse(e.Args[3], out var width))
                 window.Width = Math.Max(window.MinWidth, width);
 
-            ScreenshotThenClose(window, path);
+            // "custom" after the width shows Custom with its levels, without
+            // sending anything to the laptop.
+            var previewCustom = e.Args.Length > 4 && e.Args[4] == "custom";
+
+            ScreenshotThenClose(window, path, previewCustom ? _viewModel.Performance : null);
         }
     }
 
-    private static async void ScreenshotThenClose(Window window, string path)
+    private static async void ScreenshotThenClose(Window window, string path, PerformanceViewModel? previewCustom)
     {
-        await Task.Delay(TimeSpan.FromSeconds(4));
+        await Task.Delay(TimeSpan.FromSeconds(3));
+
+        previewCustom?.Preview(new Core.Models.PerformanceState(
+            Core.Models.PerformanceMode.Custom, Core.Models.CpuBoost.High, Core.Models.GpuBoost.Medium, MaxFan: false));
+        await Task.Delay(TimeSpan.FromSeconds(1));
 
         var dpi = System.Windows.Media.VisualTreeHelper.GetDpi(window);
         var content = (FrameworkElement)window.Content;

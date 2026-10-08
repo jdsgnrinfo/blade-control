@@ -265,7 +265,7 @@
         <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Height" Value="80" />
+        <Setter Property="Height" Value="48" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
