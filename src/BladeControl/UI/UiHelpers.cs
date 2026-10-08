@@ -35,6 +35,27 @@ public sealed class FractionWidthConverter : IMultiValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>
+/// A font size that follows a width: the width divided by the first number of
+/// the parameter, kept between its other two ("8,14,21": width / 8, from 14 to
+/// 21). Tiles of the same width get the same size, so a row of them stays even
+/// as the window narrows.
+/// </summary>
+public sealed class WidthToFontSizeConverter : IValueConverter
+{
+    public static WidthToFontSizeConverter Instance { get; } = new();
+
+    public object Convert(object value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        var parts = (parameter as string ?? "8,14,21").Split(',').Select(part => double.Parse(part, CultureInfo.InvariantCulture)).ToArray();
+        var width = value is double number && number > 0 ? number : double.MaxValue;
+        return Math.Clamp(width / parts[0], parts[1], parts[2]);
+    }
+
+    public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
+
 /// <summary>True hides, false shows: the other side of BooleanToVisibilityConverter.</summary>
 public sealed class InverseVisibilityConverter : IValueConverter
 {

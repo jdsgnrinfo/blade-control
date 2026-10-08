@@ -277,8 +277,12 @@
                         <Border.RenderTransform>
                             <ScaleTransform x:Name="Scale" />
                         </Border.RenderTransform>
-                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <!-- In a narrow window the content shrinks to fit instead of being cut off. -->
+                        <Viewbox StretchDirection="DownOnly" Margin="8,6"
+                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                            <ContentPresenter />
+                        </Viewbox>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -327,7 +331,9 @@
                             <Path Width="34" Height="34" Style="{StaticResource IconPath}"
                                   Data="{Binding Tag, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
                         </Border>
-                        <TextBlock Text="{Binding}" HorizontalAlignment="Center" />
+                        <!-- The three modes share one size, taken from the tile's width. -->
+                        <TextBlock Text="{Binding}" HorizontalAlignment="Center"
+                                   FontSize="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=RadioButton}, Converter={x:Static ui:WidthToFontSizeConverter.Instance}, ConverterParameter='8.2,14,21'}" />
                     </StackPanel>
                 </DataTemplate>
             </Setter.Value>

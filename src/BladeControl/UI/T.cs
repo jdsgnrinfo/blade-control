@@ -30,21 +30,28 @@ public sealed class T : MarkupExtension
         return Caps ? Spread(text) : text;
     }
 
-    /// <summary>"Power mode" becomes "P O W E R  M O D E" with hair spaces.</summary>
+    /// <summary>
+    /// "Power mode" becomes "P O W E R  M O D E" with hair spaces. Word joiners
+    /// hold each hair space to its letters, so a narrow card wraps the title
+    /// between words, never inside one.
+    /// </summary>
     public static string Spread(string text)
     {
-        const char hairSpace = ' ';
+        const string joinedHairSpace = "⁠ ⁠";
         var upper = text.ToUpper(L.Current == AppLanguage.Spanish
             ? System.Globalization.CultureInfo.GetCultureInfo("es")
             : System.Globalization.CultureInfo.InvariantCulture);
-        var builder = new StringBuilder(upper.Length * 2);
+        var builder = new StringBuilder(upper.Length * 4);
 
-        foreach (var character in upper)
+        for (var i = 0; i < upper.Length; i++)
         {
-            if (builder.Length > 0)
-                builder.Append(hairSpace);
+            if (i > 0)
+            {
+                // Beside a word space, a plain hair space: the line may break there.
+                builder.Append(upper[i] == ' ' || upper[i - 1] == ' ' ? " " : joinedHairSpace);
+            }
 
-            builder.Append(character);
+            builder.Append(upper[i]);
         }
 
         return builder.ToString();

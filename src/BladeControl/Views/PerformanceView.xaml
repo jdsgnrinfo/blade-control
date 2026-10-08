@@ -13,9 +13,15 @@
         <!-- ===== Power mode ===== -->
         <Border Style="{StaticResource Card}" VerticalAlignment="Top">
             <StackPanel>
+                <!-- In a narrow window the title wraps to two lines rather than run under the switch. -->
                 <Grid Margin="0,0,0,26">
-                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Power mode', Caps=True}" VerticalAlignment="Center" />
-                    <Border Style="{StaticResource SegmentStrip}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Power mode', Caps=True}" VerticalAlignment="Center"
+                               TextWrapping="Wrap" Margin="0,0,12,0" />
+                    <Border Grid.Column="1" Style="{StaticResource SegmentStrip}">
                         <StackPanel Orientation="Horizontal">
                             <RadioButton Style="{StaticResource Segment}" GroupName="Source" Content="{ui:T 'Plugged In'}" IsChecked="{Binding EditingPluggedIn}" />
                             <RadioButton Style="{StaticResource Segment}" GroupName="Source" Content="{ui:T 'On Battery'}" IsChecked="{Binding EditingOnBattery}" />

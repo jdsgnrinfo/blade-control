@@ -53,13 +53,17 @@ public partial class App : Application
         _ = _viewModel.Performance.StartAsync();
         _viewModel.Device.Start();
 
-        // "--screenshot file.png [page]": draws the window into a picture a few
+        // "--screenshot file.png [page] [width]": draws the window into a picture a few
         // seconds after it opens, then closes. For the README and for checking
         // the look without touching the screen.
         if (e.Args is ["--screenshot", var path, ..])
         {
             if (e.Args.Length > 2 && Enum.TryParse<AppPage>(e.Args[2], ignoreCase: true, out var page))
                 _viewModel.Page = page;
+
+            // An optional width, to see how the page holds up in a narrow window.
+            if (e.Args.Length > 3 && double.TryParse(e.Args[3], out var width))
+                window.Width = Math.Max(window.MinWidth, width);
 
             ScreenshotThenClose(window, path);
         }
