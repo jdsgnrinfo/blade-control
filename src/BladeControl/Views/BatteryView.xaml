@@ -85,36 +85,28 @@
                                     Visibility="{Binding HasDay, Converter={StaticResource Hidden}}" />
 
                     <StackPanel Visibility="{Binding HasDay, Converter={StaticResource Visible}}">
-                        <ui:BatteryBarChart Height="230" Bars="{Binding DayBars}" Charging="{Binding DayCharging}" PlugIns="{Binding DayPlugIns}"
-                                            TickLabels="{Binding DayTicks}" BarTips="{Binding DayTips}"
-                                            Accent="{StaticResource Brush.Accent}" LineBrush="{StaticResource Brush.Track}"
-                                            TextBrush="{StaticResource Brush.TextMuted}" />
+                        <ui:ChargeChart Height="200" Points="{Binding DayPoints}" Start="{Binding DayStart}" Charging="{Binding DayCharging}"
+                                        PlugIns="{Binding DayPlugIns}" TickLabels="{Binding DayTicks}"
+                                        Accent="{StaticResource Brush.Accent}" LineBrush="{StaticResource Brush.Line}"
+                                        TextBrush="{StaticResource Brush.TextMuted}" />
 
-                        <!-- How the day went, and what the charger is doing now. -->
-                        <Grid Margin="0,18,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="{ui:T 'Screen on'}" FontSize="13" FontWeight="SemiBold" Margin="0,0,32,8" />
-                            <TextBlock Grid.Column="1" Text="{Binding ScreenOnText}" FontSize="13" Foreground="{StaticResource Brush.TextSoft}" />
-                            <TextBlock Grid.Row="1" Text="{ui:T 'Screen off'}" FontSize="13" FontWeight="SemiBold" Margin="0,0,32,8" />
-                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ScreenOffText}" FontSize="13" Foreground="{StaticResource Brush.TextSoft}" />
-                            <TextBlock Grid.Row="2" Text="{ui:T 'Asleep'}" FontSize="13" FontWeight="SemiBold" Margin="0,0,32,0" />
-                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding AsleepText}" FontSize="13" Foreground="{StaticResource Brush.TextSoft}" />
+                        <Border Style="{StaticResource Separator}" Margin="0,18" />
 
-                            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                                <TextBlock Text="{Binding StateText}" FontSize="13" Foreground="{StaticResource Brush.TextSoft}" />
-                                <Path Width="9" Height="12" Margin="6,1,0,0" Data="{StaticResource Icon.Bolt}" Fill="{StaticResource Brush.Accent}" Stretch="Uniform"
-                                      Visibility="{Binding IsPluggedIn, Converter={StaticResource Visible}}" />
-                            </StackPanel>
-                        </Grid>
+                        <!-- How the day went, as the health card's details. -->
+                        <ItemsControl ItemsSource="{Binding DaySummary}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="140" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Hint}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </StackPanel>
             </Border>

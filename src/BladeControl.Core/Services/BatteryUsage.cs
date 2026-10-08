@@ -26,8 +26,8 @@ internal enum UsageState
 /// </summary>
 internal sealed record UsageEntry(DateTime Start, TimeSpan Duration, bool OnAc, UsageState State, int ChargeMilliwattHours);
 
-/// <summary>An hour of the 24-hour chart: the charge at its end (or now, for this hour), null when Windows has no record of it.</summary>
-internal sealed record BatteryHour(DateTime Start, double? Fraction);
+/// <summary>A point of the charge line: X across the 24 hours and the charge, both 0 to 1.</summary>
+internal sealed record ChargePoint(double X, double Fraction);
 
 /// <summary>A stretch with the charger in, as fractions of the chart's width, 0 to 1.</summary>
 internal sealed record ChargingSpan(double From, double To, bool StartsInside);
@@ -35,7 +35,7 @@ internal sealed record ChargingSpan(double From, double To, bool StartsInside);
 /// <summary>The last 24 hours, as the Battery page draws them.</summary>
 internal sealed record BatteryDay(
     DateTime Start,
-    IReadOnlyList<BatteryHour> Hours,
+    IReadOnlyList<ChargePoint> Line,
     IReadOnlyList<ChargingSpan> Charging,
     TimeSpan ScreenOn,
     TimeSpan ScreenOff,
@@ -92,9 +92,8 @@ internal static class BatteryUsage
     }
 
     /// <summary>
-    /// The 24 hours up to <paramref name="now"/>, in whole hours (the last one
-    /// is the hour now). The charge between two entries is taken as a
-    /// straight line; after the last one it runs to the reading now.
+    /// The 24 hours up to the end of the hour now: the charge as a line through
+    /// each entry (a straight line between two), on to the reading now.
     /// <paramref name="fullChargeMilliwattHours"/> is what 100% means.
     /// </summary>
     public static BatteryDay Build(IReadOnlyList<UsageEntry> entries, DateTime now, int? chargeNow, bool? onAcNow, int fullChargeMilliwattHours)
@@ -108,27 +107,28 @@ internal static class BatteryUsage
         if (chargeNow is int charge && (points.Count == 0 || points[^1].At <= now))
             points.Add((now, charge));
 
-        var hours = new List<BatteryHour>(HoursShown);
+        var total = (end - start).TotalSeconds;
+        var line = new List<ChargePoint>();
 
-        for (var hour = 0; hour < HoursShown; hour++)
-        {
-            var hourStart = start.AddHours(hour);
-            var at = hourStart.AddHours(1) < now ? hourStart.AddHours(1) : now;
-            var fraction = ChargeAt(points, at) is double value && fullChargeMilliwattHours > 0
-                ? Math.Clamp(value / fullChargeMilliwattHours, 0, 1)
-                : (double?)null;
+        // Where the line enters the chart, when the record goes back further.
+        if (points.Count > 0 && points[0].At < start && ChargeAt(points, start) is double atStart)
+            line.Add(new ChargePoint(0, Fraction(atStart, fullChargeMilliwattHours)));
 
-            hours.Add(new BatteryHour(hourStart, fraction));
-        }
+        line.AddRange(points
+            .Where(point => point.At >= start && point.At <= now)
+            .Select(point => new ChargePoint((point.At - start).TotalSeconds / total, Fraction(point.Charge, fullChargeMilliwattHours))));
 
         return new BatteryDay(
             start,
-            hours,
+            line,
             ChargingSpans(entries, start, end, now, onAcNow),
             TimeIn(entries, UsageState.Active, start, now),
             TimeIn(entries, UsageState.ScreenOff, start, now),
             TimeIn(entries, UsageState.Asleep, start, now));
     }
+
+    private static double Fraction(double charge, int full) =>
+        full > 0 ? Math.Clamp(charge / full, 0, 1) : 0;
 
     private static UsageState StateOf(string? type) => type switch
     {

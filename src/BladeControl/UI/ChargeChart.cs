@@ -9,29 +9,31 @@ using System.Windows.Media;
 namespace BladeControl.UI;
 
 /// <summary>
-/// The battery's day as Windows' Settings draws it: a rounded bar per hour
-/// for the charge, guides at 50% and 100%, a soft shade while the charger was
-/// in with a dotted line and a bolt where it was plugged in, and the time
-/// under every few hours. Hovering a bar shows its hour and charge.
+/// The battery's last 24 hours: the charge as a line with a soft fill under
+/// it, faint guides at a quarter, half and three quarters, a shade while the
+/// charger was in with a dotted line and a bolt where it went in, and the
+/// time under every few hours. Hovering shows the time and charge there.
 /// </summary>
-public sealed class BatteryBarChart : FrameworkElement
+public sealed class ChargeChart : FrameworkElement
 {
-    private const double ScaleWidth = 44;   // The 100% and 50% at the left.
+    private const double ScaleWidth = 44;   // The 100%, 50% and 0% at the left.
     private const double TopRoom = 26;      // Above 100%, for the bolts.
-    private const double BottomRoom = 32;   // The ticks and times under the bars.
+    private const double BottomRoom = 32;   // The ticks and times under the line.
     private const double FontSize = 11;
 
-    public static readonly DependencyProperty BarsProperty = Register<IReadOnlyList<double>>(nameof(Bars));
+    public static readonly DependencyProperty PointsProperty = Register<IReadOnlyList<Point>>(nameof(Points));
     public static readonly DependencyProperty ChargingProperty = Register<IReadOnlyList<Point>>(nameof(Charging));
     public static readonly DependencyProperty PlugInsProperty = Register<IReadOnlyList<double>>(nameof(PlugIns));
     public static readonly DependencyProperty TickLabelsProperty = Register<IReadOnlyList<string>>(nameof(TickLabels));
-    public static readonly DependencyProperty BarTipsProperty = Register<IReadOnlyList<string>>(nameof(BarTips));
     public static readonly DependencyProperty AccentProperty = Register<Brush>(nameof(Accent));
     public static readonly DependencyProperty LineBrushProperty = Register<Brush>(nameof(LineBrush));
     public static readonly DependencyProperty TextBrushProperty = Register<Brush>(nameof(TextBrush));
 
-    /// <summary>Each hour's charge, 0 to 1, oldest first; NaN for an hour with no record.</summary>
-    public IReadOnlyList<double>? Bars { get => (IReadOnlyList<double>?)GetValue(BarsProperty); set => SetValue(BarsProperty, value); }
+    public static readonly DependencyProperty StartProperty = DependencyProperty.Register(
+        nameof(Start), typeof(DateTime), typeof(ChargeChart), new PropertyMetadata(default(DateTime)));
+
+    /// <summary>The charge over time: X across the chart and Y the charge, both 0 to 1, oldest first.</summary>
+    public IReadOnlyList<Point>? Points { get => (IReadOnlyList<Point>?)GetValue(PointsProperty); set => SetValue(PointsProperty, value); }
 
     /// <summary>The stretches with the charger in, as X from and Y to, fractions of the width.</summary>
     public IReadOnlyList<Point>? Charging { get => (IReadOnlyList<Point>?)GetValue(ChargingProperty); set => SetValue(ChargingProperty, value); }
@@ -42,8 +44,8 @@ public sealed class BatteryBarChart : FrameworkElement
     /// <summary>The times under the chart, spread evenly from its left edge to its right.</summary>
     public IReadOnlyList<string>? TickLabels { get => (IReadOnlyList<string>?)GetValue(TickLabelsProperty); set => SetValue(TickLabelsProperty, value); }
 
-    /// <summary>What hovering each bar says.</summary>
-    public IReadOnlyList<string>? BarTips { get => (IReadOnlyList<string>?)GetValue(BarTipsProperty); set => SetValue(BarTipsProperty, value); }
+    /// <summary>The time at the left edge; the chart covers 24 hours from it, for the hover tip.</summary>
+    public DateTime Start { get => (DateTime)GetValue(StartProperty); set => SetValue(StartProperty, value); }
 
     public Brush? Accent { get => (Brush?)GetValue(AccentProperty); set => SetValue(AccentProperty, value); }
 
@@ -52,7 +54,7 @@ public sealed class BatteryBarChart : FrameworkElement
     public Brush? TextBrush { get => (Brush?)GetValue(TextBrushProperty); set => SetValue(TextBrushProperty, value); }
 
     private static DependencyProperty Register<T>(string name) =>
-        DependencyProperty.Register(name, typeof(T), typeof(BatteryBarChart), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+        DependencyProperty.Register(name, typeof(T), typeof(ChargeChart), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
     private Rect Plot => new(ScaleWidth, TopRoom, Math.Max(0, ActualWidth - ScaleWidth - 4), Math.Max(0, ActualHeight - TopRoom - BottomRoom));
 
@@ -66,49 +68,73 @@ public sealed class BatteryBarChart : FrameworkElement
             return;
 
         var accent = Accent ?? Brushes.LimeGreen;
-        var line = LineBrush ?? Brushes.DimGray;
+        var lineBrush = LineBrush ?? Brushes.DimGray;
         var text = TextBrush ?? Brushes.Gray;
         var accentColor = accent is SolidColorBrush solid ? solid.Color : Colors.LimeGreen;
 
-        // The background takes the mouse, so a bar's tip shows anywhere in its column.
+        // The background takes the mouse, so the tip shows anywhere over it.
         context.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, ActualWidth, ActualHeight));
 
         // The charger's stretches, shaded from above 100% to the bottom.
-        var shade = Frozen(new SolidColorBrush(Color.FromArgb(22, accentColor.R, accentColor.G, accentColor.B)));
+        var shade = Frozen(new SolidColorBrush(Color.FromArgb(18, accentColor.R, accentColor.G, accentColor.B)));
         foreach (var span in Charging ?? [])
         {
             var from = plot.Left + span.X * plot.Width;
             var to = plot.Left + span.Y * plot.Width;
 
             if (to > from)
-                context.DrawRectangle(shade, null, new Rect(from, plot.Top - TopRoom + 12, to - from, plot.Height + TopRoom - 12));
+                context.DrawRectangle(shade, null, new Rect(from, plot.Top - TopRoom + 12, to - from, plot.Bottom - plot.Top + TopRoom - 12));
         }
 
-        // 100% and 50%.
-        var guide = Frozen(new Pen(line, 1));
-        foreach (var (level, label) in new[] { (1.0, "100%"), (0.5, "50%") })
+        // Dashed guides at a quarter, half and three quarters; 100%, 50% and 0% beside the scale.
+        var dashed = Frozen(new Pen(lineBrush, 1) { DashStyle = new DashStyle([3, 4], 0) });
+        foreach (var level in new[] { 0.25, 0.5, 0.75 })
         {
             var y = Math.Round(plot.Bottom - level * plot.Height) + 0.5;
-            context.DrawLine(guide, new Point(plot.Left - 8, y), new Point(plot.Right, y));
-            var formatted = Text(label, text);
-            context.DrawText(formatted, new Point(plot.Left - 14 - formatted.Width, y - formatted.Height / 2));
+            context.DrawLine(dashed, new Point(plot.Left, y), new Point(plot.Right, y));
         }
 
-        // A bar per hour: rounded, brighter at the top.
-        if (Bars is { Count: > 0 } bars)
+        foreach (var (level, label) in new[] { (1.0, "100%"), (0.5, "50%"), (0.0, "0%") })
         {
-            var slot = plot.Width / bars.Count;
-            var width = Math.Clamp(slot * 0.42, 4, 16);
-            var fill = Frozen(new LinearGradientBrush(accentColor, Darker(accentColor, 0.62), 90));
+            var formatted = Text(label, text);
+            var y = plot.Bottom - level * plot.Height;
+            context.DrawText(formatted, new Point(plot.Left - 10 - formatted.Width, y - formatted.Height / 2));
+        }
 
-            for (var i = 0; i < bars.Count; i++)
+        // The charge: a soft fill fading down, and the line over it.
+        if (Points is { Count: > 0 } points)
+        {
+            var at = points.Select(point => new Point(plot.Left + point.X * plot.Width, plot.Bottom - Math.Clamp(point.Y, 0, 1) * (plot.Height - 2) - 1)).ToList();
+
+            if (at.Count == 1)
             {
-                if (double.IsNaN(bars[i]))
-                    continue;
+                context.DrawEllipse(accent, null, at[0], 2.5, 2.5);
+            }
+            else
+            {
+                var fill = Frozen(new LinearGradientBrush(
+                    Color.FromArgb(70, accentColor.R, accentColor.G, accentColor.B),
+                    Color.FromArgb(0, accentColor.R, accentColor.G, accentColor.B), 90));
 
-                var height = Math.Max(width, Math.Clamp(bars[i], 0, 1) * plot.Height);
-                var x = plot.Left + slot * i + (slot - width) / 2;
-                context.DrawRoundedRectangle(fill, null, new Rect(x, plot.Bottom - height, width, height), width / 2, width / 2);
+                var area = new StreamGeometry();
+                using (var draw = area.Open())
+                {
+                    draw.BeginFigure(new Point(at[0].X, plot.Bottom), isFilled: true, isClosed: true);
+                    draw.PolyLineTo([.. at, new Point(at[^1].X, plot.Bottom)], isStroked: false, isSmoothJoin: false);
+                }
+                area.Freeze();
+                context.DrawGeometry(fill, null, area);
+
+                var path = new StreamGeometry();
+                using (var draw = path.Open())
+                {
+                    draw.BeginFigure(at[0], isFilled: false, isClosed: false);
+                    draw.PolyLineTo(at.Skip(1).ToList(), isStroked: true, isSmoothJoin: true);
+                }
+                path.Freeze();
+
+                var pen = Frozen(new Pen(accent, 2) { LineJoin = PenLineJoin.Round, StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round });
+                context.DrawGeometry(null, pen, path);
             }
         }
 
@@ -119,9 +145,9 @@ public sealed class BatteryBarChart : FrameworkElement
         });
         var bolt = TryFindResource("Icon.Bolt") as Geometry;
 
-        foreach (var at in PlugIns ?? [])
+        foreach (var plugIn in PlugIns ?? [])
         {
-            var x = Math.Round(plot.Left + at * plot.Width) + 0.5;
+            var x = Math.Round(plot.Left + plugIn * plot.Width) + 0.5;
             context.DrawLine(dotted, new Point(x, plot.Top - TopRoom + 2), new Point(x, plot.Bottom));
 
             if (bolt is not null)
@@ -135,7 +161,7 @@ public sealed class BatteryBarChart : FrameworkElement
         }
 
         // The base line, its ticks, and the times under them.
-        context.DrawLine(guide, new Point(plot.Left, plot.Bottom + 0.5), new Point(plot.Right, plot.Bottom + 0.5));
+        context.DrawLine(Frozen(new Pen(lineBrush, 1)), new Point(plot.Left, plot.Bottom + 0.5), new Point(plot.Right, plot.Bottom + 0.5));
 
         if (TickLabels is { Count: > 1 } labels)
         {
@@ -153,7 +179,7 @@ public sealed class BatteryBarChart : FrameworkElement
         }
     }
 
-    // Its own tip, moved with the mouse, so it can change from bar to bar while open.
+    // Its own tip, moved with the mouse, so it can change as it goes along the line.
     private ToolTip? _tip;
 
     protected override void OnMouseMove(MouseEventArgs e)
@@ -161,26 +187,28 @@ public sealed class BatteryBarChart : FrameworkElement
         base.OnMouseMove(e);
 
         var plot = Plot;
-        var at = e.GetPosition(this);
+        var mouse = e.GetPosition(this);
 
-        if (BarTips is not { Count: > 0 } tips || plot.Width <= 0 || at.X < plot.Left || at.X > plot.Right)
+        if (Points is not { Count: > 0 } points || plot.Width <= 0 || mouse.X < plot.Left || mouse.X > plot.Right)
         {
             HideTip();
             return;
         }
 
-        var index = Math.Clamp((int)((at.X - plot.Left) / (plot.Width / tips.Count)), 0, tips.Count - 1);
+        var x = (mouse.X - plot.Left) / plot.Width;
 
-        if (string.IsNullOrEmpty(tips[index]))
+        if (ChargeAt(points, x) is not double charge)
         {
             HideTip();
             return;
         }
+
+        var time = Start.AddHours(24 * x).ToString("t", CultureInfo.CurrentCulture);
 
         _tip ??= new ToolTip { PlacementTarget = this, Placement = PlacementMode.Relative };
-        _tip.Content = tips[index];
-        _tip.HorizontalOffset = at.X + 12;
-        _tip.VerticalOffset = at.Y + 18;
+        _tip.Content = $"{time}  ·  {Math.Round(charge * 100)}%";
+        _tip.HorizontalOffset = mouse.X + 12;
+        _tip.VerticalOffset = mouse.Y + 18;
         _tip.IsOpen = true;
     }
 
@@ -196,13 +224,28 @@ public sealed class BatteryBarChart : FrameworkElement
             _tip.IsOpen = false;
     }
 
+    // The line's height at x, or null outside it.
+    private static double? ChargeAt(IReadOnlyList<Point> points, double x)
+    {
+        if (x < points[0].X || x > points[^1].X)
+            return null;
+
+        for (var i = 1; i < points.Count; i++)
+        {
+            if (x > points[i].X)
+                continue;
+
+            var span = points[i].X - points[i - 1].X;
+            return span <= 0 ? points[i].Y : points[i - 1].Y + (points[i].Y - points[i - 1].Y) * (x - points[i - 1].X) / span;
+        }
+
+        return points[^1].Y;
+    }
+
     private FormattedText Text(string value, Brush brush) =>
         new(value, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
             new Typeface(TextElement.GetFontFamily(this), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal),
             FontSize, brush, VisualTreeHelper.GetDpi(this).PixelsPerDip);
-
-    private static Color Darker(Color color, double factor) =>
-        Color.FromRgb((byte)(color.R * factor), (byte)(color.G * factor), (byte)(color.B * factor));
 
     private static T Frozen<T>(T freezable) where T : Freezable
     {

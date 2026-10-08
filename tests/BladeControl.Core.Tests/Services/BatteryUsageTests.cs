@@ -44,24 +44,36 @@ public class BatteryUsageTests
     }
 
     [Fact]
-    public void Build_HasTwentyFourHoursEndingWithTheHourNow()
+    public void Build_CoversTheTwentyFourHoursEndingWithTheHourNow()
     {
         var day = BatteryUsage.Build(BatteryUsage.Parse(Report), Now, chargeNow: 51498, onAcNow: false, fullChargeMilliwattHours: 56903);
 
-        Assert.Equal(BatteryUsage.HoursShown, day.Hours.Count);
         Assert.Equal(new DateTime(2026, 10, 7, 10, 0, 0), day.Start);
-        Assert.Equal(new DateTime(2026, 10, 8, 9, 0, 0), day.Hours[^1].Start);
     }
 
     [Fact]
-    public void Build_LeavesHoursBeforeTheRecordEmpty_AndEndsWithTheChargeNow()
+    public void Build_DrawsALineThroughEachEntry_EndingWithTheChargeNow()
     {
         var day = BatteryUsage.Build(BatteryUsage.Parse(Report), Now, chargeNow: 51498, onAcNow: false, fullChargeMilliwattHours: 56903);
 
-        // The record starts at 2:20, so the bar for 1:00 to 2:00 has nothing.
-        Assert.Null(day.Hours.Single(hour => hour.Start.Hour == 1).Fraction);
-        Assert.Equal(1.0, day.Hours.Single(hour => hour.Start.Hour == 3).Fraction!.Value, 3);
-        Assert.Equal(51498 / 56903.0, day.Hours[^1].Fraction!.Value, 3);
+        // The record starts at 2:20, so the line starts there, not at the left edge.
+        Assert.Equal(4, day.Line.Count);
+        Assert.Equal((new DateTime(2026, 10, 8, 2, 20, 1) - day.Start).TotalHours / 24, day.Line[0].X, 3);
+        Assert.Equal(1.0, day.Line[0].Fraction, 3);
+        Assert.Equal((Now - day.Start).TotalHours / 24, day.Line[^1].X, 3);
+        Assert.Equal(51498 / 56903.0, day.Line[^1].Fraction, 3);
+    }
+
+    [Fact]
+    public void Build_StartsTheLineAtTheLeftEdge_WhenTheRecordGoesBackFurther()
+    {
+        var entries = BatteryUsage.Parse(Report).Prepend(
+            new UsageEntry(new DateTime(2026, 10, 7, 8, 0, 0), TimeSpan.FromHours(1), false, UsageState.Active, 28451)).ToList();
+
+        var day = BatteryUsage.Build(entries, Now, chargeNow: 51498, onAcNow: false, fullChargeMilliwattHours: 56903);
+
+        Assert.Equal(0, day.Line[0].X);
+        Assert.InRange(day.Line[0].Fraction, 0.5, 1.0);
     }
 
     [Fact]
@@ -86,12 +98,12 @@ public class BatteryUsageTests
     }
 
     [Fact]
-    public void Build_WithNoRecord_ShowsOnlyTheHourNow()
+    public void Build_WithNoRecord_ShowsOnlyTheChargeNow()
     {
         var day = BatteryUsage.Build([], Now, chargeNow: 28451, onAcNow: true, fullChargeMilliwattHours: 56903);
 
-        Assert.All(day.Hours.Take(BatteryUsage.HoursShown - 1), hour => Assert.Null(hour.Fraction));
-        Assert.Equal(0.5, day.Hours[^1].Fraction!.Value, 2);
+        var point = Assert.Single(day.Line);
+        Assert.Equal(0.5, point.Fraction, 2);
         Assert.Single(day.Charging);
     }
 }

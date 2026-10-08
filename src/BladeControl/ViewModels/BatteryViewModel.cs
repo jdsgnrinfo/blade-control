@@ -17,7 +17,7 @@ internal sealed record BatteryFigure(string Name, string Value, string? Caption)
 
 /// <summary>
 /// The Battery page: the charge now and where it is going (power in or out,
-/// time left or to full), the last 24 hours' charge as a bar an hour with
+/// time left or to full), the last 24 hours' charge as a line with
 /// the charger's stretches, and the battery's health (what a full charge
 /// holds against when it was new) with its details. The figures come from
 /// Windows' battery driver, read every two seconds while the page is open;
@@ -80,9 +80,13 @@ internal sealed partial class BatteryViewModel : ObservableObject
 
     // ===== Last 24 hours =====
 
-    /// <summary>Each hour's charge, 0 to 1, oldest first; NaN for an hour Windows has no record of.</summary>
+    /// <summary>The charge over the 24 hours: X across, Y the charge, both 0 to 1.</summary>
     [ObservableProperty]
-    private IReadOnlyList<double> _dayBars = [];
+    private IReadOnlyList<Point> _dayPoints = [];
+
+    /// <summary>The time at the chart's left edge.</summary>
+    [ObservableProperty]
+    private DateTime _dayStart;
 
     /// <summary>The charger's stretches: X from, Y to, as fractions of the chart's width.</summary>
     [ObservableProperty]
@@ -96,17 +100,9 @@ internal sealed partial class BatteryViewModel : ObservableObject
     [ObservableProperty]
     private IReadOnlyList<string> _dayTicks = [];
 
+    /// <summary>Time with the screen on, off and asleep over the 24 hours.</summary>
     [ObservableProperty]
-    private IReadOnlyList<string> _dayTips = [];
-
-    [ObservableProperty]
-    private string _screenOnText = "-";
-
-    [ObservableProperty]
-    private string _screenOffText = "-";
-
-    [ObservableProperty]
-    private string _asleepText = "-";
+    private IReadOnlyList<PanelDetail> _daySummary = [];
 
     /// <summary>False when Windows' battery report could not be read.</summary>
     [ObservableProperty]
@@ -317,17 +313,17 @@ internal sealed partial class BatteryViewModel : ObservableObject
     {
         var culture = CultureInfo.CurrentCulture;
 
-        DayBars = [.. day.Hours.Select(hour => hour.Fraction ?? double.NaN)];
+        DayStart = day.Start;
+        DayPoints = [.. day.Line.Select(point => new Point(point.X, point.Fraction))];
         DayCharging = [.. day.Charging.Select(span => new Point(span.From, span.To))];
         DayPlugIns = [.. day.Charging.Where(span => span.StartsInside).Select(span => span.From)];
         DayTicks = [.. Enumerable.Range(0, 5).Select(step => day.Start.AddHours(step * 6).ToString("t", culture))];
-        DayTips = [.. day.Hours.Select((hour, index) => hour.Fraction is double fraction
-            ? $"{(index == day.Hours.Count - 1 ? L.T("Now") : hour.Start.AddHours(1).ToString("t", culture))}  ·  {Math.Round(fraction * 100)}%"
-            : string.Empty)];
-
-        ScreenOnText = Span(day.ScreenOn);
-        ScreenOffText = Span(day.ScreenOff);
-        AsleepText = Span(day.Asleep);
+        DaySummary =
+        [
+            new PanelDetail(L.T("Screen on"), Span(day.ScreenOn)),
+            new PanelDetail(L.T("Screen off"), Span(day.ScreenOff)),
+            new PanelDetail(L.T("Asleep"), Span(day.Asleep))
+        ];
     }
 
     // "6 h 7 min", or a dash for none, as Settings shows it.
