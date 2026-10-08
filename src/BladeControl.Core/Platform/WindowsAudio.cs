@@ -142,6 +142,99 @@ internal static class WindowsAudio
 
         [PreserveSig]
         int GetDefaultAudioEndpoint(DataFlow dataFlow, Role role, out IMMDevice device);
+
+        [PreserveSig]
+        int GetDevice([MarshalAs(UnmanagedType.LPWStr)] string id, out IMMDevice device);
+
+        [PreserveSig]
+        int RegisterEndpointNotificationCallback(IMMNotificationClient client);
+
+        [PreserveSig]
+        int UnregisterEndpointNotificationCallback(IMMNotificationClient client);
+    }
+
+    [ComImport, Guid("7991EEC9-7E89-4D85-8390-6C703CEC60C0"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    private interface IMMNotificationClient
+    {
+        void OnDeviceStateChanged([MarshalAs(UnmanagedType.LPWStr)] string id, int state);
+
+        void OnDeviceAdded([MarshalAs(UnmanagedType.LPWStr)] string id);
+
+        void OnDeviceRemoved([MarshalAs(UnmanagedType.LPWStr)] string id);
+
+        void OnDefaultDeviceChanged(DataFlow flow, Role role, [MarshalAs(UnmanagedType.LPWStr)] string? id);
+
+        void OnPropertyValueChanged([MarshalAs(UnmanagedType.LPWStr)] string id, PropertyKey key);
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct PropertyKey
+    {
+        public Guid FormatId;
+        public int PropertyId;
+    }
+
+    /// <summary>
+    /// Raises <see cref="Changed"/> when an output device is plugged in, taken out,
+    /// switched on or off, or becomes the default; on Windows' own thread.
+    /// Its name and the like changing are left out.
+    /// </summary>
+    public sealed class DeviceWatcher : IDisposable
+    {
+        private readonly IMMDeviceEnumerator? _enumerator;
+        private readonly Client _client;
+
+        public DeviceWatcher()
+        {
+            _client = new Client(this);
+
+            try
+            {
+                _enumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
+                Marshal.ThrowExceptionForHR(_enumerator.RegisterEndpointNotificationCallback(_client));
+            }
+            catch (Exception exception) when (exception is COMException or InvalidCastException)
+            {
+                AppLog.Error("Could not watch the audio devices.", exception);
+                _enumerator = null;
+            }
+        }
+
+        public event EventHandler? Changed;
+
+        public void Dispose()
+        {
+            try
+            {
+                _enumerator?.UnregisterEndpointNotificationCallback(_client);
+            }
+            catch (COMException)
+            {
+                // Windows has let go already.
+            }
+        }
+
+        private void Raise() => Changed?.Invoke(this, EventArgs.Empty);
+
+        [ComVisible(true)]
+        private sealed class Client(DeviceWatcher owner) : IMMNotificationClient
+        {
+            public void OnDeviceStateChanged(string id, int state) => owner.Raise();
+
+            public void OnDeviceAdded(string id) => owner.Raise();
+
+            public void OnDeviceRemoved(string id) => owner.Raise();
+
+            public void OnDefaultDeviceChanged(DataFlow flow, Role role, string? id)
+            {
+                if (flow == DataFlow.Render && role == Role.Multimedia)
+                    owner.Raise();
+            }
+
+            public void OnPropertyValueChanged(string id, PropertyKey key)
+            {
+            }
+        }
     }
 
     [ComImport, Guid("0BD7A1BE-7A1A-44DB-8397-CC5392387B5E"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

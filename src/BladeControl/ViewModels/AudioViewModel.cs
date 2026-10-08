@@ -25,7 +25,7 @@ namespace BladeControl.ViewModels;
 /// curve starts; changing a band keeps the preset named until Save keeps the
 /// change in it (the app's own presets never change: Save asks for a new name).
 /// </remarks>
-internal sealed partial class AudioViewModel : ObservableObject
+internal sealed partial class AudioViewModel : ObservableObject, IDisposable
 {
     private readonly AppServices _services;
     private readonly Action<string, bool> _report;
@@ -34,6 +34,11 @@ internal sealed partial class AudioViewModel : ObservableObject
 
     // Writes wait a moment after the last change, so a drag writes the file a few times, not on every step.
     private readonly DispatcherTimer _writeDelay = new() { Interval = TimeSpan.FromMilliseconds(150) };
+
+    // Headphones coming and going send several notices at once; the list is read once they settle.
+    private readonly WindowsAudio.DeviceWatcher _deviceWatcher = new();
+    private readonly DispatcherTimer _deviceSettle = new() { Interval = TimeSpan.FromMilliseconds(600) };
+    private bool _pageOpen;
 
     private IReadOnlyList<AudioDevice> _shownDevices = [];
     private string? _deviceId;
@@ -50,6 +55,20 @@ internal sealed partial class AudioViewModel : ObservableObject
         {
             _writeDelay.Stop();
             Commit();
+        };
+
+        // A device plugged in, taken out or made the default shows at once on the open page.
+        _deviceWatcher.Changed += (_, _) => System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            _deviceSettle.Stop();
+            _deviceSettle.Start();
+        });
+        _deviceSettle.Tick += (_, _) =>
+        {
+            _deviceSettle.Stop();
+
+            if (_pageOpen)
+                Refresh();
         };
 
         RefreshPresetList();
@@ -197,6 +216,7 @@ internal sealed partial class AudioViewModel : ObservableObject
     /// <summary>When the page opens: the devices plugged in now, and whether Equalizer APO is ready for the one shown.</summary>
     public void Refresh()
     {
+        _pageOpen = true;
         _shownDevices = WindowsAudio.OutputDevices();
 
         _showing = true;
@@ -222,11 +242,25 @@ internal sealed partial class AudioViewModel : ObservableObject
     /// <summary>As the page closes or the app exits: a change still waiting is written now, not lost.</summary>
     public void Flush()
     {
+        _pageOpen = false;
+
         if (!_writeDelay.IsEnabled)
             return;
 
         _writeDelay.Stop();
         Commit();
+    }
+
+    /// <summary>
+    /// At startup: Equalizer APO's file is written again from the saved
+    /// equalizers, every device's, so what plays always matches what the page shows.
+    /// </summary>
+    public void Restore() => WriteEqualizerApo();
+
+    public void Dispose()
+    {
+        _deviceSettle.Stop();
+        _deviceWatcher.Dispose();
     }
 
     // ===== Commands =====
@@ -410,12 +444,18 @@ internal sealed partial class AudioViewModel : ObservableObject
             AudioDevices = new Dictionary<string, AudioDeviceEq>(_devices, StringComparer.OrdinalIgnoreCase)
         });
 
+        WriteEqualizerApo();
+    }
+
+    private void WriteEqualizerApo()
+    {
         if (EqualizerApo.ConfigFolder() is not { } folder)
             return;
 
         try
         {
             new EqualizerApoWriter(folder).Write(EqualizerApoConfig.Build(_devices));
+            AppLog.Info($"Equalizer written for {_devices.Values.Count(device => device.Enabled)} of {_devices.Count} devices.");
         }
         catch (Exception exception) when (exception is System.IO.IOException or UnauthorizedAccessException)
         {
