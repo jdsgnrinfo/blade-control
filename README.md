@@ -27,13 +27,14 @@ laptop's picture, battery and temperatures.
   controller reports them.
 - English and Spanish, following Windows or the saved setting.
 
-Lighting, Display, Battery, Audio, Optimize and Settings are being moved over
-from Razer Helper next.
+Closing the window keeps it in the tray; a click on its icon opens it again,
+and Exit in the icon's menu ends it.
 
 ## Requirements
 
 - Windows 10 or 11 on a Razer Blade.
-- The [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) (or newer).
+- The [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) (or newer), except
+  for the portable build, which carries .NET inside it.
 
 ## Building
 
@@ -46,6 +47,17 @@ dotnet run --project src/BladeControl
 `BladeControl.exe --screenshot file.png [page]` draws the window into a
 picture a few seconds after it opens, then closes; `page` is one of
 Performance, Lighting, Display, Battery, Audio, Optimize or Settings.
+
+## Portable build
+
+One `BladeControl.exe` that runs from any folder, with nothing to install:
+
+```bash
+dotnet publish src/BladeControl -c Release -p:Portable=true -o dist
+```
+
+The settings and the log stay in `%LOCALAPPDATA%\BladeControl`. With Start at
+login on, Windows starts the exe from wherever it was last opened, in the tray.
 
 ## Layout
 

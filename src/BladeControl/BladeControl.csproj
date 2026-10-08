@@ -17,6 +17,20 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
+  <!--
+    The portable build: one exe that runs on any 64-bit Windows 10 or 11,
+    with .NET inside it, nothing to install:
+    dotnet publish src/BladeControl -c Release -p:Portable=true -o dist
+  -->
+  <PropertyGroup Condition="'$(Portable)' == 'true'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
   <!-- WPF names win: Windows Forms and System.Drawing are only used by name, in the tray icon. -->
   <ItemGroup>
     <Using Remove="System.Windows.Forms" />

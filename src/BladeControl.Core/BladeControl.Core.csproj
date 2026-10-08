@@ -9,6 +9,11 @@
     <RootNamespace>BladeControl.Core</RootNamespace>
   </PropertyGroup>
 
+  <!-- Inside the portable exe there is no room for its symbols. -->
+  <PropertyGroup Condition="'$(Portable)' == 'true'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="System.Management" Version="10.0.12" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="10.0.12" />
