@@ -9,6 +9,10 @@
     <!-- Only for the tray icon (NotifyIcon). -->
     <UseWindowsForms>true</UseWindowsForms>
     <Version>0.1.0</Version>
+    <!-- The name Windows shows: Task Manager, the startup apps, the file's properties. -->
+    <Product>Blade Control</Product>
+    <AssemblyTitle>Blade Control</AssemblyTitle>
+    <Company>Blade Control</Company>
     <!-- Run on a newer .NET too if 10 is not installed. -->
     <RollForward>LatestMajor</RollForward>
     <!-- Small heaps over speed: the app spends most of its time waiting in the tray. -->
