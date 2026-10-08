@@ -97,7 +97,7 @@
             One scroll bar, at the window's right edge. The panel is sticky: it
             follows the scroll so it stays in view (see MainWindow.KeepPanelInView).
         -->
-        <ScrollViewer x:Name="PageScroll" Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+        <ScrollViewer x:Name="PageScroll" ui:SmoothScroll.IsEnabled="True" Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                       Padding="0,0,4,0" ScrollChanged="PageScroll_ScrollChanged">
             <Grid Margin="24,24,20,8">
                 <Grid.ColumnDefinitions>
