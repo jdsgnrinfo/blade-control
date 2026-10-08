@@ -125,27 +125,34 @@
 
     <!-- ===== Window caption buttons ===== -->
 
+    <!--
+        Windows 11's own caption buttons, as Open Shark shows them: 46 by 36,
+        square, flush with the window's top right corner, with grey symbols that
+        turn white on a faint highlight. Close turns red.
+    -->
     <Style x:Key="CaptionButton" TargetType="Button">
         <Setter Property="Width" Value="46" />
-        <Setter Property="Height" Value="40" />
-        <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Foreground" Value="#FF8B8B92" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="FontFamily" Value="{StaticResource Font.Symbols}" />
         <Setter Property="FontSize" Value="10" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+        <Setter Property="Tag" Value="#1AFFFFFF" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="Back" Background="{TemplateBinding Background}" CornerRadius="4">
+                    <Border x:Name="Back" Background="{TemplateBinding Background}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TileHover}" />
+                            <Setter TargetName="Back" Property="Background" Value="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter Property="Foreground" Value="White" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TilePressed}" />
+                            <Setter TargetName="Back" Property="Opacity" Value="0.8" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -154,49 +161,33 @@
     </Style>
 
     <Style x:Key="CloseButton" TargetType="Button" BasedOn="{StaticResource CaptionButton}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border x:Name="Back" Background="{TemplateBinding Background}" CornerRadius="4">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Back" Property="Background" Value="#FFC42B1C" />
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Back" Property="Background" Value="#FF9E2418" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Tag" Value="#FFC42B1C" />
     </Style>
 
     <!-- ===== Navigation ===== -->
 
-    <!-- The sections along the title bar: SYSTEM, AUDIO... grey, the open one white. -->
-    <Style x:Key="TopNav" TargetType="RadioButton">
-        <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
-        <Setter Property="FontSize" Value="15" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="13,0" />
+    <!-- A square page button with a symbol, beside refresh: Settings. Green on a dark tile, solid green when open. -->
+    <Style x:Key="IconTab" TargetType="RadioButton">
+        <Setter Property="Width" Value="40" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Focusable" Value="False" />
-        <Setter Property="GroupName" Value="TopNav" />
-        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="GroupName" Value="SubTab" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
-                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter VerticalAlignment="Center" />
+                    <Border x:Name="Back" Background="{TemplateBinding Background}" CornerRadius="{StaticResource Radius.Control}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.TextSoft}" />
+                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TileHover}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.Accent}" />
+                            <Setter Property="Foreground" Value="{StaticResource Brush.OnAccent}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

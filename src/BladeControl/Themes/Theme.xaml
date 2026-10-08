@@ -38,7 +38,6 @@
         <GradientStop Color="{StaticResource Color.CardTop}" Offset="0" />
         <GradientStop Color="{StaticResource Color.Card}" Offset="1" />
     </LinearGradientBrush>
-    <SolidColorBrush x:Key="Brush.TitleBar" Color="#FF1F1F1F" />
     <SolidColorBrush x:Key="Brush.Tile" Color="{StaticResource Color.Tile}" />
     <SolidColorBrush x:Key="Brush.TileHover" Color="{StaticResource Color.TileHover}" />
     <SolidColorBrush x:Key="Brush.TilePressed" Color="{StaticResource Color.TilePressed}" />

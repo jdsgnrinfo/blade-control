@@ -18,35 +18,31 @@
         The one-pixel glass frame keeps Windows' own shadow, thin border and rounded corners.
     -->
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0,0,0,1" CornerRadius="0" UseAeroCaptionButtons="False" />
+        <WindowChrome CaptionHeight="36" ResizeBorderThickness="6" GlassFrameThickness="0,0,0,1" CornerRadius="0" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
 
     <Grid x:Name="Root">
         <Grid.RowDefinitions>
-            <RowDefinition Height="56" />
+            <RowDefinition Height="36" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- ===== Title bar: mark, settings and the window buttons ===== -->
-        <Grid Grid.Row="0" Background="{StaticResource Brush.TitleBar}">
+        <!-- ===== Title bar: thin and quiet, as in Open Shark: a small mark, the name, and Windows' buttons ===== -->
+        <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" Margin="22,0,0,0">
-                <Path Width="26" Height="26" Data="{StaticResource Icon.Logo}" Fill="{StaticResource Brush.Accent}" Stretch="Uniform" />
-                <TextBlock Text="{ui:T 'Blade Control', Caps=True}" Margin="14,0,8,0" VerticalAlignment="Center"
-                           FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextMuted}" />
+            <StackPanel Orientation="Horizontal" Margin="14,0,0,0">
+                <Path Width="16" Height="16" Data="{StaticResource Icon.Logo}" Fill="{StaticResource Brush.Accent}" Stretch="Uniform" />
+                <TextBlock Text="{ui:T 'Blade Control'}" Margin="8,0,0,1" VerticalAlignment="Center"
+                           FontSize="13" Foreground="{StaticResource Brush.TextMuted}" />
             </StackPanel>
 
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,0,8,0" VerticalAlignment="Center">
-                <RadioButton Style="{StaticResource TopNav}" IsChecked="{Binding IsSettings}" ToolTip="{ui:T 'Settings'}" Padding="12,0">
-                    <TextBlock Text="&#xE713;" FontFamily="{StaticResource Font.Symbols}" FontSize="18" />
-                </RadioButton>
-                <Border Width="12" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
                 <Button Style="{StaticResource CaptionButton}" Content="&#xE921;" Click="Minimize_Click" ToolTip="{ui:T 'Minimize'}" />
                 <Button x:Name="MaximizeButton" Style="{StaticResource CaptionButton}" Content="&#xE922;" Click="Maximize_Click" />
                 <Button Style="{StaticResource CloseButton}" Content="&#xE8BB;" Click="Close_Click" ToolTip="{ui:T 'Close'}" />
@@ -85,8 +81,13 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <Button Grid.Column="2" Style="{StaticResource IconButton}" Content="{StaticResource Icon.Refresh}" Command="{Binding RefreshCommand}"
-                    ToolTip="{ui:T 'Read the laptop again'}" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button Style="{StaticResource IconButton}" Content="{StaticResource Icon.Refresh}" Command="{Binding RefreshCommand}"
+                        ToolTip="{ui:T 'Read the laptop again'}" />
+                <RadioButton Style="{StaticResource IconTab}" Margin="8,0,0,0" IsChecked="{Binding IsSettings}" ToolTip="{ui:T 'Settings'}">
+                    <TextBlock Text="&#xE713;" FontFamily="{StaticResource Font.Symbols}" FontSize="16" />
+                </RadioButton>
+            </StackPanel>
         </Grid>
 
         <Border Grid.Row="1" VerticalAlignment="Bottom" Height="1" Background="{StaticResource Brush.Line}" />
