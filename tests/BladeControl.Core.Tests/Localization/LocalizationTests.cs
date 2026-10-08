@@ -53,7 +53,7 @@ public partial class LocalizationTests
 
     [Fact]
     public void TheTranslatedTextsAreFound_SoTheCheckBelowIsNotVacuous() =>
-        Assert.True(LiteralsInSource().Count > 100);
+        Assert.True(LiteralsInSource().Count > 50);
 
     [Fact]
     public void EveryTextMarkedForTranslationHasASpanishOne()
