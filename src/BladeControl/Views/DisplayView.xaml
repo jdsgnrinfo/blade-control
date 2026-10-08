@@ -26,8 +26,12 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
+                            <!-- The rate's icon, as in Razer Helper; its name under the pointer. -->
                             <RadioButton Style="{StaticResource Tile}" GroupName="RefreshRate" Height="64" Margin="0,0,8,0"
-                                         Content="{Binding Name}" IsChecked="{Binding IsSelected}" />
+                                         IsChecked="{Binding IsSelected}" ToolTip="{Binding Name}">
+                                <Path Data="{Binding Icon}" Height="24" Stretch="Uniform"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                            </RadioButton>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

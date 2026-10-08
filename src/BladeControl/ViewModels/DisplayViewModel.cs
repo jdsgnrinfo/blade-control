@@ -22,6 +22,9 @@ internal sealed partial class RefreshChoice(DisplayRefreshMode mode, string name
 
     public string Name { get; } = name;
 
+    /// <summary>The rate in blocky digits over a row of bars; "A" for Auto.</summary>
+    public System.Windows.Media.Geometry Icon { get; } = UI.RefreshRateIcon.For(mode.FixedHz);
+
     public bool IsSelected
     {
         get => _isSelected;
