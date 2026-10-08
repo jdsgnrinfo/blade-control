@@ -56,6 +56,9 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     /// <summary>The system monitor, under Battery health.</summary>
     public SystemMonitorViewModel Monitor { get; }
 
+    /// <summary>Windows' power plan, under Power mode.</summary>
+    public PowerPlanViewModel Plan { get; } = new();
+
     // ===== What the page shows =====
 
     public bool IsPluggedIn => PowerProfileRules.TreatAsPluggedIn(_services.PowerSource.IsPluggedIn);

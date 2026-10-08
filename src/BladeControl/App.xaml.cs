@@ -106,6 +106,7 @@ public partial class App : Application
         _ = _viewModel.Performance.StartAsync();
         _viewModel.Device.Start();
         _viewModel.Performance.Monitor.Start(); // The first page is Performance.
+        _viewModel.Performance.Plan.Refresh();
 
         if (inTray)
         {

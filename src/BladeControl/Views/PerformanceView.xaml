@@ -6,89 +6,121 @@
     <!-- Two cards side by side, or one under the other in a narrow window. -->
     <ui:AdaptiveColumns>
 
-        <!-- ===== Power mode ===== -->
-        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
-            <StackPanel>
-                <!-- In a narrow window the title wraps to two lines rather than run under the switch. -->
-                <Grid Margin="0,0,0,26" MinHeight="34">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Power mode'}" VerticalAlignment="Center"
-                               TextWrapping="Wrap" Margin="0,0,12,0" />
-                    <Border Grid.Column="1" Style="{StaticResource SegmentStrip}">
-                        <StackPanel Orientation="Horizontal">
-                            <RadioButton Style="{StaticResource Segment}" GroupName="Source" Content="{ui:T 'Plugged In'}" IsChecked="{Binding EditingPluggedIn}" />
-                            <RadioButton Style="{StaticResource Segment}" GroupName="Source" Content="{ui:T 'On Battery'}" IsChecked="{Binding EditingOnBattery}" />
+        <!-- Power mode, and Windows' power plan under it. -->
+        <StackPanel>
+            <!-- ===== Power mode ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <!-- In a narrow window the title wraps to two lines rather than run under the switch. -->
+                    <Grid Margin="0,0,0,26" MinHeight="34">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Power mode'}" VerticalAlignment="Center"
+                                   TextWrapping="Wrap" Margin="0,0,12,0" />
+                        <Border Grid.Column="1" Style="{StaticResource SegmentStrip}">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Source" Content="{ui:T 'Plugged In'}" IsChecked="{Binding EditingPluggedIn}" />
+                                <RadioButton Style="{StaticResource Segment}" GroupName="Source" Content="{ui:T 'On Battery'}" IsChecked="{Binding EditingOnBattery}" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+    
+                    <UniformGrid Columns="3">
+                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="0,0,8,0" Tag="{StaticResource Icon.Silent}"
+                                     Content="{ui:T 'Silent'}" IsChecked="{Binding IsSilent}" IsEnabled="{Binding SilentOffered}" />
+                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="4,0" Tag="{StaticResource Icon.Balanced}"
+                                     Content="{ui:T 'Balanced'}" IsChecked="{Binding IsBalanced}" IsEnabled="{Binding BalancedOffered}" />
+                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="8,0,0,0" Tag="{StaticResource Icon.Custom}"
+                                     Content="{ui:T 'Custom'}" IsChecked="{Binding IsCustom}" IsEnabled="{Binding CustomOffered}"
+                                     ToolTipService.ShowOnDisabled="True" ToolTip="{ui:T 'Custom is available when plugged in.'}" />
+                    </UniformGrid>
+    
+                    <!-- Custom's levels: shown in Custom, changeable on the power source the laptop is on now. -->
+                    <StackPanel Visibility="{Binding IsCustom, Converter={StaticResource Visible}}" Margin="0,30,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <Path Width="15" Height="15" Data="{StaticResource Icon.Cpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,8,0" />
+                            <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'CPU preset'}" />
                         </StackPanel>
-                    </Border>
-                </Grid>
-
-                <UniformGrid Columns="3">
-                    <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="0,0,8,0" Tag="{StaticResource Icon.Silent}"
-                                 Content="{ui:T 'Silent'}" IsChecked="{Binding IsSilent}" IsEnabled="{Binding SilentOffered}" />
-                    <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="4,0" Tag="{StaticResource Icon.Balanced}"
-                                 Content="{ui:T 'Balanced'}" IsChecked="{Binding IsBalanced}" IsEnabled="{Binding BalancedOffered}" />
-                    <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="8,0,0,0" Tag="{StaticResource Icon.Custom}"
-                                 Content="{ui:T 'Custom'}" IsChecked="{Binding IsCustom}" IsEnabled="{Binding CustomOffered}"
-                                 ToolTipService.ShowOnDisabled="True" ToolTip="{ui:T 'Custom is available when plugged in.'}" />
-                </UniformGrid>
-
-                <!-- Custom's levels: shown in Custom, changeable on the power source the laptop is on now. -->
-                <StackPanel Visibility="{Binding IsCustom, Converter={StaticResource Visible}}" Margin="0,30,0,0">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                        <Path Width="15" Height="15" Data="{StaticResource Icon.Cpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,8,0" />
-                        <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'CPU preset'}" />
+                        <UniformGrid Columns="4" IsEnabled="{Binding CanChangeLevels}">
+                            <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="0,0,6,0" Content="{ui:T 'Low'}" IsChecked="{Binding IsCpuLow}" />
+                            <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="3,0" Content="{ui:T 'Medium'}" IsChecked="{Binding IsCpuMedium}" />
+                            <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="3,0" Content="{ui:T 'High'}" IsChecked="{Binding IsCpuHigh}" />
+                            <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="6,0,0,0" Content="{ui:T 'Boost'}" IsChecked="{Binding IsCpuBoost}" />
+                        </UniformGrid>
+    
+                        <StackPanel Orientation="Horizontal" Margin="0,28,0,12">
+                            <Path Width="15" Height="15" Data="{StaticResource Icon.Gpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,8,0" />
+                            <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'GPU preset'}" />
+                        </StackPanel>
+                        <UniformGrid Columns="4" IsEnabled="{Binding CanChangeLevels}">
+                            <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="0,0,6,0" Content="{ui:T 'Low'}" IsChecked="{Binding IsGpuLow}" />
+                            <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="3,0" Content="{ui:T 'Medium'}" IsChecked="{Binding IsGpuMedium}" />
+                            <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="3,0" Content="{ui:T 'High'}" IsChecked="{Binding IsGpuHigh}" />
+                        </UniformGrid>
                     </StackPanel>
-                    <UniformGrid Columns="4" IsEnabled="{Binding CanChangeLevels}">
-                        <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="0,0,6,0" Content="{ui:T 'Low'}" IsChecked="{Binding IsCpuLow}" />
-                        <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="3,0" Content="{ui:T 'Medium'}" IsChecked="{Binding IsCpuMedium}" />
-                        <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="3,0" Content="{ui:T 'High'}" IsChecked="{Binding IsCpuHigh}" />
-                        <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="6,0,0,0" Content="{ui:T 'Boost'}" IsChecked="{Binding IsCpuBoost}" />
-                    </UniformGrid>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,28,0,12">
-                        <Path Width="15" Height="15" Data="{StaticResource Icon.Gpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,8,0" />
-                        <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'GPU preset'}" />
-                    </StackPanel>
-                    <UniformGrid Columns="4" IsEnabled="{Binding CanChangeLevels}">
-                        <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="0,0,6,0" Content="{ui:T 'Low'}" IsChecked="{Binding IsGpuLow}" />
-                        <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="3,0" Content="{ui:T 'Medium'}" IsChecked="{Binding IsGpuMedium}" />
-                        <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="3,0" Content="{ui:T 'High'}" IsChecked="{Binding IsGpuHigh}" />
-                    </UniformGrid>
+    
+                    <Border Style="{StaticResource Separator}" Margin="0,30,0,24" />
+    
+                    <!-- Max fan speed. -->
+                    <Grid Visibility="{Binding HasMaxFan, Converter={StaticResource Visible}}" Margin="0,0,0,24">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0">
+                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Run maximum fan speed'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Text="{Binding MaxFanHint}" Margin="0,6,0,0" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding MaxFan}" IsEnabled="{Binding CanUseMaxFan}" />
+                    </Grid>
+    
+                    <!-- Switching profile with the charger. -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0">
+                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Switch profile with the charger'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0"
+                                       Text="{ui:T 'Plugging in or unplugging applies that power source\'s mode.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding AutoSwitchProfiles}" />
+                    </Grid>
                 </StackPanel>
+            </Border>
 
-                <Border Style="{StaticResource Separator}" Margin="0,30,0,24" />
-
-                <!-- Max fan speed. -->
-                <Grid Visibility="{Binding HasMaxFan, Converter={StaticResource Visible}}" Margin="0,0,0,24">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Run maximum fan speed'}" />
-                        <TextBlock Style="{StaticResource Text.Hint}" Text="{Binding MaxFanHint}" Margin="0,6,0,0" />
-                    </StackPanel>
-                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding MaxFan}" IsEnabled="{Binding CanUseMaxFan}" />
-                </Grid>
-
-                <!-- Switching profile with the charger. -->
+            <!-- ===== Windows' power plan ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top" DataContext="{Binding Plan}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,0,24,0">
-                        <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Switch profile with the charger'}" />
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0"
-                                   Text="{ui:T 'Plugging in or unplugging applies that power source\'s mode.'}" />
+                    <StackPanel Margin="0,0,16,0" VerticalAlignment="Center">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Power plan'}" />
+                        <TextBlock Text="{Binding Hint}" Margin="0,4,0,0" TextWrapping="Wrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Hint}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HintIsError}" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource Brush.Warm}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </StackPanel>
-                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding AutoSwitchProfiles}" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource ActionButton}" Margin="0,0,8,0" Content="{ui:T 'Install Razer Blade plan'}"
+                                Command="{Binding InstallCommand}" Visibility="{Binding CanInstall, Converter={StaticResource Visible}}" />
+                        <ComboBox Style="{StaticResource Dropdown}" MinWidth="170" ItemsSource="{Binding PlanNames}" SelectedIndex="{Binding PlanIndex}" />
+                    </StackPanel>
                 </Grid>
-            </StackPanel>
-        </Border>
+            </Border>
+        </StackPanel>
 
         <!-- Battery health, and the system monitor under it. -->
         <StackPanel>
