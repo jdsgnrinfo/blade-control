@@ -3,171 +3,101 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="clr-namespace:BladeControl.UI">
 
-    <UserControl.Resources>
-        <!-- A boost: from 0 (off) to 10, a step at a time. -->
-        <Style x:Key="BoostSlider" TargetType="ui:SpringSlider">
-            <Setter Property="Minimum" Value="0" />
-            <Setter Property="Maximum" Value="10" />
-            <Setter Property="Step" Value="1" />
-        </Style>
-    </UserControl.Resources>
-
     <!-- Two columns, or one under the other in a narrow window. -->
     <ui:AdaptiveColumns>
 
-        <!-- The device, and its equalizer under it. -->
-        <StackPanel>
-            <!-- ===== Output device ===== -->
-            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
-                <StackPanel>
-                    <Grid Margin="0,0,0,16" MinHeight="34">
-                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Output device'}" VerticalAlignment="Center" />
-                    </Grid>
+        <!-- ===== Output device, and whether Equalizer APO is ready for it ===== -->
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,16" MinHeight="34">
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Output device'}" VerticalAlignment="Center" />
+                </Grid>
 
-                    <ComboBox Style="{StaticResource Dropdown}" ItemsSource="{Binding DeviceNames}" SelectedIndex="{Binding DeviceIndex}"
-                              Visibility="{Binding HasDevice, Converter={StaticResource Visible}}" />
-                    <ContentControl Style="{StaticResource NoteBox}" Content="{ui:T 'No output device is plugged in.'}"
-                                    Visibility="{Binding HasDevice, Converter={StaticResource Hidden}}" />
+                <ComboBox Style="{StaticResource Dropdown}" ItemsSource="{Binding DeviceNames}" SelectedIndex="{Binding DeviceIndex}"
+                          Visibility="{Binding HasDevice, Converter={StaticResource Visible}}" />
+                <ContentControl Style="{StaticResource NoteBox}" Content="{ui:T 'No output device is plugged in.'}"
+                                Visibility="{Binding HasDevice, Converter={StaticResource Hidden}}" />
 
-                    <TextBlock Style="{StaticResource Text.Hint}" Margin="0,10,0,0" TextWrapping="Wrap"
-                               Text="{ui:T 'Picking one makes it the one Windows plays to. Each keeps its own equalizer.'}" />
-                </StackPanel>
-            </Border>
+                <TextBlock Style="{StaticResource Text.Hint}" Margin="0,10,0,0" TextWrapping="Wrap"
+                           Text="{ui:T 'Picking one makes it the one Windows plays to. Each keeps its own equalizer.'}" />
 
-            <!-- ===== Equalizer ===== -->
-            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
-                <StackPanel>
-                    <Grid Margin="0,0,0,16" MinHeight="34">
+                <!-- Why the equalizer cannot play on this device yet, with the way to fix it. -->
+                <Border Margin="0,18,0,0" Padding="14,10" CornerRadius="6" Background="{StaticResource Brush.InfoBox}"
+                        Visibility="{Binding ShowsNotice, Converter={StaticResource Visible}}">
+                    <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Equalizer'}" VerticalAlignment="Center" />
-                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding EqEnabled}" IsEnabled="{Binding HasDevice}"
-                                  VerticalAlignment="Center" />
+                        <Path Width="18" Height="18" Data="{StaticResource Icon.Info}" Stroke="{StaticResource Brush.TextMuted}" StrokeThickness="1.6"
+                              Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,12,0" />
+                        <TextBlock Grid.Column="1" Text="{Binding NoticeText}" FontSize="13" TextWrapping="Wrap" VerticalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{StaticResource Brush.TextSoft}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding NoticeIsError}" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource Brush.Warm}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <Button Grid.Column="2" Style="{StaticResource ActionButton}" Margin="12,0,0,0" Content="{Binding NoticeButton}"
+                                Command="{Binding NoticeActionCommand}" Background="{StaticResource Brush.Accent}" Foreground="{StaticResource Brush.OnAccent}"
+                                Visibility="{Binding NoticeHasButton, Converter={StaticResource Visible}}" />
                     </Grid>
-    
-                    <!-- The preset, and what can be done with it. -->
-                    <Grid IsEnabled="{Binding HasDevice}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <ComboBox Style="{StaticResource Dropdown}" Margin="0,0,8,0" MinWidth="140"
-                                  ItemsSource="{Binding PresetNames}" SelectedIndex="{Binding PresetIndex}" />
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <Button Style="{StaticResource ActionButton}" MinWidth="0" Margin="0,0,6,0" Content="{ui:T 'Reset'}"
-                                    Command="{Binding ResetCommand}" ToolTip="{ui:T 'Back to flat, with the boosts off'}" />
-                            <Button Style="{StaticResource ActionButton}" MinWidth="0" Margin="0,0,6,0" Content="{ui:T 'Save'}" Command="{Binding SaveCommand}" />
-                            <Button Style="{StaticResource ActionButton}" MinWidth="0" Margin="0,0,6,0" Content="{ui:T 'New'}" Command="{Binding NewCommand}" />
-                            <Button Style="{StaticResource ActionButton}" MinWidth="0" Content="{ui:T 'Delete'}" Command="{Binding DeleteCommand}" />
-                        </StackPanel>
-                    </Grid>
-    
-                    <!-- The ten bands. -->
-                    <ui:EqualizerGraph Height="250" Margin="0,18,0,0" Gains="{Binding Gains}"
-                                       Accent="{StaticResource Brush.Accent}" TrackBrush="{StaticResource Brush.Tile}"
-                                       LineBrush="{StaticResource Brush.Line}" TextBrush="{StaticResource Brush.TextMuted}"
-                                       MutedBrush="{StaticResource Brush.TextDisabled}">
-                        <ui:EqualizerGraph.IsEnabled>
-                            <MultiBinding Converter="{x:Static ui:AllTrueConverter.Instance}">
-                                <Binding Path="EqEnabled" />
-                                <Binding Path="HasDevice" />
-                            </MultiBinding>
-                        </ui:EqualizerGraph.IsEnabled>
-                    </ui:EqualizerGraph>
-    
-                    <TextBlock Style="{StaticResource Text.Hint}" Margin="0,10,0,0" TextWrapping="Wrap"
-                               Text="{ui:T 'Drag a band, or scroll over it. A double click puts it back to 0.'}" />
-    
-                    <!-- Why the equalizer cannot play yet, with the way to fix it. -->
-                    <Border Margin="0,18,0,0" Padding="14,10" CornerRadius="6" Background="{StaticResource Brush.InfoBox}"
-                            Visibility="{Binding ShowsNotice, Converter={StaticResource Visible}}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Path Width="18" Height="18" Data="{StaticResource Icon.Info}" Stroke="{StaticResource Brush.TextMuted}" StrokeThickness="1.6"
-                                  Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,12,0" />
-                            <TextBlock Grid.Column="1" Text="{Binding NoticeText}" FontSize="13" TextWrapping="Wrap" VerticalAlignment="Center">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="{StaticResource Brush.TextSoft}" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding NoticeIsError}" Value="True">
-                                                <Setter Property="Foreground" Value="{StaticResource Brush.Warm}" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <Button Grid.Column="2" Style="{StaticResource ActionButton}" Margin="12,0,0,0" Content="{Binding NoticeButton}"
-                                    Command="{Binding NoticeActionCommand}" Background="{StaticResource Brush.Accent}" Foreground="{StaticResource Brush.OnAccent}"
-                                    Visibility="{Binding NoticeHasButton, Converter={StaticResource Visible}}" />
-                        </Grid>
-                    </Border>
-                </StackPanel>
-            </Border>
-        </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
 
-        <!-- The boosts. -->
-        <StackPanel>
-            <!-- ===== Boosts, added to whatever curve plays ===== -->
-            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
-                <StackPanel>
-                    <Grid Margin="0,0,0,16" MinHeight="34">
-                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Sound boosts'}" VerticalAlignment="Center" />
-                    </Grid>
+        <!-- ===== Equalizer ===== -->
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,16" MinHeight="34">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Equalizer'}" VerticalAlignment="Center" />
+                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding EqEnabled}" IsEnabled="{Binding HasDevice}"
+                              VerticalAlignment="Center" />
+                </Grid>
 
-                    <StackPanel>
-                        <StackPanel.IsEnabled>
-                            <MultiBinding Converter="{x:Static ui:AllTrueConverter.Instance}">
-                                <Binding Path="EqEnabled" />
-                                <Binding Path="HasDevice" />
-                            </MultiBinding>
-                        </StackPanel.IsEnabled>
-
-                        <Grid>
-                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Bass enhancer'}" />
-                            <TextBlock Text="{Binding BassBoost}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
-                        </Grid>
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap" Text="{ui:T 'Lifts everything under about 120 Hz.'}" />
-                        <ui:SpringSlider Style="{StaticResource BoostSlider}" Margin="0,6,0,0" Value="{Binding BassBoost}" />
-                        <Grid Margin="0,4,0,0">
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="10" HorizontalAlignment="Right" />
-                        </Grid>
-
-                        <Border Style="{StaticResource Separator}" Margin="0,18" />
-
-                        <Grid>
-                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Dynamic boost'}" />
-                            <TextBlock Text="{Binding DynamicBoost}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
-                        </Grid>
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap" Text="{ui:T 'Brings out both ends, for a fuller, punchier sound.'}" />
-                        <ui:SpringSlider Style="{StaticResource BoostSlider}" Margin="0,6,0,0" Value="{Binding DynamicBoost}" />
-                        <Grid Margin="0,4,0,0">
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="10" HorizontalAlignment="Right" />
-                        </Grid>
-
-                        <Border Style="{StaticResource Separator}" Margin="0,18" />
-
-                        <Grid>
-                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Clarity'}" />
-                            <TextBlock Text="{Binding ClarityBoost}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
-                        </Grid>
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap" Text="{ui:T 'Lifts the mids and treble, for crisper voices and detail.'}" />
-                        <ui:SpringSlider Style="{StaticResource BoostSlider}" Margin="0,6,0,0" Value="{Binding ClarityBoost}" />
-                        <Grid Margin="0,4,0,0">
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
-                            <TextBlock Style="{StaticResource Text.Scale}" Text="10" HorizontalAlignment="Right" />
-                        </Grid>
+                <!-- The preset, and what can be done with it. -->
+                <Grid IsEnabled="{Binding HasDevice}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Style="{StaticResource Dropdown}" Margin="0,0,8,0" MinWidth="140"
+                              ItemsSource="{Binding PresetNames}" SelectedIndex="{Binding PresetIndex}" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Style="{StaticResource ActionButton}" MinWidth="0" Margin="0,0,6,0" Content="{ui:T 'Reset'}"
+                                Command="{Binding ResetCommand}" ToolTip="{ui:T 'Back to flat'}" />
+                        <Button Style="{StaticResource ActionButton}" MinWidth="0" Margin="0,0,6,0" Content="{ui:T 'Save'}" Command="{Binding SaveCommand}" />
+                        <Button Style="{StaticResource ActionButton}" MinWidth="0" Margin="0,0,6,0" Content="{ui:T 'New'}" Command="{Binding NewCommand}" />
+                        <Button Style="{StaticResource ActionButton}" MinWidth="0" Content="{ui:T 'Delete'}" Command="{Binding DeleteCommand}" />
                     </StackPanel>
-                </StackPanel>
-            </Border>
-        </StackPanel>
+                </Grid>
+
+                <!-- The ten bands: up to +12 dB, down to off. -->
+                <ui:EqualizerGraph Height="300" Margin="0,18,0,0" Gains="{Binding Gains}"
+                                   Accent="{StaticResource Brush.Accent}" TrackBrush="{StaticResource Brush.Tile}"
+                                   LineBrush="{StaticResource Brush.Line}" TextBrush="{StaticResource Brush.TextMuted}"
+                                   MutedBrush="{StaticResource Brush.TextDisabled}">
+                    <ui:EqualizerGraph.IsEnabled>
+                        <MultiBinding Converter="{x:Static ui:AllTrueConverter.Instance}">
+                            <Binding Path="EqEnabled" />
+                            <Binding Path="HasDevice" />
+                        </MultiBinding>
+                    </ui:EqualizerGraph.IsEnabled>
+                </ui:EqualizerGraph>
+
+                <TextBlock Style="{StaticResource Text.Hint}" Margin="0,10,0,0" TextWrapping="Wrap"
+                           Text="{ui:T 'Drag a band, or scroll over it. At the bottom it is cut off; a double click puts it back to 0.'}" />
+            </StackPanel>
+        </Border>
     </ui:AdaptiveColumns>
 </UserControl>

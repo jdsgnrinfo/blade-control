@@ -11,8 +11,14 @@ internal static class EqBands
 
     public static int Count => Frequencies.Length;
 
-    /// <summary>How far a band moves up or down, in dB.</summary>
-    public const double Range = 12;
+    /// <summary>How far a band lifts, in dB. More only clips, or costs as much volume in the preamp.</summary>
+    public const double MaxGain = 12;
+
+    /// <summary>How far a band cuts, in dB; at the very bottom it is cut off altogether (see <see cref="CutGain"/>).</summary>
+    public const double MinGain = -24;
+
+    /// <summary>What a band at the bottom is written as: far enough down that nothing of it is heard.</summary>
+    public const double CutGain = -120;
 
     /// <summary>The smallest move, in dB.</summary>
     public const double Step = 0.5;
@@ -23,7 +29,10 @@ internal static class EqBands
 
     /// <summary>A gain kept on the band's range, on a whole step.</summary>
     public static double Snap(double gain) =>
-        Math.Round(Math.Clamp(gain, -Range, Range) / Step, MidpointRounding.AwayFromZero) * Step;
+        Math.Round(Math.Clamp(gain, MinGain, MaxGain) / Step, MidpointRounding.AwayFromZero) * Step;
+
+    /// <summary>A band pulled all the way down: off, not just quieter.</summary>
+    public static bool IsCut(double gain) => gain <= MinGain;
 
     public static double[] Flat() => new double[Count];
 }
@@ -190,9 +199,9 @@ internal static class EqualizerApoConfig
 
             text.AppendLine();
             text.AppendLine($"Device: {DeviceGuid(endpointId)}");
-            text.AppendLine($"Preamp: {Number(-curve.Headroom() + 0.0)} dB"); // + 0.0: never "-0".
+            text.AppendLine($"Preamp: {Number(-Preamp(curve) + 0.0)} dB"); // + 0.0: never "-0".
             text.AppendLine("GraphicEQ: " + string.Join("; ",
-                EqBands.Frequencies.Select((frequency, band) => $"{frequency} {Number(curve.Gains[band])}")));
+                EqBands.Frequencies.Select((frequency, band) => $"{frequency} {Number(EqBands.IsCut(curve.Gains[band]) ? EqBands.CutGain : curve.Gains[band])}")));
 
             foreach (var (filters, boost) in new[] { (EqBoosts.Bass, curve.BassBoost), (EqBoosts.Dynamic, curve.DynamicBoost), (EqBoosts.Clarity, curve.ClarityBoost) })
             {
@@ -206,6 +215,13 @@ internal static class EqualizerApoConfig
 
         return text.ToString();
     }
+
+    // As much down as the loudest frequency goes up, and a decibel more: the
+    // equalizer's filter rings a little past its curve, and a lift right at
+    // full scale is what clips first (in a Bluetooth codec, say). Nothing lifted, nothing taken.
+    private const double PreampMargin = 1;
+
+    private static double Preamp(AudioDeviceEq curve) => curve.Headroom() is var headroom and > 0 ? headroom + PreampMargin : 0;
 
     private static string Number(double value) => value.ToString("0.#", CultureInfo.InvariantCulture);
 }

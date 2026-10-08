@@ -21,7 +21,7 @@ public class EqualizerTests
 
         Assert.StartsWith(EqualizerApoConfig.Marker, text);
         Assert.Contains("Device: {afad2450-a064-4347-82d4-d9dcebb60cdd}", text);
-        Assert.Contains("Preamp: -6 dB", text);
+        Assert.Contains("Preamp: -7 dB", text); // The 6 dB lift, and a decibel to spare.
         Assert.Contains("GraphicEQ: 31 6; 62 5.5; 125 4; 250 2; 500 0; 1000 -1; 2000 0; 4000 1.5; 8000 2.5; 16000 3", text);
     }
 
@@ -54,7 +54,7 @@ public class EqualizerTests
 
         Assert.Equal(10, curve.BassBoost);
         Assert.Equal(0, curve.DynamicBoost);
-        Assert.Equal([12, -12, 1.5, 0, 0, 0, 0, 0, 0, 0], curve.Gains);
+        Assert.Equal([12, -24, 1.5, 0, 0, 0, 0, 0, 0, 0], curve.Gains);
     }
 
     [Fact]
@@ -72,6 +72,18 @@ public class EqualizerTests
         {
             Thread.CurrentThread.CurrentCulture = before;
         }
+    }
+
+    [Fact]
+    public void ABandAtTheBottom_IsCutOffAltogether()
+    {
+        var text = EqualizerApoConfig.Build(new Dictionary<string, AudioDeviceEq>
+        {
+            [Speakers] = new(true, null, [EqBands.MinGain, -12, 0, 0, 0, 0, 0, 0, 0, 0])
+        });
+
+        Assert.Contains("GraphicEQ: 31 -120; 62 -12; 125 0;", text);
+        Assert.Contains("Preamp: 0 dB", text);
     }
 
     [Fact]

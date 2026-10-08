@@ -14,13 +14,12 @@ namespace BladeControl.ViewModels;
 /// <summary>
 /// The Audio page, as in Razer Helper: the output device Windows plays to
 /// (picking another switches Windows to it), and that device's equalizer:
-/// on or off, a preset to start from, ten bands, and Bass enhancer, Dynamic
-/// boost and Clarity added to whatever curve plays. Equalizer APO does the
+/// on or off, a preset to start from, and ten bands. Equalizer APO does the
 /// equalizing; when it is missing, or not hooked into the device, a note
 /// says so with the way to fix it.
 /// </summary>
 /// <remarks>
-/// Each device keeps its own curve and boosts, which play as soon as they
+/// Each device keeps its own curve, which plays as soon as it
 /// change: Equalizer APO reads its file again by itself. A preset is where a
 /// curve starts; changing a band keeps the preset named until Save keeps the
 /// change in it (the app's own presets never change: Save asks for a new name).
@@ -49,7 +48,9 @@ internal sealed partial class AudioViewModel : ObservableObject, IDisposable
         _services = services;
         _report = report;
         _savedPresets = [.. (services.Settings.EqPresets ?? []).Where(preset => !EqPreset.IsBuiltIn(preset.Name))];
-        _devices = new Dictionary<string, AudioDeviceEq>(services.Settings.AudioDevices ?? [], StringComparer.OrdinalIgnoreCase);
+        // The boosts are gone from the page, so none saved from before plays unseen.
+        _devices = (services.Settings.AudioDevices ?? []).ToDictionary(
+            pair => pair.Key, pair => pair.Value with { BassBoost = 0, DynamicBoost = 0, ClarityBoost = 0 }, StringComparer.OrdinalIgnoreCase);
 
         _writeDelay.Tick += (_, _) =>
         {
@@ -144,44 +145,6 @@ internal sealed partial class AudioViewModel : ObservableObject, IDisposable
         }
     }
 
-    private int _bassBoost;
-
-    public int BassBoost
-    {
-        get => _bassBoost;
-        set
-        {
-            if (SetProperty(ref _bassBoost, value))
-                Change(device => device with { BassBoost = value });
-        }
-    }
-
-    private int _dynamicBoost;
-
-    public int DynamicBoost
-    {
-        get => _dynamicBoost;
-        set
-        {
-            if (SetProperty(ref _dynamicBoost, value))
-                Change(device => device with { DynamicBoost = value });
-        }
-    }
-
-    private int _clarityBoost;
-
-    public int ClarityBoost
-    {
-        get => _clarityBoost;
-        set
-        {
-            if (SetProperty(ref _clarityBoost, value))
-                Change(device => device with { ClarityBoost = value });
-        }
-    }
-
-    public int BoostLevels => EqBoosts.Levels;
-
     /// <summary>Save keeps a change in the user's own preset, or asks for a name; nothing to keep, nothing to do.</summary>
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -268,7 +231,7 @@ internal sealed partial class AudioViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void Reset()
     {
-        Change(device => device.WithPreset(EqPreset.BuiltIn[0]) with { BassBoost = 0, DynamicBoost = 0, ClarityBoost = 0 });
+        Change(device => device.WithPreset(EqPreset.BuiltIn[0]));
         ShowCurve();
     }
 
@@ -361,9 +324,6 @@ internal sealed partial class AudioViewModel : ObservableObject, IDisposable
         _showing = true;
         SetProperty(ref _eqEnabled, device.Enabled, nameof(EqEnabled));
         SetProperty(ref _gains, [.. device.Gains], nameof(Gains));
-        SetProperty(ref _bassBoost, device.BassBoost, nameof(BassBoost));
-        SetProperty(ref _dynamicBoost, device.DynamicBoost, nameof(DynamicBoost));
-        SetProperty(ref _clarityBoost, device.ClarityBoost, nameof(ClarityBoost));
         _showing = false;
 
         RefreshPresetList();
