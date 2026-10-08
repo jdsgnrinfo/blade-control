@@ -14,12 +14,12 @@
         <Border Style="{StaticResource Card}" VerticalAlignment="Top">
             <StackPanel>
                 <!-- In a narrow window the title wraps to two lines rather than run under the switch. -->
-                <Grid Margin="0,0,0,26">
+                <Grid Margin="0,0,0,26" MinHeight="38">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Power mode', Caps=True}" VerticalAlignment="Center"
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Power mode'}" VerticalAlignment="Center"
                                TextWrapping="Wrap" Margin="0,0,12,0" />
                     <Border Grid.Column="1" Style="{StaticResource SegmentStrip}">
                         <StackPanel Orientation="Horizontal">
@@ -97,7 +97,10 @@
         <!-- ===== Battery health ===== -->
         <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
             <StackPanel>
-                <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Battery health', Caps=True}" Margin="0,0,0,26" />
+                <!-- As tall as Power mode's header, so the two titles line up. -->
+                <Grid Margin="0,0,0,26" MinHeight="38">
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Battery health'}" VerticalAlignment="Center" />
+                </Grid>
 
                 <!-- A controller that takes a charge limit. -->
                 <StackPanel Visibility="{Binding HasChargeLimit, Converter={StaticResource Visible}}">
