@@ -54,7 +54,7 @@ public class EqualizerTests
 
         Assert.Equal(10, curve.BassBoost);
         Assert.Equal(0, curve.DynamicBoost);
-        Assert.Equal([24, -24, 1.5, 0, 0, 0, 0, 0, 0, 0], curve.Gains);
+        Assert.Equal([6, -6, 1.5, 0, 0, 0, 0, 0, 0, 0], curve.Gains);
     }
 
     [Fact]

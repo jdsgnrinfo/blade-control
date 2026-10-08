@@ -11,11 +11,11 @@ internal static class EqBands
 
     public static int Count => Frequencies.Length;
 
-    /// <summary>How far a band lifts, in dB. Equalizer APO takes any gain; the preamp gives back as much volume as the highest lift.</summary>
-    public const double MaxGain = 24;
+    /// <summary>How far a band lifts, in dB: enough to shape the sound, little enough that the preamp keeps most of the volume.</summary>
+    public const double MaxGain = 6;
 
     /// <summary>How far a band cuts, in dB.</summary>
-    public const double MinGain = -24;
+    public const double MinGain = -6;
 
     /// <summary>The smallest move, in dB.</summary>
     public const double Step = 0.5;

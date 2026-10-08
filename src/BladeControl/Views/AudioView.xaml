@@ -82,7 +82,7 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- The ten bands, from +24 to -24 dB. -->
+                <!-- The ten bands, from +6 to -6 dB. -->
                 <ui:EqualizerGraph Height="300" Margin="0,18,0,0" Gains="{Binding Gains}"
                                    Accent="{StaticResource Brush.Accent}" TrackBrush="{StaticResource Brush.Tile}"
                                    LineBrush="{StaticResource Brush.Line}" TextBrush="{StaticResource Brush.TextMuted}"
