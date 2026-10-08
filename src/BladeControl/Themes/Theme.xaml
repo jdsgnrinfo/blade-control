@@ -65,5 +65,5 @@
     <!-- Sizes. -->
     <CornerRadius x:Key="Radius.Card">6</CornerRadius>
     <CornerRadius x:Key="Radius.Control">4</CornerRadius>
-    <Thickness x:Key="Padding.Card">28,24,28,26</Thickness>
+    <Thickness x:Key="Padding.Card">24</Thickness>
 </ResourceDictionary>
