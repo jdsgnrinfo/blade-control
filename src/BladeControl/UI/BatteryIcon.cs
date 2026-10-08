@@ -52,7 +52,8 @@ public sealed class BatteryIcon : FrameworkElement
     /// <summary>The fill while plugged in.</summary>
     public Brush? Accent { get => (Brush?)GetValue(AccentProperty); set => SetValue(AccentProperty, value); }
 
-    protected override Size MeasureOverride(Size availableSize) => new(38, 18);
+    // As big as it is set to be (Width and Height), never more, so nothing is cut off.
+    protected override Size MeasureOverride(Size availableSize) => new(0, 0);
 
     private static void OnFractionChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
