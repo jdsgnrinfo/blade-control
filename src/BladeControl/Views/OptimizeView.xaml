@@ -1,0 +1,83 @@
+<UserControl x:Class="BladeControl.Views.OptimizeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BladeControl.UI">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== Memory and disk ===== -->
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,12" MinHeight="34">
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Memory and storage'}" VerticalAlignment="Center" />
+                </Grid>
+
+                <ContentControl Content="{Binding Memory}" ContentTemplate="{StaticResource ActionRowTemplate}" />
+                <Border Style="{StaticResource Separator}" Margin="0,12" />
+                <ContentControl Content="{Binding TemporaryFiles}" ContentTemplate="{StaticResource ActionRowTemplate}" />
+                <Border Style="{StaticResource Separator}" Margin="0,12" />
+                <ContentControl Content="{Binding ShaderCache}" ContentTemplate="{StaticResource ActionRowTemplate}" />
+            </StackPanel>
+        </Border>
+
+        <!-- ===== System: the dedicated GPU, hibernation and Razer's software ===== -->
+        <StackPanel Grid.Column="2">
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12" MinHeight="34">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'System'}" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <ContentControl Content="{Binding FreeUpGpu}" ContentTemplate="{StaticResource ActionRowTemplate}" />
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Free up GPU when unplugged'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0"
+                                       Text="{ui:T 'Offers to close apps using the dedicated GPU, to save battery.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding CloseGpuAppsOnUnplug}" />
+                    </Grid>
+
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Hibernation'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{Binding HibernationHint}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding Hibernation}"
+                                  IsEnabled="{Binding HibernationChanging, Converter={x:Static ui:NotConverter.Instance}}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Razer's own software, only once it is known to be installed. -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top"
+                    Visibility="{Binding HasRazerSoftware, Converter={StaticResource Visible}}">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12" MinHeight="34">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Razer software'}" VerticalAlignment="Center" />
+                    </Grid>
+                    <ContentControl Content="{Binding RazerSoftware}" ContentTemplate="{StaticResource ActionRowTemplate}" />
+                    <ContentControl Style="{StaticResource NoteBox}" Margin="0,14,0,0"
+                                    Content="{ui:T 'Tip: uninstall Razer Synapse for the cleanest experience.'}" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

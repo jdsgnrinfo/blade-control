@@ -35,6 +35,16 @@ public sealed class FractionWidthConverter : IMultiValueConverter
         throw new NotSupportedException();
 }
 
+/// <summary>True becomes false and false true: a control enabled while something is not under way.</summary>
+public sealed class NotConverter : IValueConverter
+{
+    public static NotConverter Instance { get; } = new();
+
+    public object Convert(object value, Type targetType, object? parameter, CultureInfo culture) => value is not true;
+
+    public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture) => value is not true;
+}
+
 /// <summary>True hides, false shows: the other side of BooleanToVisibilityConverter.</summary>
 public sealed class InverseVisibilityConverter : IValueConverter
 {

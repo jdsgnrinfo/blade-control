@@ -1,0 +1,117 @@
+<UserControl x:Class="BladeControl.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BladeControl.UI">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== General: language, start with Windows, stay on top ===== -->
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,12" MinHeight="34">
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'General'}" VerticalAlignment="Center" />
+                </Grid>
+
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Language'}" />
+                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Blade Control restarts to change the language.'}" />
+                    </StackPanel>
+                    <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" MinWidth="120" VerticalAlignment="Center"
+                              ItemsSource="{Binding LanguageNames}" SelectedIndex="{Binding LanguageIndex}" />
+                </Grid>
+
+                <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Start at login'}" />
+                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Opens Blade Control when you sign in to Windows.'}" />
+                    </StackPanel>
+                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding StartAtLogin}" />
+                </Grid>
+
+                <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Always on top'}" />
+                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Keeps the window above other windows and games.'}" />
+                    </StackPanel>
+                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding AlwaysOnTop}" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- ===== Maintenance: Razer's drivers, the logs, the reset ===== -->
+        <Border Grid.Column="2" Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,12" MinHeight="34">
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Maintenance'}" VerticalAlignment="Center" />
+                </Grid>
+
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Razer drivers and support'}" />
+                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'BIOS and driver updates for your laptop, on Razer\'s site.'}" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Open'}" Command="{Binding OpenDriversCommand}"
+                            VerticalAlignment="Center" />
+                </Grid>
+
+                <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Logs'}" />
+                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'What Blade Control did and any errors, to share if something goes wrong.'}" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Open'}" Command="{Binding OpenLogsCommand}"
+                            VerticalAlignment="Center" />
+                </Grid>
+
+                <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                <Grid Margin="0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Reset to defaults'}" />
+                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Clears your settings and puts the laptop back in Balanced. Asks first.'}" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Reset'}" Command="{Binding ResetCommand}"
+                            VerticalAlignment="Center" />
+                </Grid>
+
+                <TextBlock Text="{Binding Version}" Style="{StaticResource Text.Scale}" Margin="0,18,0,0" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

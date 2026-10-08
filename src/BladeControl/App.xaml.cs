@@ -2,6 +2,8 @@ using System.Globalization;
 using System.Windows;
 using BladeControl.Core.Diagnostics;
 using BladeControl.Core.Localization;
+using BladeControl.Core.Platform;
+using BladeControl.Core.Services;
 using BladeControl.Services;
 using BladeControl.ViewModels;
 using BladeControl.Views;
@@ -20,6 +22,19 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // The elevated helpers Optimize starts (with Windows' permission) do
+        // their one job and exit, before the single-instance check (the normal
+        // app is already running) and before any window exists.
+        if (RunElevatedCommand(e.Args) is int exitCode)
+        {
+            Shutdown(exitCode);
+            return;
+        }
+
+        // After a restart from Settings, let the old copy finish exiting first:
+        // it still holds the single-instance lock until it is gone.
+        AppRestart.WaitForPreviousCopy(e.Args);
 
         // Two copies would compete for the laptop's HID command channel and
         // overwrite each other's settings file.
@@ -48,6 +63,7 @@ public partial class App : Application
         _viewModel = new MainViewModel(_services);
         var window = new MainWindow { DataContext = _viewModel };
         MainWindow = window;
+        window.Topmost = _services.Settings.AlwaysOnTop;
         window.Show();
 
         _ = _viewModel.Performance.StartAsync();
@@ -72,6 +88,12 @@ public partial class App : Application
             ScreenshotThenClose(window, path, previewCustom ? _viewModel.Performance : null);
         }
     }
+
+    private static int? RunElevatedCommand(string[] args) =>
+        RazerServiceCommand.TryRun(args, new WindowsServiceControl())
+        ?? MemoryCacheCommand.TryRun(args, WindowsMemoryCache.Purge)
+        ?? HibernationCommand.TryRun(args, WindowsHibernation.SetEnabled)
+        ?? WindowsCachesCommand.TryRun(args, WindowsCaches.CleanElevated);
 
     private static async void ScreenshotThenClose(Window window, string path, PerformanceViewModel? previewCustom)
     {
@@ -110,6 +132,7 @@ public partial class App : Application
     {
         _viewModel?.Performance.TurnOffMaxFanBeforeExit();
         _viewModel?.Lighting.Shutdown();
+        _viewModel?.Optimize.Dispose();
         _viewModel?.Device.Stop();
         _services?.Dispose();
         _singleInstance?.Dispose();

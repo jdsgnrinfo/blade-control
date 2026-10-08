@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BladeControl.ViewModels;
 
-/// <summary>The pages, in the row of green tabs; Settings opens from the gear in the title bar.</summary>
+/// <summary>The pages, in the row of green tabs; Settings opens from the gear beside refresh.</summary>
 internal enum AppPage
 {
     Performance,
@@ -28,6 +28,8 @@ internal sealed partial class MainViewModel : ObservableObject
         Services = services;
         Performance = new PerformanceViewModel(services, Report);
         Lighting = new LightingViewModel(services, Report);
+        Optimize = new OptimizeViewModel(services, Report);
+        Settings = new SettingsViewModel(services, Report);
         Device = new DevicePanelViewModel(services);
 
         _statusTimer.Tick += (_, _) =>
@@ -43,6 +45,10 @@ internal sealed partial class MainViewModel : ObservableObject
 
     public LightingViewModel Lighting { get; }
 
+    public OptimizeViewModel Optimize { get; }
+
+    public SettingsViewModel Settings { get; }
+
     public DevicePanelViewModel Device { get; }
 
     [ObservableProperty]
@@ -51,7 +57,7 @@ internal sealed partial class MainViewModel : ObservableObject
     private AppPage _page = AppPage.Performance;
 
     /// <summary>The pages not built yet show that they are coming.</summary>
-    public bool ShowsComingSoon => Page is not (AppPage.Performance or AppPage.Lighting);
+    public bool ShowsComingSoon => Page is not (AppPage.Performance or AppPage.Lighting or AppPage.Optimize or AppPage.Settings);
 
     /// <summary>The open page's name, for the pages that are still to come.</summary>
     public string PageTitle => L.T(Page switch
@@ -80,8 +86,17 @@ internal sealed partial class MainViewModel : ObservableObject
 
     public bool IsSettings { get => Page == AppPage.Settings; set { if (value) Page = AppPage.Settings; } }
 
-    // The Lighting page follows the Fn brightness keys only while it is open.
-    partial void OnPageChanged(AppPage value) => Lighting.SetPageOpen(value == AppPage.Lighting);
+    // The Lighting page follows the Fn brightness keys only while it is open;
+    // Optimize and Settings read again what may have changed since.
+    partial void OnPageChanged(AppPage value)
+    {
+        Lighting.SetPageOpen(value == AppPage.Lighting);
+
+        if (value == AppPage.Optimize)
+            _ = Optimize.RefreshAsync();
+        else if (value == AppPage.Settings)
+            Settings.Refresh();
+    }
 
     [ObservableProperty]
     private string _status = string.Empty;
@@ -91,7 +106,12 @@ internal sealed partial class MainViewModel : ObservableObject
 
     /// <summary>Reads the laptop again: Fn keys or another program may have changed its mode.</summary>
     [RelayCommand]
-    private Task Refresh() => Page == AppPage.Lighting ? Lighting.RefreshAsync() : Performance.RefreshAsync();
+    private Task Refresh() => Page switch
+    {
+        AppPage.Lighting => Lighting.RefreshAsync(),
+        AppPage.Optimize => Optimize.RefreshAsync(),
+        _ => Performance.RefreshAsync()
+    };
 
     private void Report(string message, bool isError)
     {

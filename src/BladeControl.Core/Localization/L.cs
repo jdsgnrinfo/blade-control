@@ -466,5 +466,20 @@ internal static class L
         ["Cycles smoothly through every color."] = "Recorre todos los colores suavemente.",
         ["Animates all colors in a wave across the keyboard."] = "Todos los colores recorren el teclado en una onda.",
         ["The keyboard backlight is off."] = "La luz del teclado está apagada.",
+
+        // Optimize page.
+        ["Memory and storage"] = "Memoria y almacenamiento",
+        ["Razer software"] = "Software de Razer",
+
+        // Settings page.
+        ["General"] = "General",
+        ["Opens Blade Control when you sign in to Windows."] = "Abre Blade Control al iniciar sesión en Windows.",
+        ["Keeps the window above other windows and games."] = "Mantiene la ventana por encima de otras ventanas y juegos.",
+        ["Razer drivers and support"] = "Controladores y soporte de Razer",
+        ["BIOS and driver updates for your laptop, on Razer's site."] = "Actualizaciones de BIOS y controladores para tu portátil, en la web de Razer.",
+        ["Open"] = "Abrir",
+        ["What Blade Control did and any errors, to share if something goes wrong."] = "Lo que hizo Blade Control y sus errores, para compartir si algo falla.",
+        ["Clears your settings and puts the laptop back in Balanced. Asks first."] = "Borra tus ajustes y vuelve a poner el portátil en Equilibrado. Pregunta antes.",
+        ["Blade Control could not restart itself. Please close it and open it again."] = "Blade Control no pudo reiniciarse solo. Ciérralo y vuelve a abrirlo.",
     };
 }

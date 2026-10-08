@@ -42,6 +42,13 @@ internal sealed class AppServices : IDisposable
             "CPU boost",
             Settings.CpuBoostBeforeSilent,
             saved => UpdateSettings(settings => settings with { CpuBoostBeforeSilent = saved }));
+
+        StartupRegistration = new RunKeyStartupRegistration(Environment.ProcessPath ?? string.Empty);
+        RazerSoftware = new RazerSoftwareManager(
+            new RazerServiceManager(new WindowsServiceControl()),
+            new RazerLoginEntryManager(new RunKeyLoginEntries()),
+            new WindowsRazerApps());
+        FactoryReset = new FactoryReset(_settingsService, StartupRegistration, Performance, ChargeLimit);
     }
 
     public AppSettings Settings { get; private set; }
@@ -68,6 +75,14 @@ internal sealed class AppServices : IDisposable
     public KeyboardScreenOffService KeyboardLightsOff { get; }
 
     public SilentPlanOverride SilentBoost { get; }
+
+    /// <summary>Starting with Windows, through the Run key.</summary>
+    public IStartupRegistration StartupRegistration { get; }
+
+    /// <summary>Razer's own services, startup entries and programs, for Optimize.</summary>
+    public RazerSoftwareManager RazerSoftware { get; }
+
+    public FactoryReset FactoryReset { get; }
 
     /// <summary>Changes the settings and writes them to disk straight away.</summary>
     public void UpdateSettings(Func<AppSettings, AppSettings> edit)
