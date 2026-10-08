@@ -28,7 +28,6 @@
                                    Foreground="{StaticResource Brush.Accent}" />
                     </StackPanel>
                 </Grid>
-                <TextBlock Text="{Binding PowerText}" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource Brush.Accent}" />
                 <Border Style="{StaticResource Separator}" Margin="0,24" />
             </StackPanel>
 

@@ -105,9 +105,6 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
     private int? _batteryPercent;
 
     [ObservableProperty]
-    private string _powerText = string.Empty;
-
-    [ObservableProperty]
     private bool _isPluggedIn;
 
     public bool HasBattery => BatteryPercent is not null;
@@ -156,13 +153,6 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
 
             BatteryPercent = _services.PowerSource.BatteryPercent;
             IsPluggedIn = _services.PowerSource.IsPluggedIn != false;
-            PowerText = _services.PowerSource.IsPluggedIn switch
-            {
-                true when BatteryPercent is >= 100 => L.T("Plugged in, fully charged"),
-                true => L.T("Plugged in"),
-                false => L.T("On battery"),
-                null => string.Empty
-            };
         }
         catch (Exception exception)
         {
