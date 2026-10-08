@@ -22,9 +22,9 @@
                 <Grid>
                     <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Battery'}" VerticalAlignment="Center" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <ui:BatteryIcon Width="22" Height="10" Margin="0,0,6,0" VerticalAlignment="Center"
+                        <ui:BatteryIcon Width="24" Height="11" Margin="0,0,6,0" VerticalAlignment="Center"
                                         Fraction="{Binding BatteryFraction}" IsPluggedIn="{Binding IsPluggedIn}" Accent="{StaticResource Brush.Accent}" />
-                        <TextBlock Text="{Binding BatteryText}" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"
+                        <TextBlock Text="{Binding BatteryText}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"
                                    Foreground="{StaticResource Brush.Accent}" />
                     </StackPanel>
                 </Grid>
