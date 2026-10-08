@@ -10,7 +10,7 @@ namespace BladeControl.Services;
 /// <summary>
 /// Blade Control in the notification area, as Razer Helper is: the logo in
 /// the color of the performance mode, its name and the mode on hover, a
-/// double click to open the window and a right click for the menu (Open,
+/// click to open the window and a right click for the menu (Open,
 /// Exit). The app keeps running here after its window is closed.
 /// </summary>
 internal sealed class TrayIcon : IDisposable
@@ -29,7 +29,8 @@ internal sealed class TrayIcon : IDisposable
             Visible = true
         };
 
-        _icon.MouseDoubleClick += (_, e) =>
+        // A click (or a double click) opens the window.
+        _icon.MouseClick += (_, e) =>
         {
             if (e.Button == Forms.MouseButtons.Left)
                 OpenRequested?.Invoke(this, EventArgs.Empty);

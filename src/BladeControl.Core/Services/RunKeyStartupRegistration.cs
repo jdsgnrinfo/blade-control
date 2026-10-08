@@ -15,6 +15,9 @@ internal sealed class RunKeyStartupRegistration(
     string approvedKeyPath = RunKeyStartupRegistration.DefaultApprovedKeyPath) : IStartupRegistration
 {
     internal const string DefaultValueName = "BladeControl";
+
+    /// <summary>Started at sign-in, the app waits in the tray instead of opening its window.</summary>
+    internal const string TrayArgument = "--tray";
     internal const string DefaultRunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
     internal const string DefaultApprovedKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run";
 
@@ -39,8 +42,8 @@ internal sealed class RunKeyStartupRegistration(
         {
             using var runKey = Registry.CurrentUser.CreateSubKey(runKeyPath);
 
-            // Quoted, so a path with spaces is not split at the first space.
-            runKey.SetValue(valueName, $"\"{executablePath}\"");
+            // Quoted, so a path with spaces is not split at the first space; it starts in the tray.
+            runKey.SetValue(valueName, $"\"{executablePath}\" {TrayArgument}");
 
             // A leftover "Disabled" from Task Manager would otherwise keep it off.
             using var approvedKey = Registry.CurrentUser.OpenSubKey(approvedKeyPath, writable: true);

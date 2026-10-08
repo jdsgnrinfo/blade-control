@@ -29,7 +29,7 @@ public sealed class RunKeyStartupRegistrationTests : IDisposable
         Create().SetEnabled(true);
 
         using var key = Registry.CurrentUser.OpenSubKey(RunPath);
-        Assert.Equal($"\"{ExePath}\"", key!.GetValue("RazerHelperTest"));
+        Assert.Equal($"\"{ExePath}\" --tray", key!.GetValue("RazerHelperTest"));
         Assert.True(Create().IsEnabled);
     }
 

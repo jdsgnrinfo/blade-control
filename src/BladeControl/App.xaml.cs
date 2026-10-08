@@ -87,11 +87,22 @@ public partial class App : Application
         if (!screenshot)
             KeepInTray();
 
-        var window = OpenWindow(keepPlacement: !screenshot);
+        // Started at sign-in ("--tray"): it waits in the tray, and the window opens from there.
+        var inTray = !screenshot && e.Args.Contains(RunKeyStartupRegistration.TrayArgument);
+        var window = inTray ? null : OpenWindow(keepPlacement: !screenshot);
 
         _ = _viewModel.Performance.StartAsync();
         _viewModel.Device.Start();
         _viewModel.Performance.Monitor.Start(); // The first page is Performance.
+
+        if (inTray)
+        {
+            _viewModel.SetWindowShown(false);
+            ReleaseMemoryLater();
+        }
+
+        if (!screenshot)
+            RefreshStartupEntry();
         // A screenshot run leaves the screen's rate and colors to the open app.
         if (e.Args is not ["--screenshot", ..])
             _viewModel.Display.Restore();
@@ -106,7 +117,7 @@ public partial class App : Application
 
             // An optional width, to see how the page holds up in a narrow window.
             if (e.Args.Length > 3 && double.TryParse(e.Args[3], out var width))
-                window.Width = Math.Max(window.MinWidth, width);
+                window!.Width = Math.Max(window.MinWidth, width);
 
             // "custom" after the width shows Custom with its levels, without
             // sending anything to the laptop.
@@ -115,7 +126,7 @@ public partial class App : Application
             // "scrolled" scrolls the page to its end first, to see the sticky panel.
             var scrolled = e.Args.Skip(4).Contains("scrolled");
 
-            ScreenshotThenClose(window, path, previewCustom ? _viewModel.Performance : null, scrolled);
+            ScreenshotThenClose(window!, path, previewCustom ? _viewModel.Performance : null, scrolled);
         }
     }
 
@@ -168,6 +179,12 @@ public partial class App : Application
 
         window.DataContext = null;
         _viewModel!.SetWindowShown(false);
+        ReleaseMemoryLater();
+    }
+
+    // A moment after the window has gone (or at a start in the tray), once the app
+    // is idle, the memory goes back to Windows, and a trim keeps it low from then on.
+    private void ReleaseMemoryLater() =>
         _ = Dispatcher.BeginInvoke(async () =>
         {
             await Task.Delay(TimeSpan.FromSeconds(2));
@@ -178,6 +195,20 @@ public partial class App : Application
                 _trimTimer.Start();
             }
         }, DispatcherPriority.ApplicationIdle);
+
+    // An entry made by an older version (or for an exe since moved) is written again,
+    // so sign-in starts this exe, in the tray.
+    private void RefreshStartupEntry()
+    {
+        try
+        {
+            if (_services!.StartupRegistration.IsEnabled)
+                _services.StartupRegistration.SetEnabled(true);
+        }
+        catch (Exception exception) when (exception is UnauthorizedAccessException or System.Security.SecurityException or System.IO.IOException)
+        {
+            AppLog.Error("Could not refresh the start-at-login entry.", exception);
+        }
     }
 
     /// <summary>Brings the window back from the tray, or to the front.</summary>
