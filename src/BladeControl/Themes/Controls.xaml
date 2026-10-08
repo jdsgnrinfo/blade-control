@@ -198,9 +198,9 @@
     <!-- The pages of a section: green words, the open one on a green block. -->
     <Style x:Key="SubTab" TargetType="RadioButton">
         <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
-        <Setter Property="FontSize" Value="21" />
+        <Setter Property="FontSize" Value="18" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="13,3,13,5" />
+        <Setter Property="Padding" Value="12,3,12,4" />
         <Setter Property="Margin" Value="0,0,12,0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="GroupName" Value="SubTab" />
