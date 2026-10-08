@@ -77,9 +77,8 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Charge, last hour'}" VerticalAlignment="Center" />
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Last charge'}" VerticalAlignment="Center" />
                         <TextBlock Grid.Column="1" VerticalAlignment="Center">
-                            <Run Text="{Binding HistoryChange, Mode=OneWay}" FontSize="14" FontWeight="SemiBold" />
                             <Run Text="{Binding HistorySpan, Mode=OneWay}" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" />
                         </TextBlock>
                     </Grid>

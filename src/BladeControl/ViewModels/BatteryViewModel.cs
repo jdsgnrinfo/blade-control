@@ -80,11 +80,7 @@ internal sealed partial class BatteryViewModel : ObservableObject
     [ObservableProperty]
     private IReadOnlyList<Point> _historyPoints = [];
 
-    /// <summary>How much the charge moved over the line, "+8%" or "−12%"; empty with too few readings.</summary>
-    [ObservableProperty]
-    private string _historyChange = string.Empty;
-
-    /// <summary>Over how long, "in 42 min".</summary>
+    /// <summary>How long the line covers, "42 min".</summary>
     [ObservableProperty]
     private string _historySpan = string.Empty;
 
@@ -276,24 +272,16 @@ internal sealed partial class BatteryViewModel : ObservableObject
             1 - (now - sample.At).TotalSeconds / HistoryWindow.TotalSeconds,
             sample.Percent / 100.0))];
 
-        var (firstAt, firstPercent) = _history.Peek();
+        var firstAt = _history.Peek().At;
         var minutes = (int)Math.Round((now - firstAt).TotalMinutes);
 
         if (_history.Count < 2 || minutes < 1)
         {
-            HistoryChange = string.Empty;
             HistorySpan = L.T("Gathering readings");
             return;
         }
 
-        var change = percent - firstPercent;
-        HistoryChange = change switch
-        {
-            > 0 => $"+{change}%",
-            < 0 => $"−{-change}%",
-            _ => "0%"
-        };
-        HistorySpan = L.F("in {0}", BatteryDetailsText.Duration(minutes * 60));
+        HistorySpan = BatteryDetailsText.Duration(minutes * 60);
     }
 
     private static string WattHours(int milliwattHours) =>

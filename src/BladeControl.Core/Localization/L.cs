@@ -492,7 +492,7 @@ internal static class L
 
         // Battery page.
         ["Battery status"] = "Estado de la batería",
-        ["Charge, last hour"] = "Carga, última hora",
+        ["Last charge"] = "Última carga",
         ["60 min ago"] = "Hace 60 min",
         ["Now"] = "Ahora",
         ["Good condition"] = "En buen estado",
@@ -506,7 +506,6 @@ internal static class L
         ["When new"] = "De fábrica",
         ["Full charge now"] = "Carga completa hoy",
         ["Gathering readings"] = "Reuniendo lecturas",
-        ["in {0}"] = "en {0}",
         ["What a full charge holds now, against what it held when new. Batteries lose a little every year."] =
             "Lo que guarda una carga completa hoy frente a cuando era nueva. Las baterías pierden un poco cada año.",
         ["The charge limit is on the Performance page, under Battery health."] =
