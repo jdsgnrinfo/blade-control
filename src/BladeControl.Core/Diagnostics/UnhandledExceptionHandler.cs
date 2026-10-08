@@ -4,7 +4,7 @@ namespace BladeControl.Core.Diagnostics;
 /// <summary>
 /// Decides what to do with an exception nobody caught: always write it to the
 /// log, and tell the user at the right moments. It has no dependency on
-/// Windows or the log file, so the rules can be tested; <c>Program</c> wires
+/// Windows or the log file, so the rules can be tested; <c>App</c> wires
 /// it to the real hooks.
 /// </summary>
 /// <remarks>

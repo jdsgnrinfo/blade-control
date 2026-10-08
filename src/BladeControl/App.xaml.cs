@@ -68,10 +68,22 @@ public partial class App : Application
         }
 
         AppLog.Info("Blade Control starting.");
+        // Every error nobody caught goes to the log; the user hears of it once.
+        var errors = new UnhandledExceptionHandler(AppLog.Error, message => UI.Dialogs.Tell(message, "Blade Control"), AppLog.LogFilePath);
         DispatcherUnhandledException += (_, args) =>
         {
-            AppLog.Error("Unhandled error on the interface thread.", args.Exception);
+            errors.OnRecoverableException(args.Exception);
             args.Handled = true;
+        };
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            if (args.ExceptionObject is Exception exception)
+                errors.OnFatalException(exception);
+        };
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            errors.OnUnobservedTaskException(args.Exception);
+            args.SetObserved();
         };
 
         _services = new AppServices();

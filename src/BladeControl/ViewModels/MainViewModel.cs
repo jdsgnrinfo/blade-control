@@ -62,23 +62,8 @@ internal sealed partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsPerformance), nameof(IsLighting), nameof(IsDisplay), nameof(IsBattery),
-        nameof(IsAudio), nameof(IsOptimize), nameof(IsSettings), nameof(PageTitle), nameof(ShowsComingSoon))]
+        nameof(IsAudio), nameof(IsOptimize), nameof(IsSettings))]
     private AppPage _page = AppPage.Performance;
-
-    /// <summary>The pages not built yet show that they are coming.</summary>
-    public bool ShowsComingSoon => Page is not (AppPage.Performance or AppPage.Lighting or AppPage.Display or AppPage.Battery or AppPage.Audio or AppPage.Optimize or AppPage.Settings);
-
-    /// <summary>The open page's name, for the pages that are still to come.</summary>
-    public string PageTitle => L.T(Page switch
-    {
-        AppPage.Lighting => "Lighting",
-        AppPage.Display => "Display",
-        AppPage.Battery => "Battery",
-        AppPage.Audio => "Audio",
-        AppPage.Optimize => "Optimize",
-        AppPage.Settings => "Settings",
-        _ => "Performance"
-    });
 
     // The radio buttons: setting one to true opens it.
     public bool IsPerformance { get => Page == AppPage.Performance; set { if (value) Page = AppPage.Performance; } }

@@ -1,8 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ui="clr-namespace:BladeControl.UI">
-
-    <ui:FormatConverter x:Key="Format" />
     <BooleanToVisibilityConverter x:Key="Visible" />
     <ui:InverseVisibilityConverter x:Key="Hidden" />
 

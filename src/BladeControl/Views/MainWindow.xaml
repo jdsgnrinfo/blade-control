@@ -127,8 +127,6 @@
                 <views:SettingsView ui:Reveal.OnShow="True" DataContext="{Binding Settings}"
                                     Visibility="{Binding DataContext.IsSettings, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
-                <views:ComingSoonView Visibility="{Binding ShowsComingSoon, Converter={StaticResource Visible}}" />
-
                 <views:DevicePanel x:Name="Panel" Grid.Column="2" DataContext="{Binding Device}" VerticalAlignment="Top"
                                    SizeChanged="Panel_SizeChanged" />
             </Grid>
