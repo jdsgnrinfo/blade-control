@@ -15,6 +15,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         Panel.RenderTransform = _panelShift;
         StateChanged += (_, _) => ShowWindowState();
+        Loaded += (_, _) => ShowWindowState(); // It may open maximized, as it was left.
         SourceInitialized += (_, _) => RoundCorners();
         ShowWindowState();
         FitToScreen();

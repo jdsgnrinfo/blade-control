@@ -69,4 +69,10 @@ internal sealed record AppSettings(
     BladeControl.Core.Services.EqPreset[]? EqPresets = null,
     Dictionary<string, BladeControl.Core.Services.AudioDeviceEq>? AudioDevices = null,
     // The main window's sidebar folded down to its icons, as it was left.
-    bool SidebarCollapsed = false);
+    bool SidebarCollapsed = false,
+    // Where the window was and how big, as it was left (its size before it
+    // was maximized, if it was); null until it has been closed once.
+    WindowPlacement? Window = null);
+
+/// <summary>The window's position and size in device-independent pixels, and whether it was maximized.</summary>
+internal sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool Maximized);

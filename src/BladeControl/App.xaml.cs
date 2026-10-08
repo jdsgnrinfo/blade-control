@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows;
 using BladeControl.Core.Diagnostics;
 using BladeControl.Core.Localization;
+using BladeControl.Core.Models;
 using BladeControl.Core.Platform;
 using BladeControl.Core.Services;
 using BladeControl.Services;
@@ -64,6 +65,12 @@ public partial class App : Application
         var window = new MainWindow { DataContext = _viewModel };
         MainWindow = window;
         window.Topmost = _services.Settings.AlwaysOnTop;
+        RestorePlacement(window, _services.Settings.Window);
+
+        // A screenshot run leaves the size the user left alone.
+        if (e.Args is not ["--screenshot", ..])
+            window.Closing += (_, _) => _services.UpdateSettings(settings => settings with { Window = PlacementOf(window) });
+
         window.Show();
 
         _ = _viewModel.Performance.StartAsync();
@@ -90,6 +97,41 @@ public partial class App : Application
 
             ScreenshotThenClose(window, path, previewCustom ? _viewModel.Performance : null, scrolled);
         }
+    }
+
+    // The window where it was left, as big as it was, if that is still on a screen
+    // (a monitor may have been unplugged since); otherwise centred at its first size.
+    private static void RestorePlacement(Window window, WindowPlacement? placement)
+    {
+        if (placement is not { } saved)
+            return;
+
+        var screen = new Rect(SystemParameters.VirtualScreenLeft, SystemParameters.VirtualScreenTop,
+            SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight);
+        var bounds = new Rect(saved.Left, saved.Top, saved.Width, saved.Height);
+        var visible = Rect.Intersect(screen, bounds);
+
+        if (visible.IsEmpty || visible.Width < 120 || visible.Height < 80)
+            return;
+
+        window.WindowStartupLocation = WindowStartupLocation.Manual;
+        window.Left = saved.Left;
+        window.Top = saved.Top;
+        window.Width = Math.Clamp(saved.Width, window.MinWidth, screen.Width);
+        window.Height = Math.Clamp(saved.Height, window.MinHeight, screen.Height);
+
+        if (saved.Maximized)
+            window.WindowState = WindowState.Maximized;
+    }
+
+    // Maximized, the size before it was maximized is kept, so it comes back to that.
+    private static WindowPlacement PlacementOf(Window window)
+    {
+        var bounds = window.WindowState == WindowState.Normal
+            ? new Rect(window.Left, window.Top, window.Width, window.Height)
+            : window.RestoreBounds;
+
+        return new WindowPlacement(bounds.Left, bounds.Top, bounds.Width, bounds.Height, window.WindowState == WindowState.Maximized);
     }
 
     private static int? RunElevatedCommand(string[] args) =>
