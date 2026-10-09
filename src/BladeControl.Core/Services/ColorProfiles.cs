@@ -10,9 +10,8 @@ internal enum ColorProfile
     Warm,
 
     /// <summary>
-    /// Neutral: a white of about 6500 K, the one photos are edited for. Laptop
-    /// panels run near 7000 K on their own, so a touch of blue comes off; without
-    /// a colorimeter this is an estimate, not a calibration.
+    /// Neutral: a white of about 8000 K. Laptop panels lean warm on their own,
+    /// which throws colors off, so red and green come down a little.
     /// </summary>
     Cool,
 
@@ -42,7 +41,7 @@ internal static class ColorProfiles
         var (red, green, blue) = profile switch
         {
             ColorProfile.Warm => (1.00, 0.90, 0.76),
-            ColorProfile.Cool => (1.00, 1.00, 0.93),
+            ColorProfile.Cool => (0.90, 0.95, 1.00),
             _ => (1.00, 1.00, 1.00)
         };
 
