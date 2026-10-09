@@ -19,6 +19,9 @@ internal static class ExternalLinks
     /// <summary>Equalizer APO's official page, which the Audio page's equalizer needs installed.</summary>
     public static void OpenEqualizerApoDownload() => Open(EqualizerApo.DownloadUrl);
 
+    /// <summary>Windows' Display settings, where a secondary monitor's refresh rate is chosen.</summary>
+    public static void OpenDisplaySettings() => Open("ms-settings:display");
+
     public static void OpenLogFolder() =>
         Open(Path.GetDirectoryName(AppLog.LogFilePath)!);
 

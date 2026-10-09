@@ -9,6 +9,7 @@ using BladeControl.Core.Platform;
 using BladeControl.Core.Services;
 using BladeControl.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 
 namespace BladeControl.ViewModels;
@@ -158,6 +159,17 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private IReadOnlyList<PanelDetail> _panelDetails = [];
 
+    // ===== External display =====
+
+    /// <summary>A monitor is plugged in besides the laptop's own panel.</summary>
+    [ObservableProperty]
+    private bool _hasExternalDisplay;
+
+    [RelayCommand]
+    private static void OpenDisplaySettings() => ExternalLinks.OpenDisplaySettings();
+
+    private void ShowExternalDisplay() => HasExternalDisplay = DisplayTopology.HasExternalDisplay() == true;
+
     // ===== Life cycle =====
 
     /// <summary>At startup: the saved color profile and refresh rate go back on.</summary>
@@ -194,6 +206,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
 
         ShowResolution();
         PanelDetails = ReadPanelDetails();
+        ShowExternalDisplay();
     }
 
     /// <summary>
@@ -327,6 +340,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
             _reapplyTimer.Stop();
             _reapplyTimer.Start();
             ShowResolution();
+            ShowExternalDisplay();
         });
 
     private void OnPowerModeChanged(object? sender, PowerModeChangedEventArgs e)
