@@ -30,11 +30,13 @@ public sealed class ColorProfileTests
     }
 
     [Fact]
-    public void Cool_HasLessRedThanBlue()
+    public void Cool_IsNeutral_RedAndGreenKept_ATouchLessBlue()
     {
-        var (red, _, blue) = At(ColorProfiles.Ramp(ColorProfile.Cool), Levels - 1);
+        var (red, green, blue) = At(ColorProfiles.Ramp(ColorProfile.Cool), Levels - 1);
 
-        Assert.True(red < blue);
+        Assert.Equal(ushort.MaxValue, red);
+        Assert.Equal(ushort.MaxValue, green);
+        Assert.True(blue < green && blue > ushort.MaxValue * 0.9);
     }
 
     [Fact]
