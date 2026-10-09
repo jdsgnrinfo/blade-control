@@ -5,7 +5,7 @@
         xmlns:views="clr-namespace:BladeControl.Views"
         Title="Blade Control"
         Icon="pack://application:,,,/Assets/BladeControl.ico"
-        Width="1000" Height="700" MinWidth="900" MinHeight="700"
+        Width="1000" Height="700" MinWidth="1000" MinHeight="700"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource Brush.Window}"
         Foreground="{StaticResource Brush.Text}"
