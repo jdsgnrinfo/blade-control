@@ -22,15 +22,16 @@
   </PropertyGroup>
 
   <!--
-    The portable build: one exe that runs on any 64-bit Windows 10 or 11,
-    with .NET inside it, nothing to install:
+    The portable build: a folder that runs on any 64-bit Windows 10 or 11,
+    with .NET inside the exe, nothing to install. WPF's few native DLLs sit
+    beside the exe, so nothing is unpacked into the temporary folder to run:
     dotnet publish src/BladeControl -c Release -p:Portable=true -o dist
   -->
   <PropertyGroup Condition="'$(Portable)' == 'true'">
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <DebugType>none</DebugType>
   </PropertyGroup>

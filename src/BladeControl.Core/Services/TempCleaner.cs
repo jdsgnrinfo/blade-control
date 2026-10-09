@@ -18,9 +18,9 @@ internal sealed class TempCleaner
     public static readonly TimeSpan MinimumAge = TimeSpan.FromDays(1);
 
     /// <summary>
-    /// In the temporary folder, where single-file .NET apps (Blade Control's
-    /// portable build among them) unpack themselves to run: a file not yet
-    /// loaded is not held open, and taking it away would break the app later.
+    /// In the temporary folder, where single-file .NET apps unpack themselves
+    /// to run: a file not yet loaded is not held open, and taking it away
+    /// would break the app later.
     /// </summary>
     public const string DotNetUnpacked = ".net";
 

@@ -58,7 +58,9 @@ Performance, Lighting, Display, Battery, Optimize or Settings.
 
 ## Portable build
 
-One `BladeControl.exe` that runs from any folder, with nothing to install:
+A folder that runs from anywhere, with nothing to install: `BladeControl.exe`,
+which carries .NET inside it, and beside it the few native DLLs WPF needs,
+so nothing is unpacked into the temporary folder. Keep the files together.
 
 ```bash
 dotnet publish src/BladeControl -c Release -p:Portable=true -o dist
