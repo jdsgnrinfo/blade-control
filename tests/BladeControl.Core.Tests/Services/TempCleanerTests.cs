@@ -130,6 +130,23 @@ public sealed class TempCleanerTests : IDisposable
     }
 
     [Fact]
+    public void AKeptSubfolder_StaysWhole_WhileEverythingElseGoes()
+    {
+        Write(@".net\App\abc\lib.dll", 70, old: true);
+        Write(@".netcore\new.tmp", 30, old: false);
+        Write("new.tmp", 20, old: false);
+        var cleaner = new TempCleaner([_folder], TimeSpan.Zero, keep: [TempCleaner.DotNetUnpacked]);
+
+        Assert.Equal(new TempFilesResult(2, 50), cleaner.Scan());
+
+        cleaner.Clean();
+
+        Assert.True(File.Exists(Path.Combine(_folder, @".net\App\abc\lib.dll")));
+        Assert.False(File.Exists(Path.Combine(_folder, "new.tmp")));
+        Assert.False(Directory.Exists(Path.Combine(_folder, ".netcore")));
+    }
+
+    [Fact]
     public void AnyFolderExists_OnlyWhenOneIsThere()
     {
         Assert.True(new TempCleaner([Path.Combine(_folder, "missing"), _folder], TimeSpan.Zero).AnyFolderExists);

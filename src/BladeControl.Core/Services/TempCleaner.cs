@@ -4,17 +4,25 @@ namespace BladeControl.Core.Services;
 internal sealed record TempFilesResult(int Files, long Bytes, int Skipped = 0);
 
 /// <summary>
-/// Clears folders of throwaway files: the user's temporary folder (only files
-/// older than a day, so nothing a program set down a moment ago goes) or the
-/// graphics driver's shader caches (everything, as the driver rebuilds them).
-/// Only files Windows lets go of are removed, so one a running program holds
-/// open is left where it is. Links and junctions are never followed, so
-/// nothing outside the folders is ever touched. The folders themselves always stay.
+/// Clears folders of throwaway files: the user's temporary folder or the
+/// graphics driver's shader caches, everything in them, or only files over an
+/// age (Windows Update's downloads). Only files Windows lets go of are
+/// removed, so one a running program holds open is left where it is. Links and
+/// junctions are never followed, so nothing outside the folders is ever
+/// touched, and subfolders named to be kept are left whole. The folders
+/// themselves always stay.
 /// </summary>
 internal sealed class TempCleaner
 {
-    /// <summary>In the temporary folder, files newer than this are left alone.</summary>
+    /// <summary>Where only old files go: files newer than this are left alone.</summary>
     public static readonly TimeSpan MinimumAge = TimeSpan.FromDays(1);
+
+    /// <summary>
+    /// In the temporary folder, where single-file .NET apps (Blade Control's
+    /// portable build among them) unpack themselves to run: a file not yet
+    /// loaded is not held open, and taking it away would break the app later.
+    /// </summary>
+    public const string DotNetUnpacked = ".net";
 
     private static readonly EnumerationOptions Walk = new()
     {
@@ -27,23 +35,35 @@ internal sealed class TempCleaner
     private readonly IReadOnlyList<string> _folders;
     private readonly TimeSpan _minimumAge;
     private readonly TimeProvider _clock;
+    private readonly IReadOnlyList<string> _kept;
 
-    /// <summary>One temporary folder, cleared of files over a day old.</summary>
+    /// <summary>One folder, cleared of files over a day old.</summary>
     public TempCleaner(string folder, TimeProvider? clock = null)
         : this([folder], MinimumAge, clock)
     {
     }
 
     /// <param name="minimumAge">Files newer than this are left alone; zero clears every file that is not in use.</param>
-    public TempCleaner(IReadOnlyList<string> folders, TimeSpan minimumAge, TimeProvider? clock = null)
+    /// <param name="keep">Names of subfolders, right under each folder, left whole.</param>
+    public TempCleaner(IReadOnlyList<string> folders, TimeSpan minimumAge, TimeProvider? clock = null, IReadOnlyList<string>? keep = null)
     {
         _folders = folders;
         _minimumAge = minimumAge;
         _clock = clock ?? TimeProvider.System;
+        _kept = [.. folders.SelectMany(folder => (keep ?? []).Select(name => Path.Combine(folder, name) + Path.DirectorySeparatorChar))];
     }
 
-    /// <summary>The user's temporary folder, %TEMP%.</summary>
-    public static TempCleaner ForCurrentUser() => new(Path.GetTempPath());
+    /// <summary>
+    /// The user's temporary folder, %TEMP%: every file no program holds open,
+    /// however new, since a session leaves its leftovers long before a day is
+    /// up. What .NET apps unpacked there to run stays.
+    /// </summary>
+    public static TempCleaner ForCurrentUser() =>
+        new([Path.GetTempPath()], TimeSpan.Zero, keep: [DotNetUnpacked]);
+
+    private bool IsKept(string path) =>
+        _kept.Any(kept => path.StartsWith(kept, StringComparison.OrdinalIgnoreCase)
+            || (path + Path.DirectorySeparatorChar).Equals(kept, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
     /// The NVIDIA driver's shader caches for the current user, DirectX and
@@ -105,6 +125,10 @@ internal sealed class TempCleaner
                 files++;
                 bytes += length;
             }
+            catch (Exception exception) when (exception is FileNotFoundException or DirectoryNotFoundException)
+            {
+                // Its program took it away meanwhile: nothing left to do, nothing left behind.
+            }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
             {
                 // Held open by a running program, or not the user's: it stays.
@@ -129,6 +153,9 @@ internal sealed class TempCleaner
 
             foreach (var file in new DirectoryInfo(folder).EnumerateFiles("*", Walk))
             {
+                if (IsKept(file.FullName))
+                    continue;
+
                 if (_minimumAge <= TimeSpan.Zero || (file.LastWriteTimeUtc < cutoff && file.CreationTimeUtc < cutoff))
                     yield return file;
             }
@@ -146,6 +173,7 @@ internal sealed class TempCleaner
 
         var folders = new DirectoryInfo(folder)
             .EnumerateDirectories("*", Walk)
+            .Where(each => !IsKept(each.FullName))
             .Where(each => _minimumAge <= TimeSpan.Zero || each.CreationTimeUtc < cutoff)
             .OrderByDescending(each => each.FullName.Length)
             .ToList();
