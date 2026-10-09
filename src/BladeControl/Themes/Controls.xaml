@@ -206,7 +206,8 @@
         </Setter>
     </Style>
 
-    <!-- The page tabs: white at 75% while not chosen, green and underlined under the pointer, on a green block when chosen. -->
+    <!-- The page tabs: white at 75% while not chosen, fading to green under the pointer, on a green block when chosen.
+         The green is a second copy of the words over the first, so only its opacity animates. -->
     <Style x:Key="SubTab" TargetType="RadioButton">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="#BFFFFFFF" />
@@ -223,19 +224,39 @@
                     <Border x:Name="Back" Background="Transparent" CornerRadius="3" Padding="{TemplateBinding Padding}">
                         <Grid>
                             <ContentPresenter VerticalAlignment="Center" />
-                            <Rectangle x:Name="Underline" Height="1.5" VerticalAlignment="Bottom" Margin="0,0,0,-1"
-                                       Fill="{StaticResource Brush.Accent}" Visibility="Hidden" />
+                            <ContentPresenter x:Name="Lit" VerticalAlignment="Center" Opacity="0"
+                                              TextElement.Foreground="{StaticResource Brush.Accent}" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
-                            <Setter TargetName="Underline" Property="Visibility" Value="Visible" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Lit" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.22">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Lit" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.35">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseInOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.Accent}" />
                             <Setter Property="Foreground" Value="{StaticResource Brush.OnAccent}" />
-                            <Setter TargetName="Underline" Property="Visibility" Value="Hidden" />
+                            <Setter TargetName="Lit" Property="Visibility" Value="Hidden" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
