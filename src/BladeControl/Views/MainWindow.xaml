@@ -62,7 +62,6 @@
                 <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Lighting'}" IsChecked="{Binding IsLighting}" />
                 <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Display'}" IsChecked="{Binding IsDisplay}" />
                 <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Battery'}" IsChecked="{Binding IsBattery}" />
-                <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Audio'}" IsChecked="{Binding IsAudio}" />
                 <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Optimize'}" IsChecked="{Binding IsOptimize}" />
             </StackPanel>
 
@@ -117,9 +116,6 @@
 
                 <views:BatteryView ui:Reveal.OnShow="True" DataContext="{Binding Battery}"
                                    Visibility="{Binding DataContext.IsBattery, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
-
-                <views:AudioView ui:Reveal.OnShow="True" DataContext="{Binding Audio}"
-                                 Visibility="{Binding DataContext.IsAudio, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
                 <views:OptimizeView ui:Reveal.OnShow="True" DataContext="{Binding Optimize}"
                                     Visibility="{Binding DataContext.IsOptimize, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />

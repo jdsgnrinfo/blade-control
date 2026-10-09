@@ -42,7 +42,7 @@ public static class SmoothScroll
     {
         var viewer = (ScrollViewer)sender;
 
-        // A list that scrolls itself, or the equalizer, under the pointer keeps the wheel.
+        // A list that scrolls itself under the pointer keeps the wheel.
         if (e.OriginalSource is DependencyObject source && InnerScroller(source, viewer) is not null)
             return;
 
@@ -82,18 +82,13 @@ public static class SmoothScroll
         CompositionTarget.Rendering += Frame;
     }
 
-    // Something between the pointer and the page that takes the wheel itself: a list
-    // that scrolls, or the equalizer.
+    // Something between the pointer and the page that takes the wheel itself: a list that scrolls.
     private static DependencyObject? InnerScroller(DependencyObject source, ScrollViewer page)
     {
         for (var element = source; element is not null && element != page; element = Parent(element))
         {
             if (element is ScrollViewer inner && inner.ScrollableHeight > 0)
                 return inner;
-
-            // The equalizer uses the wheel to move its bands.
-            if (element is EqualizerGraph { IsEnabled: true })
-                return element;
         }
 
         return null;

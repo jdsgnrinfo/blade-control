@@ -31,31 +31,12 @@ laptop's picture, battery and temperatures.
   and a color profile that stays on after the app closes.
 - **Battery**: the charge, power and time left, the last 24 hours from
   Windows' own battery report, and the battery's health.
-- **Audio** *(in testing)*: the output device and a ten-band equalizer, from
-  +6 to -6 dB, with presets. See [Audio](#audio-in-testing) for what it needs.
 - **Optimize**: freeing memory, temporary files and the shader cache, the
   dedicated GPU, hibernation, and Razer's own software.
 - English and Spanish, following Windows or the saved setting.
 
 Closing the window keeps it in the tray; a click on its icon opens it again,
 and Exit in the icon's menu ends it.
-
-## Audio (in testing)
-
-The equalizer is still being tried out. Blade Control does not process sound
-itself: it writes the curves into [Equalizer APO](https://sourceforge.net/projects/equalizerapo/),
-which does. For it to work:
-
-1. Install Equalizer APO (the Audio page links to it while it is missing).
-2. In its Device Selector, which the installer opens, tick every output
-   device the equalizer should work on, then restart Windows.
-3. Open Audio in Blade Control: each device keeps its own curve, which plays
-   as soon as it changes.
-
-A device added later, such as new Bluetooth headphones, has to be ticked
-once the same way: the Audio page says so and opens the Device Selector.
-Blade Control writes Equalizer APO's `config.txt`; the file it found there
-the first time is kept beside it as `config.before-BladeControl.txt`.
 
 ## Requirements
 
@@ -73,7 +54,7 @@ dotnet run --project src/BladeControl
 
 `BladeControl.exe --screenshot file.png [page]` draws the window into a
 picture a few seconds after it opens, then closes; `page` is one of
-Performance, Lighting, Display, Battery, Audio, Optimize or Settings.
+Performance, Lighting, Display, Battery, Optimize or Settings.
 
 ## Portable build
 

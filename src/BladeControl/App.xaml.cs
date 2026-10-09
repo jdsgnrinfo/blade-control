@@ -117,10 +117,7 @@ public partial class App : Application
             RefreshStartupEntry();
         // A screenshot run leaves the screen's rate and colors to the open app.
         if (e.Args is not ["--screenshot", ..])
-        {
             _viewModel.Display.Restore();
-            _viewModel.Audio.Restore();
-        }
 
         // "--screenshot file.png [page] [width] [custom] [scrolled]": draws the window into a picture a few
         // seconds after it opens, then closes. For the README and for checking
@@ -340,8 +337,6 @@ public partial class App : Application
         _viewModel?.Optimize.Dispose();
         _viewModel?.Display.Dispose();
         _viewModel?.Battery.Dispose();
-        _viewModel?.Audio.Flush();
-        _viewModel?.Audio.Dispose();
         _viewModel?.Performance.Monitor.Dispose();
         _viewModel?.Device.Stop();
         _showWindowWait?.Unregister(null);

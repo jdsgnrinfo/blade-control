@@ -64,10 +64,6 @@ internal sealed record AppSettings(
     int LightsOffIdleMinutes = 10,
     bool LightsOffOnLowBattery = false,
     int LightsOffBatteryPercent = 20,
-    // The Audio page: the equalizer presets the user saved, and each output
-    // device's equalizer, by Windows' endpoint id.
-    BladeControl.Core.Services.EqPreset[]? EqPresets = null,
-    Dictionary<string, BladeControl.Core.Services.AudioDeviceEq>? AudioDevices = null,
     // The main window's sidebar folded down to its icons, as it was left.
     bool SidebarCollapsed = false,
     // Where the window was and how big, as it was left (its size before it

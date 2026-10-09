@@ -146,37 +146,7 @@ internal static class L
         ["Turn off lighting when battery is below:"] = "Apagar la iluminación con batería por debajo de:",
         ["{0} min"] = "{0} min",
 
-        // Audio.
-        ["Audio"] = "Audio",
-        ["Output device"] = "Dispositivo de salida",
-        ["No output device"] = "Sin dispositivo de salida",
-        ["Equalizer"] = "Ecualizador",
-        ["Save"] = "Guardar",
-        ["New"] = "Nuevo",
-        ["Delete"] = "Eliminar",
-        ["Cancel"] = "Cancelar",
-        ["Bass enhancer"] = "Refuerzo de graves",
-        ["Dynamic boost"] = "Refuerzo dinámico",
-        ["Clarity"] = "Claridad",
-        ["Back to flat, with the boosts off"] = "Volver a plano, con los refuerzos apagados",
-        ["No output device is plugged in."] = "No hay ningún dispositivo de salida conectado.",
-        ["The equalizer needs Equalizer APO."] = "El ecualizador necesita Equalizer APO.",
-        ["Equalizer APO isn't turned on for this device yet."] = "Equalizer APO aún no está activado en este dispositivo.",
-        ["Turn on for this device"] = "Activar",
-        ["Download Equalizer APO"] = "Descargar Equalizer APO",
-        ["Could not save the equalizer to Equalizer APO."] = "No se pudo guardar el ecualizador en Equalizer APO.",
-        ["The app's own presets can't be deleted."] = "Los perfiles de la app no se pueden eliminar.",
-        ["No changes to save."] = "No hay cambios que guardar.",
-        ["My preset"] = "Mi perfil",
-        ["Save preset"] = "Guardar perfil",
-        ["Give the preset a name."] = "Ponle un nombre al perfil.",
-        ["That name belongs to one of the app's presets. Try another."] = "Ese nombre es de uno de los perfiles de la app. Prueba otro.",
-        ["Flat"] = "Plano",
-        ["Bass boost"] = "Graves",
-        ["Treble boost"] = "Agudos",
-        ["Vocal"] = "Voces",
-        ["Gaming"] = "Juegos",
-        ["Loudness"] = "Sonoridad",
+        // Settings: maintenance.
         ["Maintenance"] = "Mantenimiento",
         ["Razer drivers and support, logs, reset."] = "Drivers y soporte de Razer, registros, restablecer.",
         ["Drivers"] = "Drivers",
@@ -521,11 +491,5 @@ internal static class L
             "Lo que guarda una carga completa hoy frente a cuando era nueva. Las baterías pierden un poco cada año.",
         ["The charge limit is on the Performance page, under Battery health."] =
             "El límite de carga está en la página Rendimiento, en Salud de la batería.",
-
-        // Audio page.
-        ["Picking one makes it the one Windows plays to. Each keeps its own equalizer."] = "Al elegir uno, Windows reproduce por él. Cada uno guarda su propio ecualizador.",
-        ["Could not change the output device."] = "No se pudo cambiar el dispositivo de salida.",
-        ["Back to flat"] = "Volver a plano",
-        ["Drag a band, or scroll over it. A double click puts it back to 0."] = "Arrastra una banda o usa la rueda sobre ella. Doble clic la devuelve a 0.",
     };
 }
