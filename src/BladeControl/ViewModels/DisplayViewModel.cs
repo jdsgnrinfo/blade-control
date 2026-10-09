@@ -41,6 +41,30 @@ internal sealed partial class RefreshChoice(DisplayRefreshMode mode, string name
     internal void Show(bool selected) => SetProperty(ref _isSelected, selected, nameof(IsSelected));
 }
 
+/// <summary>A color profile to pick, as a tile with its icon (see ProfileIconTemplate).</summary>
+internal sealed partial class ProfileChoice(ColorProfile profile, string name, Action<ColorProfile> pick) : ObservableObject
+{
+    private bool _isSelected;
+
+    public ColorProfile Profile { get; } = profile;
+
+    public string Name { get; } = name;
+
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            if (value && !_isSelected)
+                pick(Profile);
+
+            OnPropertyChanged();
+        }
+    }
+
+    internal void Show(bool selected) => SetProperty(ref _isSelected, selected, nameof(IsSelected));
+}
+
 /// <summary>A line of the panel's details: what it is, and its value.</summary>
 internal sealed record PanelDetail(string Name, string Value);
 
@@ -87,7 +111,8 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         RefreshChoices = [.. modes.Select(mode => new RefreshChoice(mode, mode.IsAuto ? L.T("Auto") : mode.Label, PickRate))];
         AutoHint = L.F("Auto uses {0} Hz plugged in and {1} Hz on battery, and waits while a fullscreen game has the screen.", _fastHz, DisplayRefreshMode.OnBatteryHz);
 
-        ProfileNames = [.. Profiles.Select(NameOf)];
+        ProfileChoices = [.. Profiles.Select(profile => new ProfileChoice(profile, NameOf(profile), PickProfile))];
+        ShowProfile(_colors.Current);
 
         _retryTimer.Tick += (_, _) =>
         {
@@ -127,28 +152,35 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
 
     // ===== Color profile =====
 
-    public IReadOnlyList<string> ProfileNames { get; }
+    public IReadOnlyList<ProfileChoice> ProfileChoices { get; }
 
-    private int _profileIndex;
+    /// <summary>The chosen profile's name and what it does, under the tiles.</summary>
+    [ObservableProperty]
+    private string _profileName = string.Empty;
 
-    public int ProfileIndex
+    [ObservableProperty]
+    private string _profileDescription = string.Empty;
+
+    private void PickProfile(ColorProfile profile)
     {
-        get => _profileIndex;
-        set
-        {
-            if (value < 0 || !SetProperty(ref _profileIndex, value))
-                return;
+        ShowProfile(profile);
 
-            var profile = Profiles[value];
+        if (profile == _colors.Current)
+            return;
 
-            if (profile == _colors.Current)
-                return;
+        var applied = _colors.Apply(profile);
+        AppLog.Info(applied ? $"Color profile: {profile}." : $"Color profile {profile} was not taken by every screen.");
+        ProfileStatus = applied ? string.Empty : L.T("This screen does not take it");
+        _services.UpdateSettings(settings => settings with { ColorProfile = ColorProfiles.ToSetting(profile) });
+    }
 
-            var applied = _colors.Apply(profile);
-            AppLog.Info(applied ? $"Color profile: {profile}." : $"Color profile {profile} was not taken by every screen.");
-            ProfileStatus = applied ? string.Empty : L.T("This screen does not take it");
-            _services.UpdateSettings(settings => settings with { ColorProfile = ColorProfiles.ToSetting(profile) });
-        }
+    private void ShowProfile(ColorProfile profile)
+    {
+        foreach (var choice in ProfileChoices)
+            choice.Show(choice.Profile == profile);
+
+        ProfileName = NameOf(profile);
+        ProfileDescription = DescriptionOf(profile);
     }
 
     [ObservableProperty]
@@ -177,8 +209,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     {
         var profile = ColorProfiles.Parse(_services.Settings.ColorProfile);
         _colors.Apply(profile);
-        _profileIndex = Array.IndexOf(Profiles, profile);
-        OnPropertyChanged(nameof(ProfileIndex));
+        ShowProfile(profile);
 
         var saved = DisplayRefreshMode.Parse(_services.Settings.DisplayMode);
 
@@ -357,6 +388,14 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         ColorProfile.Cool => L.T("Cool"),
         ColorProfile.Contrast => L.T("Contrast"),
         _ => L.T("Standard")
+    };
+
+    private static string DescriptionOf(ColorProfile profile) => profile switch
+    {
+        ColorProfile.Warm => L.T("Less blue, easier on the eyes at night."),
+        ColorProfile.Cool => L.T("A crisper, slightly bluer white."),
+        ColorProfile.Contrast => L.T("Deeper darks and brighter lights."),
+        _ => L.T("The colors as the panel shows them.")
     };
 
     private List<PanelDetail> ReadPanelDetails()

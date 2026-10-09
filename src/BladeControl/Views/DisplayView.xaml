@@ -101,23 +101,31 @@
             <!-- ===== Color profile ===== -->
             <Border Style="{StaticResource Card}" VerticalAlignment="Top">
                 <StackPanel>
-                    <Grid Margin="0,0,0,12" MinHeight="34">
+                    <Grid Margin="0,0,0,18" MinHeight="34">
                         <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Color profile'}" VerticalAlignment="Center" />
                     </Grid>
 
-                    <Grid Margin="0,6">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
-                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Screen colors'}" />
-                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Warmer, cooler or with more contrast, on every screen.'}" />
-                            <TextBlock Text="{Binding ProfileStatus}" Style="{StaticResource Text.Status}" />
-                        </StackPanel>
-                        <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" MinWidth="140" VerticalAlignment="Center"
-                                  ItemsSource="{Binding ProfileNames}" SelectedIndex="{Binding ProfileIndex}" />
-                    </Grid>
+                    <!-- As the keyboard's effects: the profiles as tiles, the chosen one's name and what it does under them. -->
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Screen colors'}" HorizontalAlignment="Center" />
+                    <ItemsControl ItemsSource="{Binding ProfileChoices}" HorizontalAlignment="Center" Margin="0,10,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <RadioButton Style="{StaticResource EffectTile}" ContentTemplate="{StaticResource ProfileIconTemplate}"
+                                             GroupName="ColorProfile" Content="{Binding Profile}"
+                                             IsChecked="{Binding IsSelected}" ToolTip="{Binding Name}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="{Binding ProfileName}" HorizontalAlignment="Center" Margin="0,14,0,0" FontSize="15" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding ProfileDescription}" Style="{StaticResource Text.Hint}" HorizontalAlignment="Center"
+                               TextAlignment="Center" Margin="0,4,0,0" />
+                    <TextBlock Text="{Binding ProfileStatus}" Style="{StaticResource Text.Status}" HorizontalAlignment="Center" />
                 </StackPanel>
             </Border>
         </StackPanel>

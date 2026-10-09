@@ -269,6 +269,10 @@ internal static class L
         ["Cool"] = "Frío",
         ["Contrast"] = "Contraste",
         ["This screen does not take it"] = "Esta pantalla no lo admite",
+        ["Less blue, easier on the eyes at night."] = "Menos azul, más descanso para la vista de noche.",
+        ["A crisper, slightly bluer white."] = "Un blanco más nítido y algo más azulado.",
+        ["Deeper darks and brighter lights."] = "Oscuros más profundos y claros más brillantes.",
+        ["The colors as the panel shows them."] = "Los colores tal como los muestra el panel.",
         ["External display"] = "Pantalla externa",
         ["External display detected"] = "Pantalla externa detectada",
         ["No external display"] = "Sin pantalla externa",
@@ -493,7 +497,6 @@ internal static class L
             "Auto usa {0} Hz enchufado y {1} Hz con batería, y espera mientras un juego a pantalla completa ocupa la pantalla.",
         ["Resolution: {0}"] = "Resolución: {0}",
         ["Screen colors"] = "Colores de la pantalla",
-        ["Warmer, cooler or with more contrast, on every screen."] = "Más cálidos, más fríos o con más contraste, en todas las pantallas.",
 
         // Battery page.
         ["Battery status"] = "Estado de la batería",
