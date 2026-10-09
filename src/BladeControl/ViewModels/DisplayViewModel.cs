@@ -384,8 +384,8 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
 
     private static string NameOf(ColorProfile profile) => profile switch
     {
-        ColorProfile.Warm => L.T("Warm"),
-        ColorProfile.Cool => L.T("Cool"),
+        ColorProfile.Warm => L.T("Night light"),
+        ColorProfile.Cool => L.T("Neutral"),
         ColorProfile.Contrast => L.T("Contrast"),
         _ => L.T("Standard")
     };
@@ -393,7 +393,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     private static string DescriptionOf(ColorProfile profile) => profile switch
     {
         ColorProfile.Warm => L.T("Less blue, easier on the eyes at night."),
-        ColorProfile.Cool => L.T("A crisper, slightly bluer white."),
+        ColorProfile.Cool => L.T("A more balanced white, recommended for photo editing."),
         ColorProfile.Contrast => L.T("Deeper darks and brighter lights."),
         _ => L.T("The colors as the panel shows them.")
     };

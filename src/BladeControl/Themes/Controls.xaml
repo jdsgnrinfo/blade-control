@@ -520,13 +520,10 @@
                     <Ellipse Canvas.Left="9.5" Canvas.Top="3" Width="12" Height="12" Stroke="{StaticResource Brush.Accent}" StrokeThickness="2" />
                     <Ellipse Canvas.Left="6" Canvas.Top="9.5" Width="12" Height="12" Stroke="{StaticResource Brush.Accent}" StrokeThickness="2" />
                 </Canvas>
-                <!-- Warm: three waves rising, like heat in the air. -->
-                <Path x:Name="Warm" Visibility="Collapsed" Stroke="{StaticResource Brush.Accent}" StrokeThickness="2.2"
-                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                      Data="M7,20 C5,17 9,15 7,12 C5,9 9,7 7,4
-                            M12,20 C10,17 14,15 12,12 C10,9 14,7 12,4
-                            M17,20 C15,17 19,15 17,12 C15,9 19,7 17,4" />
-                <!-- Cool: a hexagon, like a crystal, with a small one filled inside. -->
+                <!-- Warm (Night light): a crescent moon. -->
+                <Path x:Name="Warm" Visibility="Collapsed" Fill="{StaticResource Brush.Accent}"
+                      Data="M21,12.8 A9,9 0 1 1 11.2,3 A7,7 0 0 0 21,12.8 Z" />
+                <!-- Cool (Neutral): a hexagon with a small one filled inside. -->
                 <Canvas x:Name="Cool" Visibility="Collapsed">
                     <Path Stroke="{StaticResource Brush.Accent}" StrokeThickness="2.2" StrokeLineJoin="Round"
                           Data="M12,2.5 L20.2,7.25 L20.2,16.75 L12,21.5 L3.8,16.75 L3.8,7.25 Z" />
