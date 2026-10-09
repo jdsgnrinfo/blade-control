@@ -206,7 +206,7 @@
         </Setter>
     </Style>
 
-    <!-- The page tabs: white at 75% while not chosen, full white on a darker ground under the pointer, green when chosen. -->
+    <!-- The page tabs: white at 75% while not chosen, green and underlined under the pointer, on a green block when chosen. -->
     <Style x:Key="SubTab" TargetType="RadioButton">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="#BFFFFFFF" />
@@ -221,16 +221,21 @@
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
                     <Border x:Name="Back" Background="Transparent" CornerRadius="3" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter VerticalAlignment="Center" />
+                        <Grid>
+                            <ContentPresenter VerticalAlignment="Center" />
+                            <Rectangle x:Name="Underline" Height="1.5" VerticalAlignment="Bottom" Margin="0,0,0,-1"
+                                       Fill="{StaticResource Brush.Accent}" Visibility="Hidden" />
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Back" Property="Background" Value="#FF181818" />
-                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
+                            <Setter TargetName="Underline" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.Accent}" />
                             <Setter Property="Foreground" Value="{StaticResource Brush.OnAccent}" />
+                            <Setter TargetName="Underline" Property="Visibility" Value="Hidden" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
