@@ -11,7 +11,7 @@ namespace BladeControl.UI;
 
 /// <summary>
 /// The app's slider, as Razer Helper's: a round-ended track filling in green,
-/// a dot at each step when there are few, and a white rounded-square thumb
+/// a dot at each step when there are few, and a white round thumb
 /// with a soft shadow. It moves on springs: the thumb follows the pointer exactly
 /// and grows a little while held; a click on the track sends it over from
 /// where it was; a release with speed carries it at most a step further
@@ -28,9 +28,8 @@ namespace BladeControl.UI;
 /// </remarks>
 public sealed class SpringSlider : RangeBase
 {
-    private const double ThumbRadius = 9;   // Half the thumb's width; it is 18 by 22, as before.
-    private const double ThumbHalfHeight = 11;
-    private const double ThumbCorner = 3;
+    private const double ThumbRadius = 9;   // The thumb is a circle 18 across.
+    private const double ThumbHalfHeight = ThumbRadius;
     private const double TrackHeight = 6;
     private const double Inset = 16;       // Room at each end for the grown thumb and its stretch.
     private const double Stretch = 5;      // How far past an end the thumb can be pulled.
@@ -376,7 +375,7 @@ public sealed class SpringSlider : RangeBase
             }
         }
 
-        // The thumb: a soft halo while pointed at, a green ring after a key, a shadow, and the white rounded square.
+        // The thumb: a soft halo while pointed at, a green ring after a key, a shadow, and the white circle.
         var halfWidth = ThumbRadius * _lift.Position;
         var halfHeight = ThumbHalfHeight * _lift.Position;
         var center = new Point(thumbX, y);
@@ -442,11 +441,10 @@ public sealed class SpringSlider : RangeBase
         context.Pop();
     }
 
-    // The thumb's shape at a size: a rounded square, its corners growing with its rings.
+    // The thumb's shape at a size: a circle, or an oval when it is drawn wider than tall.
     private static void Thumb(DrawingContext context, Brush brush, Point center, double halfWidth, double halfHeight)
     {
-        var corner = ThumbCorner + (halfHeight - ThumbHalfHeight > 0 ? (halfHeight - ThumbHalfHeight) * 0.5 : 0);
-        context.DrawRoundedRectangle(brush, null, new Rect(center.X - halfWidth, center.Y - halfHeight, 2 * halfWidth, 2 * halfHeight), corner, corner);
+        context.DrawEllipse(brush, null, center, halfWidth, halfHeight);
     }
 
     private static void Pill(DrawingContext context, Brush brush, Rect bounds)

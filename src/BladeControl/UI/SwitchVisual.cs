@@ -6,8 +6,8 @@ using System.Windows.Media;
 namespace BladeControl.UI;
 
 /// <summary>
-/// What the Switch style draws: the app's track (dark, green when on) and
-/// square-cornered knob (grey off, white on), moving as Razer Helper's
+/// What the Switch style draws: the app's pill-shaped track (dark, green when on)
+/// and round knob (grey off, white on), moving as Razer Helper's
 /// switch does. Pressing (the mouse or Space) stretches the knob towards the
 /// other side, keeping its own edge where it is; letting go sends it across
 /// on a spring that lands without overshooting, while the green fades in or
@@ -19,10 +19,10 @@ public sealed class SwitchVisual : FrameworkElement
 {
     private const double TrackWidth = 46;
     private const double TrackHeight = 24;
-    private const double TrackCorner = 5;
+    private const double TrackCorner = TrackHeight / 2;
     private const double Inset = 3;
     private const double KnobSize = 18;
-    private const double KnobCorner = 3;
+    private const double KnobCorner = KnobSize / 2;
     private const double PressStretch = 5;   // How far the knob widens towards the other side while pressed.
     private const double PulseSeconds = 0.22; // The stretch a change without a press gives: up to 16% wider and back.
     private const double PulseWidth = 0.16;
