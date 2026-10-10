@@ -189,7 +189,7 @@ internal static class L
         // Performance.
         ["System monitor"] = "Monitor del sistema",
         ["Balanced"] = "Equilibrado",
-        ["Gaming"] = "Juego",
+        ["Gaming"] = "Gaming",
         ["Custom"] = "Personalizado",
         ["Speed"] = "Velocidad",
         ["Temperature"] = "Temperatura",
@@ -451,6 +451,12 @@ internal static class L
         ["Razer software"] = "Software de Razer",
 
         // Settings page.
+        ["Experimental"] = "Experimental",
+        ["Gaming instead of Balanced"] = "Gaming en lugar de Equilibrado",
+        ["Plugged in, Balanced becomes the firmware's Gaming mode: more power, more heat and fan. Turns itself off if this laptop does not have it."] =
+            "Con el cargador, Equilibrado pasa a ser el modo Gaming del firmware: más potencia, más calor y ventilador. Se apaga solo si este portátil no lo tiene.",
+        ["Gaming takes Balanced's place while plugged in."] = "Gaming ocupa el lugar de Equilibrado con el cargador conectado.",
+        ["This laptop does not support Gaming mode."] = "Este portátil no admite el modo Gaming.",
         ["General"] = "General",
         ["Opens Blade Control when you sign in to Windows."] = "Abre Blade Control al iniciar sesión en Windows.",
         ["Keeps the window above other windows and games."] = "Mantiene la ventana por encima de otras ventanas y juegos.",

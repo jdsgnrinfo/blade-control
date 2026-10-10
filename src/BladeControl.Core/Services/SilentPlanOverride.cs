@@ -62,7 +62,7 @@ internal sealed class SilentPlanOverride(
                 case PerformanceMode.Silent when Enabled:
                     ApplyLocked();
                     break;
-                case PerformanceMode.Balanced or PerformanceMode.Custom:
+                case PerformanceMode.Balanced or PerformanceMode.Gaming or PerformanceMode.Custom:
                     RestoreLocked($"the laptop went to {mode}");
                     break;
             }

@@ -104,13 +104,21 @@ public class PowerProfileRulesTests
     }
 
     [Theory]
-    [InlineData(true, (byte)PerformanceMode.Custom)]
-    [InlineData(false, (byte)PerformanceMode.Balanced)]   // Custom is not offered on battery either
-    public void Sanitize_TurnsASavedGamingProfileIntoCustom(bool pluggedIn, byte expectedByte)
+    // Gaming off: a saved Gaming is Balanced again, plugged in or not.
+    [InlineData((byte)PerformanceMode.Gaming, true, false, (byte)PerformanceMode.Balanced)]
+    [InlineData((byte)PerformanceMode.Gaming, false, false, (byte)PerformanceMode.Balanced)]
+    // Gaming on: Balanced becomes Gaming plugged in, but stays Balanced on battery.
+    [InlineData((byte)PerformanceMode.Balanced, true, true, (byte)PerformanceMode.Gaming)]
+    [InlineData((byte)PerformanceMode.Balanced, false, true, (byte)PerformanceMode.Balanced)]
+    [InlineData((byte)PerformanceMode.Gaming, false, true, (byte)PerformanceMode.Balanced)]
+    // The other modes are not touched by it.
+    [InlineData((byte)PerformanceMode.Silent, true, true, (byte)PerformanceMode.Silent)]
+    [InlineData((byte)PerformanceMode.Custom, true, true, (byte)PerformanceMode.Custom)]
+    public void Sanitize_SwapsBalancedAndGaming_AsTheSettingSays(byte storedByte, bool pluggedIn, bool gaming, byte expectedByte)
     {
-        var stored = new PowerProfile(PerformanceMode.Gaming, CpuBoost.High, GpuBoost.Medium);
+        var stored = new PowerProfile((PerformanceMode)storedByte, CpuBoost.High, GpuBoost.Medium);
 
-        var safe = PowerProfileRules.Sanitize(stored, pluggedIn);
+        var safe = PowerProfileRules.Sanitize(stored, pluggedIn, gaming);
 
         Assert.Equal((PerformanceMode)expectedByte, safe.Mode);
         Assert.Equal(CpuBoost.High, safe.Cpu);

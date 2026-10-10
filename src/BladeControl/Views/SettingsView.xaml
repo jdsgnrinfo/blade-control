@@ -6,55 +6,80 @@
     <!-- Two cards side by side, or one under the other in a narrow window. -->
     <ui:AdaptiveColumns>
 
-        <!-- ===== General: language, start with Windows, stay on top ===== -->
-        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
-            <StackPanel>
-                <Grid Margin="0,0,0,12" MinHeight="34">
-                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'General'}" VerticalAlignment="Center" />
-                </Grid>
+        <!-- General, and the experimental options under it. -->
+        <StackPanel>
+            <!-- ===== General: language, start with Windows, stay on top ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12" MinHeight="34">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'General'}" VerticalAlignment="Center" />
+                    </Grid>
+    
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Language'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Blade Control restarts to change the language.'}" />
+                        </StackPanel>
+                        <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" MinWidth="120" VerticalAlignment="Center"
+                                  ItemsSource="{Binding LanguageNames}" SelectedIndex="{Binding LanguageIndex}" />
+                    </Grid>
+    
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+    
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Start at login'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Opens Blade Control when you sign in to Windows.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding StartAtLogin}" />
+                    </Grid>
+    
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+    
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Always on top'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Keeps the window above other windows and games.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding AlwaysOnTop}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
 
-                <Grid Margin="0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,0,20,0">
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Language'}" />
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Blade Control restarts to change the language.'}" />
-                    </StackPanel>
-                    <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" MinWidth="120" VerticalAlignment="Center"
-                              ItemsSource="{Binding LanguageNames}" SelectedIndex="{Binding LanguageIndex}" />
-                </Grid>
+            <!-- ===== Experimental: options that may not work on every Blade ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12" MinHeight="34">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Experimental'}" VerticalAlignment="Center" />
+                    </Grid>
 
-                <Border Style="{StaticResource Separator}" Margin="0,12" />
-
-                <Grid Margin="0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,0,20,0">
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Start at login'}" />
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Opens Blade Control when you sign in to Windows.'}" />
-                    </StackPanel>
-                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding StartAtLogin}" />
-                </Grid>
-
-                <Border Style="{StaticResource Separator}" Margin="0,12" />
-
-                <Grid Margin="0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,0,20,0">
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Always on top'}" />
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Keeps the window above other windows and games.'}" />
-                    </StackPanel>
-                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding AlwaysOnTop}" />
-                </Grid>
-            </StackPanel>
-        </Border>
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Gaming instead of Balanced'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0"
+                                       Text="{ui:T 'Plugged in, Balanced becomes the firmware\'s Gaming mode: more power, more heat and fan. Turns itself off if this laptop does not have it.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding GamingInsteadOfBalanced}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
 
         <!-- ===== Maintenance: Razer's drivers, the logs, the reset ===== -->
         <Border Style="{StaticResource Card}" VerticalAlignment="Top">

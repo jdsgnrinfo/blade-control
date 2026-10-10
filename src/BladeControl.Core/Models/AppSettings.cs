@@ -19,6 +19,9 @@ internal sealed record AppSettings(
     // also what a settings file from an earlier version means.
     bool AutoSwitchProfiles = true,
     bool HideWhenClickedAway = true,
+    // Experimental, off unless turned on: plugged in, the middle performance
+    // mode is the EC's Gaming instead of Balanced.
+    bool GamingInsteadOfBalanced = false,
     // Off unless the user turns it on: it closes other programs.
     bool CloseGpuAppsOnUnplug = false,
     // Program names (e.g. "blender") to never close, on top of the built-in

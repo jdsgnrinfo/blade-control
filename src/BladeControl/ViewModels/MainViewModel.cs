@@ -30,7 +30,7 @@ internal sealed partial class MainViewModel : ObservableObject
         Display = new DisplayViewModel(services, Report);
         Battery = new BatteryViewModel(services);
         Optimize = new OptimizeViewModel(services, Report);
-        Settings = new SettingsViewModel(services, Report);
+        Settings = new SettingsViewModel(services, Report, Performance.UseGamingAsync);
         Device = new DevicePanelViewModel(services);
 
         _statusTimer.Tick += (_, _) =>

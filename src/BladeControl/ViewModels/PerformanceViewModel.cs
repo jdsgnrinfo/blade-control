@@ -37,7 +37,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
 
         _profiles = new Dictionary<bool, PowerProfile>
         {
-            [true] = PowerProfileRules.Sanitize(services.Settings.PluggedInProfile ?? new PowerProfile(), pluggedIn: true),
+            [true] = PowerProfileRules.Sanitize(services.Settings.PluggedInProfile ?? new PowerProfile(), pluggedIn: true, services.Settings.GamingInsteadOfBalanced),
             [false] = PowerProfileRules.Sanitize(services.Settings.OnBatteryProfile ?? PowerProfile.DefaultOnBattery, pluggedIn: false)
         };
 
@@ -90,13 +90,28 @@ internal sealed partial class PerformanceViewModel : ObservableObject
 
     public bool IsSilent { get => ShownMode == PerformanceMode.Silent; set => Pick(value, PerformanceMode.Silent); }
 
-    public bool IsBalanced { get => ShownMode == PerformanceMode.Balanced; set => Pick(value, PerformanceMode.Balanced); }
+    /// <summary>The middle tile: Balanced, or Gaming in its place (see <see cref="PowerProfileRules.MiddleMode"/>).</summary>
+    public bool IsBalanced
+    {
+        get => ShownMode is PerformanceMode.Balanced or PerformanceMode.Gaming;
+        set => Pick(value, MiddleMode);
+    }
+
+    private bool GamingInsteadOfBalanced => _services.Settings.GamingInsteadOfBalanced;
+
+    private PerformanceMode MiddleMode => PowerProfileRules.MiddleMode(GamingInsteadOfBalanced, _editingPluggedIn);
+
+    public string MiddleName => MiddleMode == PerformanceMode.Gaming ? L.T("Gaming") : L.T("Balanced");
+
+    public System.Windows.Media.Geometry MiddleIcon =>
+        (System.Windows.Media.Geometry)System.Windows.Application.Current.FindResource(
+            MiddleMode == PerformanceMode.Gaming ? "Icon.Gaming" : "Icon.Balanced");
 
     public bool IsCustom { get => ShownMode == PerformanceMode.Custom; set => Pick(value, PerformanceMode.Custom); }
 
     public bool SilentOffered => IsModeOffered(PerformanceMode.Silent);
 
-    public bool BalancedOffered => IsModeOffered(PerformanceMode.Balanced);
+    public bool BalancedOffered => IsModeOffered(MiddleMode);
 
     /// <summary>Custom is plugged-in only, as in Synapse.</summary>
     public bool CustomOffered => IsModeOffered(PerformanceMode.Custom);
@@ -271,7 +286,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         if (_profiles[_editingPluggedIn].Mode == mode)
             return;
 
-        var edited = PowerProfileRules.Sanitize(_profiles[_editingPluggedIn] with { Mode = mode }, _editingPluggedIn);
+        var edited = PowerProfileRules.Sanitize(_profiles[_editingPluggedIn] with { Mode = mode }, _editingPluggedIn, GamingInsteadOfBalanced);
         Remember(_editingPluggedIn, edited);
         _report(_editingPluggedIn
             ? L.T("Saved. It is used when the charger is plugged in.")
@@ -348,8 +363,46 @@ internal sealed partial class PerformanceViewModel : ObservableObject
                     : state;
             },
             L.T("Could not apply the power profile."),
-            _ => _appliedSource = source,
+            state =>
+            {
+                _appliedSource = source;
+
+                if (profile.Mode == PerformanceMode.Gaming && state.Mode is not null && state.Mode != PerformanceMode.Gaming)
+                    TurnGamingOff(state.Mode.Value);
+            },
             quiet: atStartup);
+    }
+
+    /// <summary>
+    /// The experimental setting from Settings: Gaming in Balanced's place,
+    /// plugged in. Applied at once when the laptop is plugged in and in the
+    /// middle mode; otherwise the next time the middle mode is used. False
+    /// when this laptop's firmware refused Gaming, and the setting is off again.
+    /// </summary>
+    public async Task<bool> UseGamingAsync(bool on)
+    {
+        if (on == GamingInsteadOfBalanced)
+            return true;
+
+        _services.UpdateSettings(settings => settings with { GamingInsteadOfBalanced = on });
+        Remember(true, PowerProfileRules.Sanitize(_profiles[true], pluggedIn: true, on));
+        AppLog.Info($"Gaming in place of Balanced turned {(on ? "on" : "off")}.");
+        RefreshAll();
+
+        if (IsPluggedIn && !_busy && _state.Mode is PerformanceMode.Balanced or PerformanceMode.Gaming)
+            await ChangeProfileAsync(profile => profile, L.T("Could not change the performance mode."));
+
+        return on == GamingInsteadOfBalanced;
+    }
+
+    // The firmware settled on another mode when asked for Gaming: this laptop does not have it.
+    private void TurnGamingOff(PerformanceMode settledOn)
+    {
+        AppLog.Error($"The EC was asked for Gaming but stayed in {settledOn}; Gaming in place of Balanced is turned off.");
+        _services.UpdateSettings(settings => settings with { GamingInsteadOfBalanced = false });
+        Remember(true, PowerProfileRules.Sanitize(_profiles[true], pluggedIn: true));
+        _report(L.T("This laptop does not support Gaming mode."), true);
+        RefreshAll();
     }
 
     private Task ChangeProfileAsync(Func<PowerProfile, PowerProfile> edit, string failureMessage)
@@ -362,16 +415,22 @@ internal sealed partial class PerformanceViewModel : ObservableObject
             failureMessage,
             state =>
             {
-                // Asked for a mode and the firmware settled on another: this laptop does not have it.
-                if (edited.Mode is PerformanceMode asked && state.Mode is not null && state.Mode != asked)
-                {
-                    _unsupportedModes.Add(asked);
-                    AppLog.Error($"The EC was asked for {asked} but stayed in {state.Mode}; {asked} is marked as not supported.");
-                    _report(L.T("This laptop does not support that mode."), true);
-                }
-
                 Remember(source, PowerProfileRules.Remember(edited, state));
                 _appliedSource = source;
+
+                // Asked for a mode and the firmware settled on another: this laptop does not have it.
+                if (edited.Mode is PerformanceMode asked && state.Mode is PerformanceMode settled && settled != asked)
+                {
+                    if (asked == PerformanceMode.Gaming)
+                    {
+                        TurnGamingOff(settled);
+                        return;
+                    }
+
+                    _unsupportedModes.Add(asked);
+                    AppLog.Error($"The EC was asked for {asked} but stayed in {settled}; {asked} is marked as not supported.");
+                    _report(L.T("This laptop does not support that mode."), true);
+                }
             });
     }
 

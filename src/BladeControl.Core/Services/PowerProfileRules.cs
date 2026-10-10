@@ -42,17 +42,27 @@ internal static class PowerProfileRules
         state.Mode == PerformanceMode.Custom && IsModeAllowed(PerformanceMode.Custom, pluggedIn);
 
     /// <summary>
-    /// Makes a stored profile safe to apply on <paramref name="pluggedIn"/>.
-    /// A battery profile saved by an earlier version may hold a mode that is no
-    /// longer offered there; it falls back to Balanced. Gaming, saved by an
-    /// earlier version but no longer offered, becomes Custom (Balanced on
-    /// battery, where Custom is not offered either). Plugged-in profiles are
-    /// otherwise never restricted.
+    /// The middle mode: Gaming in place of Balanced when that experimental
+    /// setting is on and the laptop is plugged in; Balanced otherwise, and
+    /// always on battery, where Gaming would drain it.
     /// </summary>
-    public static PowerProfile Sanitize(PowerProfile profile, bool pluggedIn)
+    public static PerformanceMode MiddleMode(bool gamingInsteadOfBalanced, bool pluggedIn) =>
+        gamingInsteadOfBalanced && pluggedIn ? PerformanceMode.Gaming : PerformanceMode.Balanced;
+
+    /// <summary>
+    /// Makes a stored profile safe to apply on <paramref name="pluggedIn"/>.
+    /// Balanced and Gaming are the same middle mode, so each becomes whichever
+    /// the setting asks for (see <see cref="MiddleMode"/>). A battery profile
+    /// saved by an earlier version may hold a mode that is no longer offered
+    /// there; it falls back to Balanced. Plugged-in profiles are otherwise
+    /// never restricted.
+    /// </summary>
+    public static PowerProfile Sanitize(PowerProfile profile, bool pluggedIn, bool gamingInsteadOfBalanced = false)
     {
-        if (profile.Mode == PerformanceMode.Gaming)
-            profile = profile with { Mode = PerformanceMode.Custom };
+        var middle = MiddleMode(gamingInsteadOfBalanced, pluggedIn);
+
+        if (profile.Mode is PerformanceMode.Balanced or PerformanceMode.Gaming && profile.Mode != middle)
+            profile = profile with { Mode = middle };
 
         if (profile.Mode is not PerformanceMode mode || IsModeAllowed(mode, pluggedIn))
             return profile;
