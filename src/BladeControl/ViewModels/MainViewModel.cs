@@ -27,7 +27,7 @@ internal sealed partial class MainViewModel : ObservableObject
         Services = services;
         Performance = new PerformanceViewModel(services, Report);
         Lighting = new LightingViewModel(services, Report);
-        Display = new DisplayViewModel(services, Report);
+        Display = new DisplayViewModel(services, Report, () => Optimize!.CloseGpuAppsAsync());
         Battery = new BatteryViewModel(services);
         Optimize = new OptimizeViewModel(services, Report);
         Settings = new SettingsViewModel(services, Report, Performance.UseGamingAsync);

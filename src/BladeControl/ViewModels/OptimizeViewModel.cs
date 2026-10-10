@@ -272,6 +272,12 @@ internal sealed partial class OptimizeViewModel : ObservableObject, IDisposable
             Dialogs.Tell(message, L.T("Free up GPU"));
     }
 
+    /// <summary>
+    /// For Display's integrated-graphics-only switch: the same list, question
+    /// and closing as Free up GPU, with the outcome left to the caller to tell.
+    /// </summary>
+    public Task<DgpuFreeUpOutcome> CloseGpuAppsAsync() => _gpu.FreeUpAsync();
+
     // The coordinator works off the interface thread; the question is asked on it.
     private Task<bool> ConfirmCloseGpuAppsAsync(IReadOnlyList<DgpuApp> apps, bool dismissWhenPluggedIn) =>
         Application.Current.Dispatcher.InvokeAsync(() =>

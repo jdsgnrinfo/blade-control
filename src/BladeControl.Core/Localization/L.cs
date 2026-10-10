@@ -223,16 +223,32 @@ internal static class L
 
         // Display.
         ["Display"] = "Pantalla",
-        ["Panel"] = "Panel",
         ["Size"] = "Tamaño",
-        ["Resolution"] = "Resolución",
-        ["Max refresh"] = "Frecuencia máxima",
-        ["Color depth"] = "Profundidad de color",
-        ["{0} bits"] = "{0} bits",
-        ["HDR"] = "HDR",
-        ["Supported"] = "Compatible",
-        ["Not supported"] = "No compatible",
-        ["Windows did not report the panel"] = "Windows no informó del panel",
+        ["Graphics"] = "Gráficos",
+        ["Integrated graphics only"] = "Solo gráficos integrados (iGPU)",
+        ["This laptop has no dedicated GPU to turn off."] = "Este portátil no tiene una GPU dedicada que apagar.",
+        ["{0} is on: Windows uses it when an app needs it."] = "{0} está encendida: Windows la usa cuando una app la necesita.",
+        ["{0} is off: everything runs on the integrated GPU."] = "{0} está apagada: todo funciona con la GPU integrada.",
+        ["Disconnect the external display first: its port runs on the dedicated GPU."] =
+            "Desconecta antes la pantalla externa: su puerto funciona con la GPU dedicada.",
+        ["Turn off the dedicated GPU?\r\n\r\nEverything will run on the integrated GPU, which saves battery, but:\r\n  - the HDMI and USB-C video ports will not show a picture\r\n  - games and 3D apps will run much slower\r\n  - apps using the dedicated GPU will be asked to close first\r\n\r\nIt stays off, even after restarting, until you turn this switch off. Windows will ask for administrator permission."] =
+            "¿Apagar la GPU dedicada?\r\n\r\nTodo funcionará con la GPU integrada, que ahorra batería, pero:\r\n  - los puertos de vídeo HDMI y USB-C no darán imagen\r\n  - los juegos y las apps 3D irán mucho más lentos\r\n  - antes se pedirá cerrar las apps que usan la GPU dedicada\r\n\r\nSeguirá apagada, incluso tras reiniciar, hasta que desactives este interruptor. Windows pedirá permiso de administrador.",
+        ["Closing the apps on the dedicated GPU..."] = "Cerrando las apps de la GPU dedicada...",
+        ["Kept on: the apps using it were not closed."] = "Sigue encendida: no se cerraron las apps que la usan.",
+        ["Kept on: the apps using it could not be checked."] = "Sigue encendida: no se pudieron revisar las apps que la usan.",
+        ["The dedicated GPU is on again."] = "La GPU dedicada vuelve a estar encendida.",
+        ["The dedicated GPU is off."] = "La GPU dedicada está apagada.",
+        ["Restart Windows to finish the change."] = "Reinicia Windows para terminar el cambio.",
+        ["On, the dedicated GPU is turned off and everything runs on the integrated one: more battery and less heat. Off, Windows picks the GPU by itself, as usual."] =
+            "Activado, la GPU dedicada se apaga y todo funciona con la integrada: más batería y menos calor. Desactivado, Windows elige la GPU solo, como siempre.",
+        ["While it is on:"] = "Mientras esté activado:",
+        ["- The HDMI and USB-C video ports show no picture: they run on the dedicated GPU."] =
+            "- Los puertos de vídeo HDMI y USB-C no dan imagen: funcionan con la GPU dedicada.",
+        ["- Games and 3D apps run much slower."] = "- Los juegos y las apps 3D van mucho más lentos.",
+        ["- It stays on after restarting, until you turn it off. A driver update may turn the GPU back on."] =
+            "- Sigue activado tras reiniciar, hasta que lo desactives. Una actualización del driver puede volver a encender la GPU.",
+        ["The dedicated GPU is off, so this display gets no picture. Turn Integrated graphics only off to use it."] =
+            "La GPU dedicada está apagada, así que esta pantalla no recibe imagen. Desactiva Solo gráficos integrados para usarla.",
         ["Color profile"] = "Perfil de color",
         ["Standard"] = "Estándar",
         ["Night light"] = "Luz nocturna",

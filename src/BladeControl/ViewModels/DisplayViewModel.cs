@@ -8,6 +8,7 @@ using BladeControl.Core.Models;
 using BladeControl.Core.Platform;
 using BladeControl.Core.Services;
 using BladeControl.Services;
+using BladeControl.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
@@ -65,14 +66,12 @@ internal sealed partial class ProfileChoice(ColorProfile profile, string name, A
     internal void Show(bool selected) => SetProperty(ref _isSelected, selected, nameof(IsSelected));
 }
 
-/// <summary>A line of the panel's details: what it is, and its value.</summary>
-internal sealed record PanelDetail(string Name, string Value);
-
 /// <summary>
 /// The Display page, as in Razer Helper: the internal screen's refresh rate
 /// (Auto follows the charger: the fastest plugged in, 60 Hz on battery, and
-/// waits while a fullscreen game has the screen), its color profile, and what
-/// Windows says about the panel. The saved rate and profile are put back at
+/// waits while a fullscreen game has the screen), its color profile, whether
+/// an external display is connected, and the dedicated GPU turned off or on.
+/// The saved rate and profile are put back at
 /// startup, and the profile again whenever Windows may have reset it; it
 /// stays on the screens after the app closes.
 /// </summary>
@@ -91,10 +90,14 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     private Task _rateChange = Task.CompletedTask;
     private DisplayRefreshMode? _selected;
 
-    public DisplayViewModel(AppServices services, Action<string, bool> report)
+    private readonly Func<Task<DgpuFreeUpOutcome>> _closeGpuApps;
+
+    /// <param name="closeGpuApps">Optimize's "free up the dedicated GPU": lists the apps on it, asks, and closes them.</param>
+    public DisplayViewModel(AppServices services, Action<string, bool> report, Func<Task<DgpuFreeUpOutcome>> closeGpuApps)
     {
         _services = services;
         _report = report;
+        _closeGpuApps = closeGpuApps;
 
         var rates = _display.GetAvailableRefreshRates();
         _fastHz = rates.Count > 0 ? rates[^1] : 120;
@@ -186,11 +189,6 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _profileStatus = string.Empty;
 
-    // ===== Panel =====
-
-    [ObservableProperty]
-    private IReadOnlyList<PanelDetail> _panelDetails = [];
-
     // ===== External display =====
 
     /// <summary>A monitor is plugged in besides the laptop's own panel.</summary>
@@ -200,7 +198,148 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private static void OpenDisplaySettings() => ExternalLinks.OpenDisplaySettings();
 
-    private void ShowExternalDisplay() => HasExternalDisplay = DisplayTopology.HasExternalDisplay() == true;
+    private void ShowExternalDisplay()
+    {
+        HasExternalDisplay = DisplayTopology.HasExternalDisplay() == true;
+        ExternalDisplayDark = HasExternalDisplay && _integratedOnly;
+    }
+
+    /// <summary>A monitor is connected while the dedicated GPU, which drives the video ports, is off: it shows nothing.</summary>
+    [ObservableProperty]
+    private bool _externalDisplayDark;
+
+    // ===== Integrated graphics only =====
+
+    /// <summary>This laptop has a dedicated (NVIDIA) GPU Windows can turn off.</summary>
+    [ObservableProperty]
+    private bool _hasDedicatedGpu;
+
+    /// <summary>The switch is busy asking, closing apps or waiting for Windows.</summary>
+    [ObservableProperty]
+    private bool _integratedOnlyChanging;
+
+    /// <summary>The line under the switch: which card, its state, or what went wrong.</summary>
+    [ObservableProperty]
+    private string _integratedOnlyHint = string.Empty;
+
+    private bool _integratedOnly;
+    private bool _showingIntegratedOnly;
+
+    /// <summary>
+    /// On while the dedicated GPU is turned off in Windows, so everything runs
+    /// on the integrated one. Read from the device itself, so it is right after
+    /// a restart too. Changing it asks Windows for administrator permission.
+    /// </summary>
+    public bool IntegratedOnly
+    {
+        get => _integratedOnly;
+        set
+        {
+            if (_showingIntegratedOnly || IntegratedOnlyChanging || value == _integratedOnly)
+                return;
+
+            _integratedOnly = value;
+            OnPropertyChanged();
+            _ = SetIntegratedOnlyAsync(value);
+        }
+    }
+
+    private void ShowIntegratedOnly()
+    {
+        var gpu = DedicatedGpuDevice.Find();
+        HasDedicatedGpu = gpu is not null;
+
+        _showingIntegratedOnly = true;
+        _integratedOnly = gpu is { Enabled: false };
+        OnPropertyChanged(nameof(IntegratedOnly));
+        _showingIntegratedOnly = false;
+        ExternalDisplayDark = HasExternalDisplay && _integratedOnly;
+
+        IntegratedOnlyHint = gpu is null
+            ? L.T("This laptop has no dedicated GPU to turn off.")
+            : gpu.Enabled
+                ? L.F("{0} is on: Windows uses it when an app needs it.", gpu.Name)
+                : L.F("{0} is off: everything runs on the integrated GPU.", gpu.Name);
+    }
+
+    // Declining, a refusal or a problem leaves the card as it was and puts the switch back.
+    private async Task SetIntegratedOnlyAsync(bool integratedOnly)
+    {
+        IntegratedOnlyChanging = true;
+        string? problem = null;
+
+        try
+        {
+            problem = integratedOnly ? await TurnDedicatedGpuOffAsync() : await RunDedicatedGpuCommandAsync(enabled: true);
+        }
+        catch (Exception exception)
+        {
+            AppLog.Error("Could not change the dedicated GPU.", exception);
+            problem = L.T("Windows did not make the change.");
+        }
+
+        IntegratedOnlyChanging = false;
+        ShowIntegratedOnly();
+
+        if (problem is not null)
+            IntegratedOnlyHint = problem;
+    }
+
+    // Returns what stopped it, or null once the card is off.
+    private async Task<string?> TurnDedicatedGpuOffAsync()
+    {
+        // The video ports are wired to the dedicated GPU: a monitor on them would go dark.
+        if (DisplayTopology.HasExternalDisplay() != false)
+            return L.T("Disconnect the external display first: its port runs on the dedicated GPU.");
+
+        var answer = Dialogs.Ask(
+            L.T("Turn off the dedicated GPU?\r\n\r\nEverything will run on the integrated GPU, which saves battery, but:\r\n  - the HDMI and USB-C video ports will not show a picture\r\n  - games and 3D apps will run much slower\r\n  - apps using the dedicated GPU will be asked to close first\r\n\r\nIt stays off, even after restarting, until you turn this switch off. Windows will ask for administrator permission."),
+            L.T("Integrated graphics only"));
+
+        if (answer != System.Windows.MessageBoxResult.Yes)
+            return null;
+
+        IntegratedOnlyHint = L.T("Closing the apps on the dedicated GPU...");
+        var outcome = await _closeGpuApps();
+
+        switch (outcome)
+        {
+            case DgpuFreeUpOutcome.Declined:
+                return L.T("Kept on: the apps using it were not closed.");
+            case DgpuFreeUpOutcome.ExternalDisplay:
+                return L.T("Disconnect the external display first: its port runs on the dedicated GPU.");
+            case DgpuFreeUpOutcome.Busy or DgpuFreeUpOutcome.Failed:
+                return L.T("Kept on: the apps using it could not be checked.");
+            case DgpuFreeUpOutcome.Closed:
+                // Give them a moment to let go of the card.
+                await Task.Delay(TimeSpan.FromSeconds(3));
+                break;
+        }
+
+        return await RunDedicatedGpuCommandAsync(enabled: false);
+    }
+
+    private async Task<string?> RunDedicatedGpuCommandAsync(bool enabled)
+    {
+        IntegratedOnlyHint = L.T("Asking Windows (asks for permission)...");
+        var result = await ElevatedRunner.RunAsync(DedicatedGpuCommand.Arguments(enabled));
+
+        if (result.UserDeclined)
+            return L.T("Kept as it was: administrator permission was not given.");
+
+        switch (result.ExitCode)
+        {
+            case DedicatedGpuCommand.Success:
+                AppLog.Info($"Dedicated GPU turned {(enabled ? "on" : "off")}.");
+                _report(enabled ? L.T("The dedicated GPU is on again.") : L.T("The dedicated GPU is off."), false);
+                return null;
+            case DedicatedGpuCommand.RestartNeeded:
+                _report(L.T("Restart Windows to finish the change."), false);
+                return L.T("Restart Windows to finish the change.");
+            default:
+                return L.T("Windows did not make the change.");
+        }
+    }
 
     // ===== Life cycle =====
 
@@ -226,7 +365,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         }
     }
 
-    /// <summary>When the page opens: what the screen is at now, and the panel's details.</summary>
+    /// <summary>When the page opens: what the screen is at now, any external display, and the dedicated GPU.</summary>
     public void Refresh()
     {
         if (_selected is null)
@@ -236,8 +375,8 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
             _ = ApplyAutoAsync();
 
         ShowResolution();
-        PanelDetails = ReadPanelDetails();
         ShowExternalDisplay();
+        ShowIntegratedOnly();
     }
 
     /// <summary>
@@ -397,44 +536,4 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         ColorProfile.Contrast => L.T("Deeper darks and brighter lights."),
         _ => L.T("The colors as the panel shows them.")
     };
-
-    private List<PanelDetail> ReadPanelDetails()
-    {
-        DisplayPanel? panel;
-
-        try
-        {
-            panel = DisplayPanelReader.Read();
-        }
-        catch (Exception exception)
-        {
-            AppLog.Error("Could not read the panel's details.", exception);
-            panel = null;
-        }
-
-        var culture = CultureInfo.CurrentCulture;
-        var details = new List<PanelDetail>();
-
-        if (panel?.Edid is { } edid)
-        {
-            var maker = DisplayPanelText.MakerName(edid.MakerCode);
-            details.Add(new PanelDetail(L.T("Panel"), edid.Model is { } model ? $"{maker} {model}" : maker));
-
-            if (edid.DiagonalInches is { } inches)
-                details.Add(new PanelDetail(L.T("Size"), DisplayPanelText.Diagonal(inches, culture)));
-
-            if (edid is { NativeWidth: { } width, NativeHeight: { } height })
-                details.Add(new PanelDetail(L.T("Resolution"), DisplayPanelText.Resolution(width, height)));
-        }
-
-        details.Add(new PanelDetail(L.T("Max refresh"), $"{_fastHz} Hz"));
-
-        if (panel?.BitsPerColor is { } bits)
-            details.Add(new PanelDetail(L.T("Color depth"), L.F("{0} bits", bits)));
-
-        if (panel?.HdrSupported is { } hdr)
-            details.Add(new PanelDetail("HDR", hdr ? (panel.HdrOn == true ? L.T("On") : L.T("Supported")) : L.T("Not supported")));
-
-        return details;
-    }
 }

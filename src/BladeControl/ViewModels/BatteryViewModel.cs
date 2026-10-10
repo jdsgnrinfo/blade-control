@@ -12,6 +12,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BladeControl.ViewModels;
 
+/// <summary>A line of details: what it is, and its value.</summary>
+internal sealed record PanelDetail(string Name, string Value);
+
 /// <summary>A figure in the battery's status: what it is, its value, and a short note under it.</summary>
 internal sealed record BatteryFigure(string Name, string Value, string? Caption);
 

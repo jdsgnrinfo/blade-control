@@ -292,7 +292,8 @@ public partial class App : Application
         RazerServiceCommand.TryRun(args, new WindowsServiceControl())
         ?? MemoryCacheCommand.TryRun(args, WindowsMemoryCache.Purge)
         ?? HibernationCommand.TryRun(args, WindowsHibernation.SetEnabled)
-        ?? WindowsCachesCommand.TryRun(args, WindowsCaches.CleanElevated);
+        ?? WindowsCachesCommand.TryRun(args, WindowsCaches.CleanElevated)
+        ?? DedicatedGpuCommand.TryRun(args, () => DedicatedGpuDevice.Find()?.InstanceId, DedicatedGpuDevice.SetEnabled);
 
     private static async void ScreenshotThenClose(MainWindow window, string path, PerformanceViewModel? previewCustom, bool scrolled)
     {
