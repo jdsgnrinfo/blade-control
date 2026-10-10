@@ -206,14 +206,14 @@
         </Setter>
     </Style>
 
-    <!-- The page tabs: white at 75% while not chosen, fading to green under the pointer, on a green block when chosen.
+    <!-- The page tabs: grey while not chosen, fading to green under the pointer, on a green pill when chosen.
          The green is a second copy of the words over the first, so only its opacity animates. -->
     <Style x:Key="SubTab" TargetType="RadioButton">
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Foreground" Value="#BFFFFFFF" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="10,2,10,3" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Padding" Value="16,6,16,7" />
         <Setter Property="Margin" Value="0,0,4,0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="GroupName" Value="SubTab" />
@@ -221,7 +221,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
-                    <Border x:Name="Back" Background="Transparent" CornerRadius="3" Padding="{TemplateBinding Padding}">
+                    <Border x:Name="Back" Background="Transparent" CornerRadius="18" Padding="{TemplateBinding Padding}">
                         <Grid>
                             <ContentPresenter VerticalAlignment="Center" />
                             <ContentPresenter x:Name="Lit" VerticalAlignment="Center" Opacity="0"
