@@ -30,7 +30,9 @@ laptop's picture, battery and temperatures.
 - **Lighting**: keyboard and logo effects, color and brightness, and the
   keyboard going dark with the screen, when idle or on low battery.
 - **Display**: the internal screen's refresh rate (Auto follows the charger)
-  and a color profile that stays on after the app closes.
+  and a color profile that stays on after the app closes; whether an
+  external display is connected; and Integrated graphics only, which turns
+  the dedicated GPU off (its video ports go dark with it) until turned back on.
 - **Battery**: the charge, power and time left, the last 24 hours from
   Windows' own battery report, and the battery's health.
 - **Optimize**: freeing memory, temporary files and the shader cache, the
