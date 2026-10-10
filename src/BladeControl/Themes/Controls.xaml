@@ -212,7 +212,7 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Padding" Value="16,6,16,7" />
         <Setter Property="Margin" Value="0,0,4,0" />
         <Setter Property="Cursor" Value="Hand" />
