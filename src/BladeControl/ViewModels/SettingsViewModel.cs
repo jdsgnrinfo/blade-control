@@ -23,14 +23,10 @@ internal sealed partial class SettingsViewModel : ObservableObject
     private readonly Action<string, bool> _report;
     private bool _loading;
 
-    private readonly Func<bool, Task<bool>> _useGaming;
-
-    /// <param name="useGaming">Turns Gaming in Balanced's place on or off on the Performance page; false when the laptop refused it.</param>
-    public SettingsViewModel(AppServices services, Action<string, bool> report, Func<bool, Task<bool>> useGaming)
+    public SettingsViewModel(AppServices services, Action<string, bool> report)
     {
         _services = services;
         _report = report;
-        _useGaming = useGaming;
         _languageIndex = Array.IndexOf(Languages, L.Current);
         _startAtLogin = ReadStartAtLogin();
     }
@@ -107,23 +103,9 @@ internal sealed partial class SettingsViewModel : ObservableObject
         _loading = true;
         StartAtLogin = ReadStartAtLogin();
         _loading = false;
-
-        // The Performance page turns Gaming off by itself when the laptop refuses it.
-        OnPropertyChanged(nameof(GamingInsteadOfBalanced));
     }
 
     // ===== Experimental =====
-
-    /// <summary>Plugged in, the Performance page's middle mode is Gaming instead of Balanced.</summary>
-    public bool GamingInsteadOfBalanced
-    {
-        get => _services.Settings.GamingInsteadOfBalanced;
-        set
-        {
-            if (value != GamingInsteadOfBalanced)
-                _ = UseGamingAsync(value);
-        }
-    }
 
     /// <summary>Silent turns Windows' CPU boost off, which is what quiets it; off leaves the boost as the power plan has it.</summary>
     public bool SilentTurnsBoostOff
@@ -139,15 +121,6 @@ internal sealed partial class SettingsViewModel : ObservableObject
             AppLog.Info($"Silent turning the CPU boost off turned {(value ? "on" : "off")}.");
             OnPropertyChanged();
         }
-    }
-
-    private async Task UseGamingAsync(bool on)
-    {
-        if (await _useGaming(on) && on)
-            _report(L.T("Gaming takes Balanced's place while plugged in."), false);
-
-        // Shows what was kept: off again if the laptop refused it.
-        OnPropertyChanged(nameof(GamingInsteadOfBalanced));
     }
 
     // ===== Maintenance =====

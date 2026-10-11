@@ -71,21 +71,6 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,20,0">
-                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Gaming instead of Balanced'}" />
-                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0"
-                                       Text="{ui:T 'Plugged in, Balanced becomes the firmware\'s Gaming mode: more power, more heat and fan. Turns itself off if this laptop does not have it.'}" />
-                        </StackPanel>
-                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding GamingInsteadOfBalanced}" />
-                    </Grid>
-
-                    <Border Style="{StaticResource Separator}" Margin="0,12" />
-
-                    <Grid Margin="0,6">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Margin="0,0,20,0">
                             <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Turbo boost off in Silent'}" />
                             <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0"
                                        Text="{ui:T 'Silent keeps the CPU at its base speed, which is what makes it quiet. Off, Silent leaves the turbo as the power plan has it: faster, but warmer and louder.'}" />

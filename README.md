@@ -17,9 +17,7 @@ laptop's picture, battery and temperatures.
 
 - **Performance**: Silent, Balanced and Custom, with Custom's CPU (Low to
   Boost) and GPU (Low to High) levels. Each power source keeps its own mode,
-  and plugging in or unplugging switches between them. An experimental
-  setting puts the firmware's Gaming mode in Balanced's place while plugged
-  in, on the Blades that have it (it turns itself off on those that do not).
+  and plugging in or unplugging switches between them.
 - **Silent really is quiet**: Silent also turns Windows' CPU boost off, which
   is what quiets a Blade 15 Base (2020); Balanced and Custom give it back.
 - **Max fan speed**, plugged in, on the models that have it.

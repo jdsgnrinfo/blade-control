@@ -19,9 +19,6 @@ internal sealed record AppSettings(
     // also what a settings file from an earlier version means.
     bool AutoSwitchProfiles = true,
     bool HideWhenClickedAway = true,
-    // Experimental, off unless turned on: plugged in, the middle performance
-    // mode is the EC's Gaming instead of Balanced.
-    bool GamingInsteadOfBalanced = false,
     // Experimental, on unless turned off: Silent turns Windows' CPU boost off.
     bool SilentTurnsBoostOff = true,
     // Off unless the user turns it on: it closes other programs.

@@ -30,8 +30,8 @@
                     <UniformGrid Columns="3">
                         <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="0,0,8,0" Tag="{StaticResource Icon.Silent}"
                                      Content="{ui:T 'Silent'}" IsChecked="{Binding IsSilent}" IsEnabled="{Binding SilentOffered}" />
-                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="4,0" Tag="{Binding MiddleIcon}"
-                                     Content="{Binding MiddleName}" IsChecked="{Binding IsBalanced}" IsEnabled="{Binding BalancedOffered}" />
+                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="4,0" Tag="{StaticResource Icon.Balanced}"
+                                     Content="{ui:T 'Balanced'}" IsChecked="{Binding IsBalanced}" IsEnabled="{Binding BalancedOffered}" />
                         <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="8,0,0,0" Tag="{StaticResource Icon.Custom}"
                                      Content="{ui:T 'Custom'}" IsChecked="{Binding IsCustom}" IsEnabled="{Binding CustomOffered}"
                                      ToolTipService.ShowOnDisabled="True" ToolTip="{ui:T 'Custom is available when plugged in.'}" />
