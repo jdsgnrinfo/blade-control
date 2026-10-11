@@ -77,62 +77,108 @@
                         </StackPanel>
                         <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding GamingInsteadOfBalanced}" />
                     </Grid>
+
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Turbo boost off in Silent'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0"
+                                       Text="{ui:T 'Silent keeps the CPU at its base speed, which is what makes it quiet. Off, Silent leaves the turbo as the power plan has it: faster, but warmer and louder.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding SilentTurnsBoostOff}" />
+                    </Grid>
                 </StackPanel>
             </Border>
         </StackPanel>
 
-        <!-- ===== Maintenance: Razer's drivers, the logs, the reset ===== -->
-        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
-            <StackPanel>
-                <Grid Margin="0,0,0,12" MinHeight="34">
-                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Maintenance'}" VerticalAlignment="Center" />
-                </Grid>
+        <!-- Maintenance, and the coffee under it. -->
+        <StackPanel>
+            <!-- ===== Maintenance: Razer's drivers, the logs, the reset ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12" MinHeight="34">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Maintenance'}" VerticalAlignment="Center" />
+                    </Grid>
+    
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Razer drivers and support'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'BIOS and driver updates for your laptop, on Razer\'s site.'}" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Open'}" Command="{Binding OpenDriversCommand}"
+                                VerticalAlignment="Center" />
+                    </Grid>
+    
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+    
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Logs'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'What Blade Control did and any errors, to share if something goes wrong.'}" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Open'}" Command="{Binding OpenLogsCommand}"
+                                VerticalAlignment="Center" />
+                    </Grid>
+    
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+    
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Reset to defaults'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Clears your settings and puts the laptop back in Balanced. Asks first.'}" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Reset'}" Command="{Binding ResetCommand}"
+                                VerticalAlignment="Center" />
+                    </Grid>
 
-                <Grid Margin="0,6">
+                    <TextBlock Text="{Binding Version}" Style="{StaticResource Text.Scale}" Margin="0,18,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Buy me a coffee: a link to the author's PayPal ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,0,20,0">
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Razer drivers and support'}" />
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'BIOS and driver updates for your laptop, on Razer\'s site.'}" />
-                    </StackPanel>
-                    <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Open'}" Command="{Binding OpenDriversCommand}"
-                            VerticalAlignment="Center" />
-                </Grid>
-
-                <Border Style="{StaticResource Separator}" Margin="0,12" />
-
-                <Grid Margin="0,6">
-                    <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,0,20,0">
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Logs'}" />
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'What Blade Control did and any errors, to share if something goes wrong.'}" />
+
+                    <!-- A cup with steam rising, in the accent green. -->
+                    <Border Width="52" Height="52" CornerRadius="26" Background="{StaticResource Brush.AccentDim}"
+                            VerticalAlignment="Top" Margin="0,2,18,0">
+                        <Path Width="26" Height="26" Stretch="Uniform" Stroke="{StaticResource Brush.Accent}" StrokeThickness="1.8"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                              Data="M4,10 L16,10 L16,15 A5,5 0 0 1 11,20 L9,20 A5,5 0 0 1 4,15 Z M16,11.5 L17.5,11.5 A2.5,2.5 0 0 1 17.5,16.5 L16,16.5 M7.5,3 C7.5,4.5 9,4.5 9,6 M11.5,3 C11.5,4.5 13,4.5 13,6" />
+                    </Border>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Buy me a coffee'}" />
+                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,8,0,0" TextWrapping="Wrap"
+                                   Text="{ui:T 'Blade Control is free and made in my spare time. If it is useful to you, you can buy me a coffee: it helps me keep improving it.'}" />
+                        <Button Style="{StaticResource ActionButton}" Margin="0,16,0,0" HorizontalAlignment="Left"
+                                Background="{StaticResource Brush.Accent}" Foreground="{StaticResource Brush.OnAccent}"
+                                Content="{ui:T 'Buy me a coffee on PayPal'}" Command="{Binding OpenDonationCommand}"
+                                ToolTip="paypal.me/jotica96" />
                     </StackPanel>
-                    <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Open'}" Command="{Binding OpenLogsCommand}"
-                            VerticalAlignment="Center" />
                 </Grid>
-
-                <Border Style="{StaticResource Separator}" Margin="0,12" />
-
-                <Grid Margin="0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,0,20,0">
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Reset to defaults'}" />
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{ui:T 'Clears your settings and puts the laptop back in Balanced. Asks first.'}" />
-                    </StackPanel>
-                    <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Reset'}" Command="{Binding ResetCommand}"
-                            VerticalAlignment="Center" />
-                </Grid>
-
-                <TextBlock Text="{Binding Version}" Style="{StaticResource Text.Scale}" Margin="0,18,0,0" />
-            </StackPanel>
-        </Border>
+            </Border>
+        </StackPanel>
     </ui:AdaptiveColumns>
 </UserControl>

@@ -33,7 +33,8 @@ internal sealed class AppServices : IDisposable
         // The keyboard goes dark with the screen (and when idle or low, if chosen) and comes back with it.
         KeyboardLightsOff = new KeyboardScreenOffService(Lighting);
 
-        // Silent keeps the CPU at its base frequency, always: on the Blade 15
+        // Silent keeps the CPU at its base frequency (unless turned off in
+        // Settings, Experimental): on the Blade 15
         // Base (2020) the EC's Silent alone runs hotter than Balanced, and it is
         // the boost being off that quiets it. Balanced and Custom give it back.
         SilentBoost = new SilentPlanOverride(
@@ -42,6 +43,9 @@ internal sealed class AppServices : IDisposable
             "CPU boost",
             Settings.CpuBoostBeforeSilent,
             saved => UpdateSettings(settings => settings with { CpuBoostBeforeSilent = saved }));
+
+        if (!Settings.SilentTurnsBoostOff)
+            SilentBoost.SetEnabled(false);
 
         StartupRegistration = new RunKeyStartupRegistration(Environment.ProcessPath ?? string.Empty);
         RazerSoftware = new RazerSoftwareManager(

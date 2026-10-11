@@ -16,6 +16,11 @@ internal static class ExternalLinks
 
     public static void OpenProjectPage() => Open(ProjectUrl);
 
+    /// <summary>The author's PayPal.me page, for anyone who wants to buy them a coffee.</summary>
+    public const string DonationUrl = "https://paypal.me/jotica96";
+
+    public static void OpenDonation() => Open(DonationUrl);
+
     /// <summary>Windows' Display settings, where a secondary monitor's refresh rate is chosen.</summary>
     public static void OpenDisplaySettings() => Open("ms-settings:display");
 

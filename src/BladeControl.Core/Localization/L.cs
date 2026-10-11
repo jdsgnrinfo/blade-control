@@ -468,6 +468,13 @@ internal static class L
 
         // Settings page.
         ["Experimental"] = "Experimental",
+        ["Turbo boost off in Silent"] = "Turbo desactivado en Silencio",
+        ["Silent keeps the CPU at its base speed, which is what makes it quiet. Off, Silent leaves the turbo as the power plan has it: faster, but warmer and louder."] =
+            "Silencio deja la CPU a su velocidad base, que es lo que la hace silenciosa. Desactivado, Silencio deja el turbo como lo tiene el plan de energía: más rápida, pero más caliente y ruidosa.",
+        ["Buy me a coffee"] = "Invítame un café",
+        ["Blade Control is free and made in my spare time. If it is useful to you, you can buy me a coffee: it helps me keep improving it."] =
+            "Blade Control es gratis y lo hago en mi tiempo libre. Si te resulta útil, puedes invitarme un café: me ayuda a seguir mejorándolo.",
+        ["Buy me a coffee on PayPal"] = "Invítame un café en PayPal",
         ["Gaming instead of Balanced"] = "Gaming en lugar de Equilibrado",
         ["Plugged in, Balanced becomes the firmware's Gaming mode: more power, more heat and fan. Turns itself off if this laptop does not have it."] =
             "Con el cargador, Equilibrado pasa a ser el modo Gaming del firmware: más potencia, más calor y ventilador. Se apaga solo si este portátil no lo tiene.",

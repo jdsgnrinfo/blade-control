@@ -125,6 +125,22 @@ internal sealed partial class SettingsViewModel : ObservableObject
         }
     }
 
+    /// <summary>Silent turns Windows' CPU boost off, which is what quiets it; off leaves the boost as the power plan has it.</summary>
+    public bool SilentTurnsBoostOff
+    {
+        get => _services.Settings.SilentTurnsBoostOff;
+        set
+        {
+            if (value == SilentTurnsBoostOff)
+                return;
+
+            _services.UpdateSettings(settings => settings with { SilentTurnsBoostOff = value });
+            _services.SilentBoost.SetEnabled(value);
+            AppLog.Info($"Silent turning the CPU boost off turned {(value ? "on" : "off")}.");
+            OnPropertyChanged();
+        }
+    }
+
     private async Task UseGamingAsync(bool on)
     {
         if (await _useGaming(on) && on)
@@ -143,6 +159,9 @@ internal sealed partial class SettingsViewModel : ObservableObject
 
     [RelayCommand]
     private static void OpenLogs() => ExternalLinks.OpenLogFolder();
+
+    [RelayCommand]
+    private static void OpenDonation() => ExternalLinks.OpenDonation();
 
     /// <summary>Says exactly what will change before anything does; No is the default.</summary>
     [RelayCommand]
