@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- Recognizes every Razer Blade from 2021 on, including the Blade 14 (2025),
+  which the app reported as not found, and the 2026 models.
+
 ## 0.1.0 — first release
 
 Blade Control's first version: a control center for Razer Blade laptops in a

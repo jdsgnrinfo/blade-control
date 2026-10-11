@@ -25,6 +25,27 @@ internal static class RazerLaptopModels
         new RazerLaptopModel(0x02B7, "Razer Blade 16 (2024)", Verified: false),
         new RazerLaptopModel(0x02C6, "Razer Blade 16 (2025)", Verified: false),
 
+        // The other Blades from 2021 on, by the product ids OpenRazer's
+        // keyboard driver lists for them. Same command set, same caveat: not
+        // verified here, and what a firmware lacks is refused cleanly.
+        new RazerLaptopModel(0x026D, "Razer Blade 15 Advanced (Early 2021)", Verified: false),
+        new RazerLaptopModel(0x026E, "Razer Blade 17 Pro (Early 2021)", Verified: false),
+        new RazerLaptopModel(0x026F, "Razer Blade 15 Base (Early 2021)", Verified: false),
+        new RazerLaptopModel(0x0270, "Razer Blade 14 (2021)", Verified: false),
+        new RazerLaptopModel(0x0276, "Razer Blade 15 Advanced (Mid 2021)", Verified: false),
+        new RazerLaptopModel(0x0279, "Razer Blade 17 Pro (Mid 2021)", Verified: false),
+        new RazerLaptopModel(0x027A, "Razer Blade 15 Base (2022)", Verified: false),
+        new RazerLaptopModel(0x028B, "Razer Blade 17 (2022)", Verified: false),
+        new RazerLaptopModel(0x028C, "Razer Blade 14 (2022)", Verified: false),
+        new RazerLaptopModel(0x029E, "Razer Blade 15 (2023)", Verified: false),
+        new RazerLaptopModel(0x02A0, "Razer Blade 18 (2023)", Verified: false),
+        new RazerLaptopModel(0x02B6, "Razer Blade 14 (2024)", Verified: false),
+        new RazerLaptopModel(0x02B8, "Razer Blade 18 (2024)", Verified: false),
+        new RazerLaptopModel(0x02C5, "Razer Blade 14 (2025)", Verified: false),
+        new RazerLaptopModel(0x02C7, "Razer Blade 18 (2025)", Verified: false),
+        new RazerLaptopModel(0x02E0, "Razer Blade 16 (2026)", Verified: false),
+        new RazerLaptopModel(0x02E1, "Razer Blade 18 (2026)", Verified: false),
+
         // Tested by a user on their own RZ09-0328: performance modes (Gaming
         // included), Custom boost levels, lighting (its keyboard is a single
         // zone, so no Wave) and the controller temperature work. Its firmware
