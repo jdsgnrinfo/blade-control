@@ -12,7 +12,7 @@ internal static class ExternalLinks
     public static void OpenRazerDrivers() => Open(RazerDriversUrl);
 
     /// <summary>This project on GitHub: its code, changes and releases.</summary>
-    public const string ProjectUrl = "https://github.com/jdsgnrinfo/razer-helper";
+    public const string ProjectUrl = "https://github.com/jdsgnrinfo/blade-control";
 
     public static void OpenProjectPage() => Open(ProjectUrl);
 
