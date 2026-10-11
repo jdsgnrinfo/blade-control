@@ -140,8 +140,9 @@ enlace está en la app, en Ajustes.
 
 ## Créditos y licencia
 
-MIT, ver [LICENSE](LICENSE). Basado en Razer Helper de Paul Rodriguez y
-jdsgnrinfo. Titillium Web tiene licencia SIL Open Font License 1.1.
+MIT, ver [LICENSE](LICENSE). Hecho por Jotadsgnr. La idea viene de
+[Razer Helper](https://github.com/Paulrod20/razer-helper) de Paul Rodriguez.
+Titillium Web tiene licencia SIL Open Font License 1.1.
 
 Blade Control no está hecho por Razer Inc. ni afiliado a ella. Razer y Blade
 son marcas de Razer Inc. Cambia ajustes del controlador del portátil y
