@@ -297,6 +297,16 @@ internal static class L
         // Lighting.
         ["Lighting"] = "Iluminación",
         ["Keyboard"] = "Teclado",
+        ["Game mode"] = "Modo juego",
+        ["Game mode off"] = "Modo juego desactivado",
+        ["Turn on"] = "Activar",
+        ["Turn off"] = "Desactivar",
+        ["Blocks the Windows key, so it cannot take you out of a game. Apps can turn it on while they run."] =
+            "Bloquea la tecla Windows para que no te saque del juego. Las apps pueden activarlo mientras están abiertas.",
+        ["Also block Alt+Tab"] = "Bloquear también Alt+Tab",
+        ["Also block Alt+F4"] = "Bloquear también Alt+F4",
+        ["On while {0} runs."] = "Activado mientras {0} está abierto.",
+        ["Off while {0} runs."] = "Desactivado mientras {0} está abierto.",
         ["Logo"] = "Logo",
         ["Off"] = "Apagado",
         ["On"] = "Encendido",

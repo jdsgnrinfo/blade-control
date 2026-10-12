@@ -34,16 +34,21 @@ temperaturas.
   instalados con Steam, Epic Games, Xbox y Battle.net.
 - **Iluminación**: efectos, color y brillo del teclado y del logo, y el
   teclado que se apaga con la pantalla, por inactividad o con poca batería.
+  El modo juego bloquea la tecla Windows (y Alt+Tab o Alt+F4, si se elige), a
+  mano o mientras corre un juego con perfil en Apps.
 - **Pantalla**: la frecuencia de actualización de la pantalla interna (Auto
   sigue al cargador), un perfil de color (Estándar, Luz nocturna, Neutro,
   Contraste) que se mantiene al cerrar la app, si hay una pantalla externa
-  conectada y *Solo gráficos integrados* (ver abajo).
+  conectada (con la opción de seguir funcionando con la tapa cerrada mientras
+  lo está, enchufado) y *Solo gráficos integrados* (ver abajo).
 - **Batería**: la carga, la potencia y el tiempo restante, las últimas 24
   horas según el informe de batería de Windows y la salud de la batería.
 - **Optimizar**: liberar memoria, archivos temporales y la caché de shaders,
   las apps que mantienen despierta la GPU dedicada, la hibernación y el
   software de Razer.
-- **Panel del portátil**: la foto y el modelo, la batería, el plan de energía
+- **Panel del portátil**: la foto y el modelo, la batería y los vatios que
+  entran o salen (también al pasar el ratón por el icono de la bandeja), el
+  plan de energía
   de Windows y las temperaturas de CPU y GPU (azul, que pasa a rojo por encima
   de 60 °C) con la media de la última hora.
 - **Bandeja del sistema**: al cerrar la ventana la app sigue en la bandeja; un

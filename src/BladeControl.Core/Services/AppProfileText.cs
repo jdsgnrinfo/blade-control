@@ -33,6 +33,9 @@ internal static class AppProfileText
         if (profile.KeyboardBrightness is { } percent && profile.Keyboard != KeyboardEffect.Off)
             parts.Add(L.F("Keyboard {0}%", percent));
 
+        if (profile.GameMode is { } gameMode)
+            parts.Add(gameMode ? L.T("Game mode") : L.T("Game mode off"));
+
         return parts.Count == 0 ? L.T("No changes yet") : string.Join(Separator, parts);
     }
 

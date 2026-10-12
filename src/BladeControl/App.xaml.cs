@@ -434,6 +434,7 @@ public partial class App : Application
     {
         _viewModel?.Performance.TurnOffMaxFanBeforeExit();
         _viewModel?.Lighting.Shutdown();
+        _viewModel?.GameMode.Dispose();
         _viewModel?.Optimize.Dispose();
         _viewModel?.Display.Dispose();
         _viewModel?.Battery.Dispose();

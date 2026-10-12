@@ -326,6 +326,15 @@
                         <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding BrightnessOptions}" SelectedIndex="{Binding BrightnessIndex}" />
                     </Grid>
 
+                    <Grid Style="{StaticResource SettingRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Game mode'}" />
+                        <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding GameModeOptions}" SelectedIndex="{Binding GameModeIndex}" />
+                    </Grid>
+
                     <ContentControl Style="{StaticResource NoteBox}" Margin="0,18,0,0"
                                     Content="{ui:T 'No change leaves that setting as it is. Custom and maximum fans need the charger: on battery, the battery mode stays.'}" />
 

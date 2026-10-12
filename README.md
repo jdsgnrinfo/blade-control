@@ -30,16 +30,20 @@ power plan and temperatures.
   it closes, with a notice. Games installed with Steam, Epic Games, Xbox and
   Battle.net are found for you.
 - **Lighting**: keyboard and logo effects, color and brightness, and the
-  keyboard going dark with the screen, when idle or on low battery.
+  keyboard going dark with the screen, when idle or on low battery. Game
+  mode blocks the Windows key (and Alt+Tab or Alt+F4, if chosen), by hand or
+  while a game with an app profile runs.
 - **Display**: the internal screen's refresh rate (Auto follows the charger),
   a color profile (Standard, Night light, Neutral, Contrast) that stays on
-  after the app closes, whether an external display is connected, and
+  after the app closes, whether an external display is connected (and an
+  option to keep running with the lid closed while one is, plugged in), and
   *Integrated graphics only* (see below).
 - **Battery**: the charge, power and time left, the last 24 hours from
   Windows' own battery report, and the battery's health.
 - **Optimize**: freeing memory, temporary files and the shader cache, the
   apps keeping the dedicated GPU awake, hibernation, and Razer's own software.
-- **Device panel**: the laptop's picture and model, battery, Windows' power
+- **Device panel**: the laptop's picture and model, battery and the watts
+  going in or out (also on the tray icon's hover), Windows' power
   plan, and CPU and GPU temperatures (blue, turning red past 60 °C) with the
   last hour's average.
 - **Tray**: closing the window keeps the app in the tray; a click on its icon

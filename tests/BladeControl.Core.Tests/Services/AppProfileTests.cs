@@ -85,6 +85,18 @@ public class AppProfileTests
     }
 
     [Fact]
+    public void GameMode_CountsAsAChange_AndIsInTheSummary()
+    {
+        var on = new AppProfile("Game", "game.exe", GameMode: true);
+        var off = new AppProfile("Game", "game.exe", GameMode: false);
+
+        Assert.True(on.ChangesAnything);
+        Assert.True(off.ChangesAnything);
+        Assert.Equal("Game mode", AppProfileText.Summary(on));
+        Assert.Equal("Game mode off", AppProfileText.Summary(off));
+    }
+
+    [Fact]
     public void OnlyStaticAndBreathing_TakeAColor()
     {
         Assert.True(AppProfile.TakesColor(KeyboardEffect.StaticGreen));

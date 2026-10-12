@@ -37,12 +37,14 @@ internal sealed record AppProfile(
     int? KeyboardBrightness = null,
     // The keyboard's color, with an effect that takes one (Static, Breathing),
     // on the laptops that show one.
-    RgbColor? KeyboardColor = null)
+    RgbColor? KeyboardColor = null,
+    // Game mode (the Windows key blocked) on or off while the app runs.
+    bool? GameMode = null)
 {
     /// <summary>Whether the profile changes anything at all.</summary>
     public bool ChangesAnything =>
         Mode is not null || MaxFan is not null || RefreshHz is not null || ColorProfile is not null ||
-        Keyboard is not null || KeyboardBrightness is not null || KeyboardColor is not null;
+        Keyboard is not null || KeyboardBrightness is not null || KeyboardColor is not null || GameMode is not null;
 
     /// <summary>The effects that show a chosen color; the others run through their own colors.</summary>
     public static bool TakesColor(KeyboardEffect? effect) => effect is KeyboardEffect.StaticGreen or KeyboardEffect.Breathing;

@@ -32,7 +32,8 @@ internal sealed partial class MainViewModel : ObservableObject
         Battery = new BatteryViewModel(services);
         Optimize = new OptimizeViewModel(services, Report);
         Settings = new SettingsViewModel(services, Report);
-        Apps = new AppsViewModel(services, Performance, Display, Lighting, Report);
+        GameMode = new GameModeViewModel(services);
+        Apps = new AppsViewModel(services, Performance, Display, Lighting, GameMode, Report);
         Device = new DevicePanelViewModel(services);
 
         _statusTimer.Tick += (_, _) =>
@@ -49,6 +50,9 @@ internal sealed partial class MainViewModel : ObservableObject
     public AppsViewModel Apps { get; }
 
     public LightingViewModel Lighting { get; }
+
+    /// <summary>Game mode, shown on the Lighting page's Keyboard card.</summary>
+    public GameModeViewModel GameMode { get; }
 
     public DisplayViewModel Display { get; }
 
