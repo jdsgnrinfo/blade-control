@@ -86,19 +86,20 @@ public sealed class ChargeChart : FrameworkElement
                 context.DrawRectangle(shade, null, new Rect(from, plot.Top - TopRoom + 12, to - from, plot.Bottom - plot.Top + TopRoom - 12));
         }
 
-        // Dashed guides at a quarter, half and three quarters; 100%, 50% and 0% beside the scale.
+        // 100%, 50% and 0% beside the scale, each on its own line: dashed guides at
+        // 100% and 50%, the solid baseline (drawn below) at 0%. The digits, not the
+        // text's box, are centered on the line, so a label never sits off its guide.
         var dashed = Frozen(new Pen(lineBrush, 1) { DashStyle = new DashStyle([3, 4], 0) });
-        foreach (var level in new[] { 0.25, 0.5, 0.75 })
-        {
-            var y = Math.Round(plot.Bottom - level * plot.Height) + 0.5;
-            context.DrawLine(dashed, new Point(plot.Left, y), new Point(plot.Right, y));
-        }
-
         foreach (var (level, label) in new[] { (1.0, "100%"), (0.5, "50%"), (0.0, "0%") })
         {
+            var y = level == 0 ? plot.Bottom + 0.5 : Math.Round(plot.Bottom - level * plot.Height) + 0.5;
+
+            if (level > 0)
+                context.DrawLine(dashed, new Point(plot.Left, y), new Point(plot.Right, y));
+
             var formatted = Text(label, text);
-            var y = plot.Bottom - level * plot.Height;
-            context.DrawText(formatted, new Point(plot.Left - 10 - formatted.Width, y - formatted.Height / 2));
+            var digitsHalf = FontFace().CapsHeight * FontSize / 2;
+            context.DrawText(formatted, new Point(plot.Left - 10 - formatted.Width, y - formatted.Baseline + digitsHalf));
         }
 
         // The charge: a soft fill fading down, and the line over it.
@@ -243,9 +244,11 @@ public sealed class ChargeChart : FrameworkElement
     }
 
     private FormattedText Text(string value, Brush brush) =>
-        new(value, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface(TextElement.GetFontFamily(this), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal),
+        new(value, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, FontFace(),
             FontSize, brush, VisualTreeHelper.GetDpi(this).PixelsPerDip);
+
+    private Typeface FontFace() =>
+        new(TextElement.GetFontFamily(this), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal);
 
     private static T Frozen<T>(T freezable) where T : Freezable
     {
