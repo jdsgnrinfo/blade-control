@@ -6,7 +6,7 @@ internal enum ColorProfile
     /// <summary>The screen as it was before the app changed it.</summary>
     Standard,
 
-    /// <summary>Less blue, about 4000 K: easier on the eyes at night.</summary>
+    /// <summary>Less blue, about 4500 K: easier on the eyes at night.</summary>
     Warm,
 
     /// <summary>
@@ -40,7 +40,7 @@ internal static class ColorProfiles
     {
         var (red, green, blue) = profile switch
         {
-            ColorProfile.Warm => (1.00, 0.81, 0.65),
+            ColorProfile.Warm => (1.00, 0.86, 0.73),
             ColorProfile.Cool => (0.90, 0.95, 1.00),
             _ => (1.00, 1.00, 1.00)
         };
