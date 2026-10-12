@@ -31,8 +31,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border x:Name="Back" Background="Transparent" BorderBrush="Transparent" BorderThickness="1"
-                                CornerRadius="{StaticResource Radius.Control}" Padding="12,10">
+                        <Border x:Name="Back" Background="Transparent" BorderBrush="Transparent" BorderThickness="2"
+                                CornerRadius="{StaticResource Radius.Control}" Padding="11,9">
                             <ContentPresenter />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -40,8 +40,8 @@
                                 <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.Tile}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.Tile}" />
-                                <Setter TargetName="Back" Property="BorderBrush" Value="{StaticResource Brush.AccentDim}" />
+                                <Setter TargetName="Back" Property="Background" Value="Transparent" />
+                                <Setter TargetName="Back" Property="BorderBrush" Value="{StaticResource Brush.Accent}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
