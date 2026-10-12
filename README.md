@@ -71,12 +71,14 @@ power plan and temperatures.
 
 | | |
 | --- | --- |
-| ![Performance](docs/images/en/performance.png) | ![Lighting](docs/images/en/lighting.png) |
-| **Performance** | **Lighting** |
-| ![Display](docs/images/en/display.png) | ![Battery](docs/images/en/battery.png) |
-| **Display** | **Battery** |
-| ![Optimize](docs/images/en/optimize.png) | ![Settings](docs/images/en/settings.png) |
-| **Optimize** | **Settings** |
+| ![Performance](docs/images/en/performance.png) | ![Apps](docs/images/en/apps.png) |
+| **Performance** | **Apps** |
+| ![Lighting](docs/images/en/lighting.png) | ![Display](docs/images/en/display.png) |
+| **Lighting** | **Display** |
+| ![Battery](docs/images/en/battery.png) | ![Optimize](docs/images/en/optimize.png) |
+| **Battery** | **Optimize** |
+| ![Settings](docs/images/en/settings.png) | |
+| **Settings** | |
 
 ## Integrated graphics only
 

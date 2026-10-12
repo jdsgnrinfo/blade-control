@@ -77,12 +77,14 @@ temperaturas.
 
 | | |
 | --- | --- |
-| ![Rendimiento](docs/images/es/performance.png) | ![Iluminación](docs/images/es/lighting.png) |
-| **Rendimiento** | **Iluminación** |
-| ![Pantalla](docs/images/es/display.png) | ![Batería](docs/images/es/battery.png) |
-| **Pantalla** | **Batería** |
-| ![Optimizar](docs/images/es/optimize.png) | ![Ajustes](docs/images/es/settings.png) |
-| **Optimizar** | **Ajustes** |
+| ![Rendimiento](docs/images/es/performance.png) | ![Apps](docs/images/es/apps.png) |
+| **Rendimiento** | **Apps** |
+| ![Iluminación](docs/images/es/lighting.png) | ![Pantalla](docs/images/es/display.png) |
+| **Iluminación** | **Pantalla** |
+| ![Batería](docs/images/es/battery.png) | ![Optimizar](docs/images/es/optimize.png) |
+| **Batería** | **Optimizar** |
+| ![Ajustes](docs/images/es/settings.png) | |
+| **Ajustes** | |
 
 ## Solo gráficos integrados
 
