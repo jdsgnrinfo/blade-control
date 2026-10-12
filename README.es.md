@@ -1,9 +1,12 @@
-<h1>
+<p align="center">
+  <br>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo-dark.png">
     <img src="docs/images/logo-light.png" alt="Blade Control" width="375">
   </picture>
-</h1>
+  <br>
+  <br>
+</p>
 
 [English](README.md) · **Español**
 
