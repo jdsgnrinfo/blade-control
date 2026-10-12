@@ -101,19 +101,26 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     /// <summary>Custom is plugged-in only, as in Synapse.</summary>
     public bool CustomOffered => IsModeOffered(PerformanceMode.Custom);
 
-    public bool IsCpuLow { get => ShownCpu == CpuBoost.Low; set => PickCpu(value, CpuBoost.Low); }
+    private static readonly CpuBoost[] CpuLevels = [CpuBoost.Low, CpuBoost.Medium, CpuBoost.High, CpuBoost.Boost];
+    private static readonly GpuBoost[] GpuLevels = [GpuBoost.Low, GpuBoost.Medium, GpuBoost.High];
 
-    public bool IsCpuMedium { get => ShownCpu == CpuBoost.Medium; set => PickCpu(value, CpuBoost.Medium); }
+    public IReadOnlyList<string> CpuOptions { get; } = [L.T("Low"), L.T("Medium"), L.T("High"), L.T("Boost")];
 
-    public bool IsCpuHigh { get => ShownCpu == CpuBoost.High; set => PickCpu(value, CpuBoost.High); }
+    public IReadOnlyList<string> GpuOptions { get; } = [L.T("Low"), L.T("Medium"), L.T("High")];
 
-    public bool IsCpuBoost { get => ShownCpu == CpuBoost.Boost; set => PickCpu(value, CpuBoost.Boost); }
+    /// <summary>The CPU level in its dropdown; High until one is known.</summary>
+    public int CpuIndex
+    {
+        get => Math.Max(0, Array.IndexOf(CpuLevels, ShownCpu ?? CpuBoost.High));
+        set => PickCpu(value >= 0, CpuLevels[Math.Clamp(value, 0, CpuLevels.Length - 1)]);
+    }
 
-    public bool IsGpuLow { get => ShownGpu == GpuBoost.Low; set => PickGpu(value, GpuBoost.Low); }
-
-    public bool IsGpuMedium { get => ShownGpu == GpuBoost.Medium; set => PickGpu(value, GpuBoost.Medium); }
-
-    public bool IsGpuHigh { get => ShownGpu == GpuBoost.High; set => PickGpu(value, GpuBoost.High); }
+    /// <summary>The GPU level in its dropdown; High until one is known.</summary>
+    public int GpuIndex
+    {
+        get => Math.Max(0, Array.IndexOf(GpuLevels, ShownGpu ?? GpuBoost.High));
+        set => PickGpu(value >= 0, GpuLevels[Math.Clamp(value, 0, GpuLevels.Length - 1)]);
+    }
 
     /// <summary>The levels can be changed: Custom on the source the laptop is on now (the EC only takes them in Custom).</summary>
     public bool CanChangeLevels => !_busy && EditingCurrentSource && PowerProfileRules.CanChangeBoost(_state, IsPluggedIn);

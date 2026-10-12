@@ -38,28 +38,30 @@
                     </UniformGrid>
     
                     <!-- Custom's levels: shown in Custom, changeable on the power source the laptop is on now. -->
-                    <StackPanel Visibility="{Binding IsCustom, Converter={StaticResource Visible}}" Margin="0,30,0,0">
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <Path Width="15" Height="15" Data="{StaticResource Icon.Cpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,8,0" />
-                            <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'CPU preset'}" />
+                    <!-- Each level on its own row: the name on the left, its dropdown on the right. -->
+                    <Grid Visibility="{Binding IsCustom, Converter={StaticResource Visible}}" Margin="0,30,0,0" IsEnabled="{Binding CanChangeLevels}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,24,0">
+                            <Path Width="15" Height="15" Data="{StaticResource Icon.Cpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,10,0" />
+                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'CPU preset'}" VerticalAlignment="Center" />
                         </StackPanel>
-                        <UniformGrid Columns="4" IsEnabled="{Binding CanChangeLevels}">
-                            <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="0,0,6,0" Content="{ui:T 'Low'}" IsChecked="{Binding IsCpuLow}" />
-                            <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="3,0" Content="{ui:T 'Medium'}" IsChecked="{Binding IsCpuMedium}" />
-                            <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="3,0" Content="{ui:T 'High'}" IsChecked="{Binding IsCpuHigh}" />
-                            <RadioButton Style="{StaticResource Tile}" GroupName="Cpu" Margin="6,0,0,0" Content="{ui:T 'Boost'}" IsChecked="{Binding IsCpuBoost}" />
-                        </UniformGrid>
-    
-                        <StackPanel Orientation="Horizontal" Margin="0,28,0,12">
-                            <Path Width="15" Height="15" Data="{StaticResource Icon.Gpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,8,0" />
-                            <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'GPU preset'}" />
+                        <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" MinWidth="160"
+                                  ItemsSource="{Binding CpuOptions}" SelectedIndex="{Binding CpuIndex}" />
+
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,12,24,0">
+                            <Path Width="15" Height="15" Data="{StaticResource Icon.Gpu}" Fill="{StaticResource Brush.TextMuted}" Stretch="Uniform" Margin="0,0,10,0" />
+                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'GPU preset'}" VerticalAlignment="Center" />
                         </StackPanel>
-                        <UniformGrid Columns="4" IsEnabled="{Binding CanChangeLevels}">
-                            <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="0,0,6,0" Content="{ui:T 'Low'}" IsChecked="{Binding IsGpuLow}" />
-                            <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="3,0" Content="{ui:T 'Medium'}" IsChecked="{Binding IsGpuMedium}" />
-                            <RadioButton Style="{StaticResource Tile}" GroupName="Gpu" Margin="3,0" Content="{ui:T 'High'}" IsChecked="{Binding IsGpuHigh}" />
-                        </UniformGrid>
-                    </StackPanel>
+                        <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource Dropdown}" MinWidth="160" Margin="0,12,0,0"
+                                  ItemsSource="{Binding GpuOptions}" SelectedIndex="{Binding GpuIndex}" />
+                    </Grid>
     
                     <Border Style="{StaticResource Separator}" Margin="0,30,0,24" />
     
