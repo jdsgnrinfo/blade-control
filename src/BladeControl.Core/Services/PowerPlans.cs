@@ -15,8 +15,8 @@ internal interface IPowerPlans
     /// <summary>Adds a copy of <paramref name="source"/> with the id <paramref name="copy"/>.</summary>
     void Duplicate(Guid source, Guid copy);
 
-    /// <summary>Sets a processor setting (by its powercfg alias) plugged in and on battery; false when this PC does not have it.</summary>
-    bool SetProcessorValue(Guid plan, string setting, uint pluggedIn, uint onBattery);
+    /// <summary>Sets a setting (its group and itself, by powercfg alias or id) plugged in and on battery; false when this PC does not have it.</summary>
+    bool SetValue(Guid plan, string group, string setting, uint pluggedIn, uint onBattery);
 
     void Rename(Guid plan, string name, string description);
 }

@@ -60,9 +60,9 @@ internal sealed class WindowsPowerPlans : IPowerPlans
             throw new Win32Exception($"Windows did not create the power plan {copy}.");
     }
 
-    public bool SetProcessorValue(Guid plan, string setting, uint pluggedIn, uint onBattery) =>
-        PowerCfg("/setacvalueindex", plan.ToString(), "SUB_PROCESSOR", setting, pluggedIn.ToString(CultureInfo.InvariantCulture)) &&
-        PowerCfg("/setdcvalueindex", plan.ToString(), "SUB_PROCESSOR", setting, onBattery.ToString(CultureInfo.InvariantCulture));
+    public bool SetValue(Guid plan, string group, string setting, uint pluggedIn, uint onBattery) =>
+        PowerCfg("/setacvalueindex", plan.ToString(), group, setting, pluggedIn.ToString(CultureInfo.InvariantCulture)) &&
+        PowerCfg("/setdcvalueindex", plan.ToString(), group, setting, onBattery.ToString(CultureInfo.InvariantCulture));
 
     public void Rename(Guid plan, string name, string description) =>
         PowerCfg("/changename", plan.ToString(), name, description);

@@ -47,9 +47,9 @@ temperaturas.
   software de Razer.
 - **Panel del portátil**: la foto y el modelo, la batería y los vatios que
   entran o salen (también al pasar el ratón por el icono de la bandeja), el
-  plan de energía
-  de Windows y las temperaturas de CPU y GPU (azul, que pasa a rojo por encima
-  de 60 °C) con la media de la última hora.
+  plan de energía de Windows (con un plan "Razer Blade" para instalar:
+  rendimiento enchufado, duración con batería) y las temperaturas de CPU y GPU
+  (azul, que pasa a rojo por encima de 60 °C) con la media de la última hora.
 - **Bandeja del sistema**: al cerrar la ventana la app sigue en la bandeja; un
   clic en su icono la abre otra vez y Salir en su menú la cierra. Puede
   iniciarse con Windows.

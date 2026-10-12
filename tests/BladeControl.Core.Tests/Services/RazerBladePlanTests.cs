@@ -5,7 +5,7 @@ namespace BladeControl.Core.Tests.Services;
 public sealed class RazerBladePlanTests
 {
     [Fact]
-    public void Installing_CopiesBalanced_SetsTheProcessor_NamesIt_AndMakesItActive()
+    public void Installing_CopiesBalanced_SetsEverySetting_NamesIt_AndMakesItActive()
     {
         var plans = new FakePlans();
 
@@ -14,7 +14,8 @@ public sealed class RazerBladePlanTests
         Assert.Empty(refused);
         Assert.Equal((RazerBladePlan.Balanced, RazerBladePlan.Id), Assert.Single(plans.Copies));
         Assert.Equal(RazerBladePlan.Values.Count, plans.Values.Count);
-        Assert.Contains((RazerBladePlan.Id, "PERFBOOSTMODE", 2u, 3u), plans.Values);
+        Assert.Contains((RazerBladePlan.Id, "SUB_PROCESSOR", "PERFBOOSTMODE", 2u, 3u), plans.Values);
+        Assert.Contains((RazerBladePlan.Id, "SUB_PCIEXPRESS", "ASPM", 0u, 2u), plans.Values);
         Assert.Equal((RazerBladePlan.Id, "Razer Blade", RazerBladePlan.Description(false)), plans.Name);
         Assert.Equal(RazerBladePlan.Id, plans.ActiveId);
     }
@@ -33,13 +34,13 @@ public sealed class RazerBladePlanTests
     }
 
     [Fact]
-    public void ASettingThePcLacks_IsReported_ButTheEfficiencyCoresOneIsNot()
+    public void ASettingThePcLacks_IsReported_ButTheOptionalOnesAreNot()
     {
-        var plans = new FakePlans { Refuse = ["PERFEPP1", "CPMINCORES"] };
+        var plans = new FakePlans { Refuse = ["PERFEPP1", "CPMINCORES", "3619c3f2-afb2-4afc-b0e9-e7fef372de36"] };
 
         var refused = RazerBladePlan.Install(plans, spanish: false);
 
-        Assert.Equal(["CPMINCORES"], refused);
+        Assert.Equal(["Cores kept unparked, %"], refused);
         Assert.Equal(RazerBladePlan.Id, plans.ActiveId);
     }
 
@@ -49,7 +50,7 @@ public sealed class RazerBladePlanTests
 
         public List<(Guid Source, Guid Copy)> Copies { get; } = [];
 
-        public List<(Guid Plan, string Setting, uint PluggedIn, uint OnBattery)> Values { get; } = [];
+        public List<(Guid Plan, string Group, string Setting, uint PluggedIn, uint OnBattery)> Values { get; } = [];
 
         public (Guid Plan, string Name, string Description)? Name { get; private set; }
 
@@ -69,12 +70,12 @@ public sealed class RazerBladePlanTests
             Existing.Add(new PowerPlan(copy, "Copy"));
         }
 
-        public bool SetProcessorValue(Guid plan, string setting, uint pluggedIn, uint onBattery)
+        public bool SetValue(Guid plan, string group, string setting, uint pluggedIn, uint onBattery)
         {
             if (Refuse.Contains(setting))
                 return false;
 
-            Values.Add((plan, setting, pluggedIn, onBattery));
+            Values.Add((plan, group, setting, pluggedIn, onBattery));
             return true;
         }
 
