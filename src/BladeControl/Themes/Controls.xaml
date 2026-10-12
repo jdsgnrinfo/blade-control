@@ -687,6 +687,19 @@
         </Setter>
     </Style>
 
+    <!-- A link in running text, as Display's "More information": green, underlined under the pointer. -->
+    <Style x:Key="NoteLink" TargetType="Hyperlink">
+        <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
+        <Setter Property="TextDecorations" Value="{x:Null}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource Brush.AccentHover}" />
+                <Setter Property="TextDecorations" Value="Underline" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- ===== Action rows ===== -->
 
     <!-- A small dark button with green words, at the right of a row: Clean, Free up, Open... -->

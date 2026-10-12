@@ -153,30 +153,15 @@
 
             <!-- ===== Buy me a coffee: a link to the author's PayPal ===== -->
             <Border Style="{StaticResource Card}" VerticalAlignment="Top">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <!-- A cup with steam rising, in the accent green. -->
-                    <Border Width="52" Height="52" CornerRadius="26" Background="{StaticResource Brush.AccentDim}"
-                            VerticalAlignment="Top" Margin="0,2,18,0">
-                        <Path Width="26" Height="26" Stretch="Uniform" Stroke="{StaticResource Brush.Accent}" StrokeThickness="1.8"
-                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                              Data="M4,10 L16,10 L16,15 A5,5 0 0 1 11,20 L9,20 A5,5 0 0 1 4,15 Z M16,11.5 L17.5,11.5 A2.5,2.5 0 0 1 17.5,16.5 L16,16.5 M7.5,3 C7.5,4.5 9,4.5 9,6 M11.5,3 C11.5,4.5 13,4.5 13,6" />
-                    </Border>
-
-                    <StackPanel Grid.Column="1">
-                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Buy me a coffee'}" />
-                        <TextBlock Style="{StaticResource Text.Hint}" Margin="0,8,0,0" TextWrapping="Wrap"
-                                   Text="{ui:T 'Blade Control is free and made in my spare time. If it is useful to you, you can buy me a coffee: it helps me keep improving it.'}" />
-                        <Button Style="{StaticResource ActionButton}" Margin="0,16,0,0" HorizontalAlignment="Left"
-                                Background="{StaticResource Brush.Accent}" Foreground="{StaticResource Brush.OnAccent}"
-                                Content="{ui:T 'Buy me a coffee on PayPal'}" Command="{Binding OpenDonationCommand}"
-                                ToolTip="paypal.me/jotica96" />
-                    </StackPanel>
-                </Grid>
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Buy me a coffee'}" />
+                    <TextBlock Style="{StaticResource Text.Hint}" Margin="0,8,0,0" TextWrapping="Wrap"
+                               Text="{ui:T 'Blade Control is free and made in my spare time. If it is useful to you, you can buy me a coffee: it helps me keep improving it.'}" />
+                    <!-- A link like Display's "More information". -->
+                    <TextBlock Margin="0,14,0,0" FontSize="13" HorizontalAlignment="Left">
+                        <Hyperlink Style="{StaticResource NoteLink}" Command="{Binding OpenDonationCommand}" ToolTip="paypal.me/jotica96"><Run Text="{ui:T 'Buy me a coffee on PayPal'}" /></Hyperlink>
+                    </TextBlock>
+                </StackPanel>
             </Border>
         </StackPanel>
     </ui:AdaptiveColumns>
