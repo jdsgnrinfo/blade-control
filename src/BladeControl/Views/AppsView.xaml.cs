@@ -29,6 +29,39 @@ public partial class AppsView : UserControl
 
             _window = null;
         };
+
+        DataContextChanged += (_, e) =>
+        {
+            if (e.OldValue is AppsViewModel before)
+                before.PropertyChanged -= ViewModel_PropertyChanged;
+
+            if (e.NewValue is AppsViewModel after)
+                after.PropertyChanged += ViewModel_PropertyChanged;
+        };
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(AppsViewModel.Selected) && sender is AppsViewModel { Selected: not null })
+            Dispatcher.BeginInvoke(ShowEditor, System.Windows.Threading.DispatcherPriority.Loaded);
+    }
+
+    // An app was picked: in a window narrow enough that the settings sit under the list,
+    // the page glides down to them (or up, if they are above), so its settings are in view.
+    private void ShowEditor()
+    {
+        if (!IsVisible || FindAncestor<ScrollViewer>(this) is not { } page || !EditorCard.IsVisible)
+            return;
+
+        var top = EditorCard.TransformToAncestor(page).Transform(new Point(0, 0)).Y;
+        var bottom = top + EditorCard.ActualHeight;
+        const double margin = 16;
+
+        // Already in view (or its top is, when it is taller than the window).
+        if (top >= 0 && (bottom <= page.ViewportHeight || top <= page.ViewportHeight / 3))
+            return;
+
+        UI.SmoothScroll.GlideTo(page, page.VerticalOffset + top - margin);
     }
 
     // A click on the app already picked closes its settings again.

@@ -42,14 +42,20 @@ public static class SmoothScroll
     {
         var viewer = (ScrollViewer)sender;
 
-        // A list that scrolls itself under the pointer keeps the wheel.
-        if (e.OriginalSource is DependencyObject source && InnerScroller(source, viewer) is not null)
+        // A list that scrolls itself under the pointer keeps the wheel, until it reaches its end that way.
+        if (e.OriginalSource is DependencyObject source && InnerScroller(source, viewer, e.Delta) is not null)
             return;
 
         e.Handled = true;
 
         var current = viewer.GetValue(TargetProperty) is double target && !double.IsNaN(target) ? target : viewer.VerticalOffset;
-        var next = Math.Clamp(current - e.Delta / 120.0 * NotchPixels, 0, viewer.ScrollableHeight);
+        GlideTo(viewer, current - e.Delta / 120.0 * NotchPixels);
+    }
+
+    /// <summary>Glides the page to <paramref name="offset"/>, as the wheel does; straight there with Windows' animations off.</summary>
+    public static void GlideTo(ScrollViewer viewer, double offset)
+    {
+        var next = Math.Clamp(offset, 0, viewer.ScrollableHeight);
 
         if (Motion.Reduced)
         {
@@ -82,12 +88,14 @@ public static class SmoothScroll
         CompositionTarget.Rendering += Frame;
     }
 
-    // Something between the pointer and the page that takes the wheel itself: a list that scrolls.
-    private static DependencyObject? InnerScroller(DependencyObject source, ScrollViewer page)
+    // Something between the pointer and the page that takes the wheel itself: a list that can
+    // still scroll the way the wheel turned. At its end (or top) the page moves on instead.
+    private static DependencyObject? InnerScroller(DependencyObject source, ScrollViewer page, int delta)
     {
         for (var element = source; element is not null && element != page; element = Parent(element))
         {
-            if (element is ScrollViewer inner && inner.ScrollableHeight > 0)
+            if (element is ScrollViewer inner && inner.ScrollableHeight > 0 &&
+                (delta < 0 ? inner.VerticalOffset < inner.ScrollableHeight - 0.5 : inner.VerticalOffset > 0.5))
                 return inner;
         }
 
