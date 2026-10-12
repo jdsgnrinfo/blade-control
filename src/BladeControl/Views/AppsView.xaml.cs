@@ -53,6 +53,20 @@ public partial class AppsView : UserControl
         if (!IsVisible || FindAncestor<ScrollViewer>(this) is not { } page || !EditorCard.IsVisible)
             return;
 
+        // Not while the button is still down: the list picks whatever app slides under a held
+        // pointer, so the page waits for the click to end before it moves.
+        if (Mouse.LeftButton == MouseButtonState.Pressed && _window is { } window)
+        {
+            void Released(object sender, MouseButtonEventArgs e)
+            {
+                window.PreviewMouseLeftButtonUp -= Released;
+                Dispatcher.BeginInvoke(ShowEditor, System.Windows.Threading.DispatcherPriority.Input);
+            }
+
+            window.PreviewMouseLeftButtonUp += Released;
+            return;
+        }
+
         var top = EditorCard.TransformToAncestor(page).Transform(new Point(0, 0)).Y;
         var bottom = top + EditorCard.ActualHeight;
         const double margin = 16;
