@@ -41,7 +41,7 @@ internal static class RazerLaptopModels
         new RazerLaptopModel(0x02A0, "Razer Blade 18 (2023)", Verified: false),
         new RazerLaptopModel(0x02B6, "Razer Blade 14 (2024)", Verified: false),
         new RazerLaptopModel(0x02B8, "Razer Blade 18 (2024)", Verified: false),
-        new RazerLaptopModel(0x02C5, "Razer Blade 14 (2025)", Verified: false),
+        new RazerLaptopModel(0x02C5, "Razer Blade 14 (2025)", Verified: true), // Confirmed by a user on their own.
         new RazerLaptopModel(0x02C7, "Razer Blade 18 (2025)", Verified: false),
         new RazerLaptopModel(0x02E0, "Razer Blade 16 (2026)", Verified: false),
         new RazerLaptopModel(0x02E1, "Razer Blade 18 (2026)", Verified: false),

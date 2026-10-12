@@ -72,7 +72,8 @@ This is not a MUX switch: on laptops without one, such as the Blade 15 Base
 
 ## Supported laptops
 
-Verified on a **Razer Blade 16 (2023)** and a **Razer Blade 15 Base (2020)**.
+Verified on a **Razer Blade 15 Base (2020)**, a **Razer Blade 14 (2025)** and a
+**Razer Blade 16 (2023)**.
 Every Razer Blade from 2021 on is recognized (Blade 14, 15, 16, 17 and 18,
 including the 2025 and 2026 models). They use the same commands and are
 expected to work; a command a laptop's firmware does not have is refused
