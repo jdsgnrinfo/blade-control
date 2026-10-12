@@ -34,6 +34,10 @@ internal static class RazerCommands
     // so it looks like a sensor near the CPU, not the CPU die itself.
     public const ushort GetTemperatures = 0x0D85;
 
+    // Class 0x07: what powers the laptop, [source, ?]. Read only. 0 is the
+    // battery; a Blade 15 Base (2020) answers 0x0D with its own charger in.
+    public const ushort GetPowerSource = 0x078C;
+
     // Class 0x07: max fan speed. Custom performance mode only.
     public const ushort SetMaxFan = 0x070F;
     public const ushort GetMaxFan = 0x078F;

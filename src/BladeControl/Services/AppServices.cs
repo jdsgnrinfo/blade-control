@@ -28,6 +28,7 @@ internal sealed class AppServices : IDisposable
         FanTelemetry = new FanTelemetryService(_transport);
         EcTemperatures = new EcTemperatureService(_transport);
         FirmwareVersion = new FirmwareVersionService(_transport);
+        Charger = new ChargerService(_transport);
         ChargeLimit = new BatteryChargeLimitService(_transport);
         Lighting = new LightingService(_transport, Model?.HasKeyboardColor == true);
 
@@ -81,6 +82,9 @@ internal sealed class AppServices : IDisposable
 
     /// <summary>The controller's firmware version, for the laptop panel.</summary>
     public FirmwareVersionService FirmwareVersion { get; }
+
+    /// <summary>Which charger is in, for the laptop panel.</summary>
+    public ChargerService Charger { get; }
 
     public BatteryChargeLimitService ChargeLimit { get; }
 

@@ -68,6 +68,8 @@ internal static class L
         ["Power source profiles"] = "Perfiles por fuente de energía",
         ["Power plan"] = "Plan de energía",
         ["Firmware"] = "Firmware",
+        ["Charger"] = "Cargador",
+        ["Main"] = "Principal",
         ["The one Windows uses."] = "El que usa Windows.",
         ["Install Razer Blade plan"] = "Instalar plan Razer Blade",
         ["Installing..."] = "Instalando...",

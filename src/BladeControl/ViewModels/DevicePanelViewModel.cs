@@ -135,6 +135,19 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
 
     public bool HasFirmware => FirmwareText is not null;
 
+    /// <summary>The charger in ("USB-C · 65 W", "Main"); null on battery, so the row is hidden.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCharger))]
+    private string? _chargerText;
+
+    public bool HasCharger => ChargerText is not null;
+
+    // The charger is asked as it is plugged in, then every few seconds: it
+    // cannot change without Windows seeing the plug go out and back in.
+    private static readonly TimeSpan ChargerEvery = TimeSpan.FromSeconds(5);
+    private DateTime _chargerReadAt;
+    private bool _chargerWasPluggedIn;
+
     public void Start()
     {
         _ = ReadAsync();
@@ -157,18 +170,33 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
         try
         {
             var knowFirmware = HasFirmware;
-            var (cpu, gpu, fans, battery, firmware) = await Task.Run(async () =>
+            var pluggedIn = _services.PowerSource.IsPluggedIn == true;
+            var askCharger = pluggedIn && (!_chargerWasPluggedIn || DateTime.UtcNow - _chargerReadAt >= ChargerEvery);
+            _chargerWasPluggedIn = pluggedIn;
+
+            if (askCharger)
+                _chargerReadAt = DateTime.UtcNow;
+
+            var (cpu, gpu, fans, battery, firmware, charger) = await Task.Run(async () =>
             {
                 var ec = Safe("EC temperatures", _services.EcTemperatures.Read);
                 var gpuTemperature = Safe("GPU temperature", _services.GpuTemperature.ReadCelsius) ?? ec?.GpuCelsius;
                 var fanReading = HasFanSpeeds ? await _services.FanTelemetry.ReadAsync() : null;
                 var batteryReading = Safe("Battery power", BatteryReader.Read);
                 var firmwareVersion = knowFirmware ? null : Safe("firmware version", _services.FirmwareVersion.Read);
-                return ((double?)ec?.CpuCelsius, gpuTemperature, fanReading, batteryReading, firmwareVersion);
+                var chargerIn = askCharger ? Safe("charger", _services.Charger.Read) : null;
+                return ((double?)ec?.CpuCelsius, gpuTemperature, fanReading, batteryReading, firmwareVersion, chargerIn);
             });
 
             if (firmware is not null)
                 FirmwareText = firmware;
+
+            // On battery the row goes. Plugged in, a reading of "battery" is the
+            // moment between the two, so the charger last seen stays.
+            if (!pluggedIn)
+                ChargerText = null;
+            else if (charger is not null)
+                ChargerText = charger;
 
             var power = battery is null ? null : BatteryDetailsText.PowerParts(battery);
             BatteryPowerText = power?.Value;

@@ -49,6 +49,13 @@
                     <TextBlock Text="{Binding FirmwareText}" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" FontWeight="SemiBold"
                                Foreground="{StaticResource Brush.TextMuted}" />
                 </Grid>
+
+                <!-- The charger in, while plugged in: USB-C and its watts, or the laptop's own. -->
+                <Grid Margin="0,12,0,0" Visibility="{Binding HasCharger, Converter={StaticResource Visible}}">
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Charger'}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding ChargerText}" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextMuted}" />
+                </Grid>
                 <Border Style="{StaticResource Separator}" Margin="0,24" />
             </StackPanel>
 
