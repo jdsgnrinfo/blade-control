@@ -40,7 +40,7 @@ internal sealed record AppSettings(
     // On unless the user turns it off: the keyboard backlight goes off while
     // the screen is off (display timeout, sleep, closed lid).
     bool KeyboardOffWithScreen = true,
-    // On unless the user turns it off: Ctrl+Shift+F1/F2/F3 switch performance
+    // On unless the user turns it off: Ctrl+Shift+F1 to F4 switch performance
     // mode from any program. Off frees them for another program that wants them.
     bool ProfileShortcuts = true,
     // Silent always turns off Windows' processor boost. The boost setting it

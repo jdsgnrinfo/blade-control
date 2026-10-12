@@ -92,28 +92,51 @@ internal sealed partial class PerformanceViewModel : ObservableObject
 
     public bool IsBalanced { get => ShownMode == PerformanceMode.Balanced; set => Pick(value, PerformanceMode.Balanced); }
 
+    public bool IsGaming { get => ShownMode == PerformanceMode.Gaming; set => Pick(value, PerformanceMode.Gaming); }
+
     public bool IsCustom { get => ShownMode == PerformanceMode.Custom; set => Pick(value, PerformanceMode.Custom); }
 
     public bool SilentOffered => IsModeOffered(PerformanceMode.Silent);
 
     public bool BalancedOffered => IsModeOffered(PerformanceMode.Balanced);
 
+    /// <summary>Gaming is plugged-in only, like Custom.</summary>
+    public bool GamingOffered => IsModeOffered(PerformanceMode.Gaming);
+
     /// <summary>Custom is plugged-in only, as in Synapse.</summary>
     public bool CustomOffered => IsModeOffered(PerformanceMode.Custom);
 
-    public bool IsCpuLow { get => ShownCpu == CpuBoost.Low; set => PickCpu(value, CpuBoost.Low); }
+    /// <summary>Why the Gaming button is greyed out: this laptop's firmware refused it, or it needs the charger.</summary>
+    public string GamingUnavailable => _unsupportedModes.Contains(PerformanceMode.Gaming)
+        ? L.T("Not supported on this laptop")
+        : L.T("Gaming is available when plugged in.");
 
-    public bool IsCpuMedium { get => ShownCpu == CpuBoost.Medium; set => PickCpu(value, CpuBoost.Medium); }
+    /// <summary>What the Custom button says on its right: its levels when chosen, otherwise what pressing it does.</summary>
+    public string CustomSummary =>
+        IsCustom ? L.F("CPU {0} · GPU {1}", CpuOptions[CpuIndex], GpuOptions[GpuIndex])
+        : CustomOffered ? L.T("Choose levels")
+        : L.T("Plugged in only");
 
-    public bool IsCpuHigh { get => ShownCpu == CpuBoost.High; set => PickCpu(value, CpuBoost.High); }
+    private static readonly CpuBoost[] CpuLevels = [CpuBoost.Low, CpuBoost.Medium, CpuBoost.High, CpuBoost.Boost];
+    private static readonly GpuBoost[] GpuLevels = [GpuBoost.Low, GpuBoost.Medium, GpuBoost.High];
 
-    public bool IsCpuBoost { get => ShownCpu == CpuBoost.Boost; set => PickCpu(value, CpuBoost.Boost); }
+    public IReadOnlyList<string> CpuOptions { get; } = [L.T("Low"), L.T("Medium"), L.T("High"), L.T("Boost")];
 
-    public bool IsGpuLow { get => ShownGpu == GpuBoost.Low; set => PickGpu(value, GpuBoost.Low); }
+    public IReadOnlyList<string> GpuOptions { get; } = [L.T("Low"), L.T("Medium"), L.T("High")];
 
-    public bool IsGpuMedium { get => ShownGpu == GpuBoost.Medium; set => PickGpu(value, GpuBoost.Medium); }
+    /// <summary>The CPU level in its dropdown; High until one is known.</summary>
+    public int CpuIndex
+    {
+        get => Math.Max(0, Array.IndexOf(CpuLevels, ShownCpu ?? CpuBoost.High));
+        set => PickCpu(value >= 0, CpuLevels[Math.Clamp(value, 0, CpuLevels.Length - 1)]);
+    }
 
-    public bool IsGpuHigh { get => ShownGpu == GpuBoost.High; set => PickGpu(value, GpuBoost.High); }
+    /// <summary>The GPU level in its dropdown; High until one is known.</summary>
+    public int GpuIndex
+    {
+        get => Math.Max(0, Array.IndexOf(GpuLevels, ShownGpu ?? GpuBoost.High));
+        set => PickGpu(value >= 0, GpuLevels[Math.Clamp(value, 0, GpuLevels.Length - 1)]);
+    }
 
     /// <summary>The levels can be changed: Custom on the source the laptop is on now (the EC only takes them in Custom).</summary>
     public bool CanChangeLevels => !_busy && EditingCurrentSource && PowerProfileRules.CanChangeBoost(_state, IsPluggedIn);
@@ -291,7 +314,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     }
 
     /// <summary>
-    /// A mode shortcut (Ctrl+Shift+F1/F2/F3), maybe pressed in a game: the
+    /// A mode shortcut (Ctrl+Shift+F1 to F4), maybe pressed in a game: the
     /// mode for the power source the laptop is on now, as its button would,
     /// and how it went, for the notice.
     /// </summary>

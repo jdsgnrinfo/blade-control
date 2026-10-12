@@ -168,7 +168,7 @@ public partial class App : Application
         StartShortcuts();
     }
 
-    // Fn+Del shows or hides the window; Ctrl+Shift+F1/F2/F3 switch mode, unless
+    // Fn+Del shows or hides the window; Ctrl+Shift+F1 to F4 switch mode, unless
     // turned off in Settings. A key another program owns is logged and said under
     // the switch, and the others still work.
     private void StartShortcuts()
@@ -194,7 +194,7 @@ public partial class App : Application
             }
 
             _shortcuts.UnregisterModes();
-            _viewModel.Settings.ProfileShortcutsHint = L.T("Ctrl+Shift+F1, F2 and F3: Silent, Balanced and Custom.");
+            _viewModel.Settings.ProfileShortcutsHint = L.T("Ctrl+Shift+F1 to F4: Silent, Balanced, Custom and Gaming.");
             AppLog.Info("Performance mode shortcuts are off.");
         };
     }

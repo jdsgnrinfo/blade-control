@@ -112,8 +112,9 @@ public class SilentPlanOverrideTests
 
     [Theory]
     [InlineData((byte)PerformanceMode.Balanced)]
+    [InlineData((byte)PerformanceMode.Gaming)]
     [InlineData((byte)PerformanceMode.Custom)]
-    public void BalancedOrCustom_GiveTheBoostBack(byte modeByte)
+    public void LeavingSilent_GivesTheBoostBack(byte modeByte)
     {
         var rig = new Rig();
 
@@ -125,13 +126,12 @@ public class SilentPlanOverrideTests
     }
 
     [Fact]
-    public void AnUnknownModeOrGaming_LeavesTheBoostOff()
+    public void AnUnknownMode_LeavesTheBoostOff()
     {
         var rig = new Rig();
 
         rig.Service.OnModeChanged(PerformanceMode.Silent);
         rig.Service.OnModeChanged(null);
-        rig.Service.OnModeChanged(PerformanceMode.Gaming);
 
         Assert.Equal((0u, 0u), (rig.PluggedIn, rig.OnBattery));
     }

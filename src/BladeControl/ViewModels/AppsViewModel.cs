@@ -112,7 +112,7 @@ internal sealed record ColorOption(string Name, Brush? Swatch);
 /// </summary>
 internal sealed partial class AppsViewModel : ObservableObject
 {
-    private static readonly PerformanceMode?[] Modes = [null, PerformanceMode.Silent, PerformanceMode.Balanced, PerformanceMode.Custom];
+    private static readonly PerformanceMode?[] Modes = [null, PerformanceMode.Silent, PerformanceMode.Balanced, PerformanceMode.Gaming, PerformanceMode.Custom];
     private static readonly bool?[] Fans = [null, false, true];
     private static readonly ColorProfile?[] Colors = [null, ColorProfile.Standard, ColorProfile.Warm, ColorProfile.Cool, ColorProfile.Contrast];
     private static readonly int?[] Brightnesses = [null, 25, 50, 75, 100];
@@ -158,7 +158,7 @@ internal sealed partial class AppsViewModel : ObservableObject
         _effects = [null, .. lighting.OfferedEffects.Select(effect => (KeyboardEffect?)effect)];
         _rates = [null, .. display.FixedRates.Select(hertz => (int?)hertz)];
 
-        ModeOptions = [L.T("No change"), L.T("Silent"), L.T("Balanced"), L.T("Custom")];
+        ModeOptions = [L.T("No change"), L.T("Silent"), L.T("Balanced"), L.T("Gaming"), L.T("Custom")];
         CpuOptions = [L.T("Low"), L.T("Medium"), L.T("High"), L.T("Boost")];
         GpuOptions = [L.T("Low"), L.T("Medium"), L.T("High")];
         FanOptions = [L.T("No change"), L.T("Automatic"), L.T("Maximum")];

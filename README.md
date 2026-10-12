@@ -17,13 +17,13 @@ power plan and temperatures.
 
 ## Features
 
-- **Performance**: Silent, Balanced and Custom, with Custom's CPU (Low to
-  Boost) and GPU (Low to High) levels. Each power source keeps its own mode,
+- **Performance**: Silent, Balanced, Gaming (plugged in) and Custom, with
+  Custom's CPU (Low to Boost) and GPU (Low to High) levels. Each power source keeps its own mode,
   and plugging in or unplugging switches between them. Max fan speed, plugged
   in, on the models that have it, and the battery charge limit (60 to 99%) on
   controllers that accept one.
 - **Silent really is quiet**: Silent also turns Windows' CPU boost off, which
-  is what quiets a Blade 15 Base (2020); Balanced and Custom give it back.
+  is what quiets a Blade 15 Base (2020); Balanced, Gaming and Custom give it back.
   An experimental switch in Settings turns this off.
 - **Apps**: a profile for each game or app (mode, fans, refresh rate, screen
   colors and keyboard lighting) that goes on while it runs and is undone when
@@ -45,8 +45,8 @@ power plan and temperatures.
 - **Tray**: closing the window keeps the app in the tray; a click on its icon
   opens it again, and Exit in its menu ends it. It can start with Windows.
 - **Shortcuts**, from any app or game: **Fn+Del** shows or hides the window,
-  and **Ctrl+Shift+F1 / F2 / F3** switch to Silent, Balanced and Custom, with a
-  small notice at the top right that never takes the focus. The mode
+  and **Ctrl+Shift+F1 / F2 / F3 / F4** switch to Silent, Balanced, Custom and
+  Gaming, with a small notice at the top right that never takes the focus. The mode
   shortcuts can be turned off in Settings.
 - English and Spanish.
 

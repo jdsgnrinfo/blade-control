@@ -377,6 +377,92 @@
         </Setter>
     </Style>
 
+    <!--
+        Custom as a wide, low tile under the mode tiles: its icon and name on
+        the left, Tag's text on the right with a chevron that turns down when
+        chosen. Colors and motion are the Tile's.
+    -->
+    <Style x:Key="CustomModeTile" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{StaticResource Brush.Accent}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Height" Value="52" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="Back" Background="{TemplateBinding Background}" CornerRadius="{StaticResource Radius.Control}"
+                            RenderTransformOrigin="0.5,0.5" Padding="16,0">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="Scale" />
+                        </Border.RenderTransform>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Path Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center" Style="{StaticResource IconPath}"
+                                  Data="{StaticResource Icon.Custom}" />
+                            <ContentPresenter Grid.Column="1" VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                                <TextBlock x:Name="Summary" Text="{TemplateBinding Tag}" FontSize="12" Foreground="{StaticResource Brush.TextMuted}"
+                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                <Path x:Name="Chevron" Width="5" Height="9" Margin="10,0,0,0" VerticalAlignment="Center" Stretch="Uniform"
+                                      Data="M0,0 L4.5,4.5 L0,9" StrokeThickness="1.5" RenderTransformOrigin="0.5,0.5"
+                                      Stroke="{Binding Foreground, ElementName=Summary}">
+                                    <Path.RenderTransform>
+                                        <RotateTransform x:Name="Turn" />
+                                    </Path.RenderTransform>
+                                </Path>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TileHover}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.Accent}" />
+                            <Setter Property="Foreground" Value="{StaticResource Brush.OnAccent}" />
+                            <Setter TargetName="Summary" Property="Foreground" Value="{StaticResource Brush.OnAccent}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Scale" Storyboard.TargetProperty="ScaleX" From="0.96" To="1" Duration="0:0:0.25">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase Amplitude="0.6" EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Scale" Storyboard.TargetProperty="ScaleY" From="0.96" To="1" Duration="0:0:0.25">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase Amplitude="0.6" EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Turn" Storyboard.TargetProperty="Angle" To="90" Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Turn" Storyboard.TargetProperty="Angle" To="0" Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.35" />
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- Two or three small choices in a dark strip, as in "Plugged In | On Battery". -->
     <Style x:Key="Segment" TargetType="RadioButton">
         <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />

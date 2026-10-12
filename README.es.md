@@ -19,14 +19,14 @@ temperaturas.
 
 ## Funciones
 
-- **Rendimiento**: Silencio, Equilibrado y Personalizado, con los niveles de
+- **Rendimiento**: Silencio, Equilibrado, Juego (enchufado) y Personalizado, con los niveles de
   CPU (Bajo a Turbo) y GPU (Bajo a Alto) de Personalizado. Cada fuente de
   energía guarda su propio modo, y al enchufar o desenchufar se cambia solo.
   Ventiladores al máximo, enchufado, en los modelos que lo tienen, y límite de
   carga de la batería (60 a 99 %) en los controladores que lo aceptan.
 - **Silencio de verdad**: Silencio también apaga el turbo de la CPU de
   Windows, que es lo que hace silencioso a un Blade 15 Base (2020);
-  Equilibrado y Personalizado lo devuelven. Un interruptor experimental en
+  Equilibrado, Juego y Personalizado lo devuelven. Un interruptor experimental en
   Ajustes lo desactiva.
 - **Apps**: un perfil para cada juego o app (modo, ventiladores, frecuencia,
   colores de pantalla e iluminación del teclado) que se aplica mientras está
@@ -50,8 +50,8 @@ temperaturas.
   clic en su icono la abre otra vez y Salir en su menú la cierra. Puede
   iniciarse con Windows.
 - **Atajos**, desde cualquier app o juego: **Fn+Supr** muestra u oculta la
-  ventana, y **Ctrl+Shift+F1 / F2 / F3** cambian a Silencio, Equilibrado y
-  Personalizado, con un pequeño aviso arriba a la derecha que nunca quita el
+  ventana, y **Ctrl+Shift+F1 / F2 / F3 / F4** cambian a Silencio, Equilibrado,
+  Personalizado y Juego, con un pequeño aviso arriba a la derecha que nunca quita el
   foco. Los atajos de modo se pueden desactivar en Ajustes.
 - Inglés y español.
 
