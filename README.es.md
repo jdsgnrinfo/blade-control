@@ -113,11 +113,11 @@ permiso de administrador.
 
 | Ajuste | Enchufado | Con batería |
 | --- | --- | --- |
-| Preferencia energía/rendimiento (0 rendimiento, 100 eficiencia) | 30 | 60 |
-| Turbo del procesador | Agresivo, usado al 80 % | Agresivo eficiente, al 40 % |
-| Cambios de frecuencia | Revisa cada 30 ms; sube al momento, baja poco a poco | Revisa cada 100 ms; sube poco a poco |
+| Preferencia energía/rendimiento (0 rendimiento, 100 eficiencia) | 20 | 80 |
+| Turbo del procesador | Agresivo, usado al 60 % | Agresivo eficiente, al 40 % |
+| Cambios de frecuencia | Revisa cada 30 ms; sube directo al máximo, baja poco a poco | Revisa cada 100 ms; sube poco a poco |
 | Respuesta a clics y teclas (sensibilidad a la latencia) | 99 % | 40 % |
-| Núcleos despiertos | Todos; despierta más al 60 % de carga | La mitad; despierta más al 85 % |
+| Núcleos despiertos | Todos; despierta más al 60 % de carga | Al menos el 30 %; despierta más al 85 % |
 | Ahorro de energía de PCI Express y NVMe | Desactivado | Activado |
 | Ahorro de energía del Wi-Fi | Desactivado | Máximo |
 | Gráficos Intel | Máximo rendimiento | Equilibrado |

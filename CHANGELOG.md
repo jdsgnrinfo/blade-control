@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- **Razer Blade power plan**, from a user's tuning: plugged in, the energy
+  performance preference goes to 20, 60% of the boost is used and the
+  frequency rises straight to the top; on battery, the preference goes to 80
+  and at least 30% of the cores stay awake.
+
 ## 0.1.2
 
 - **Apps**: a new page with a profile for each game or app (mode, fans,

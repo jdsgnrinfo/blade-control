@@ -37,15 +37,15 @@ internal static class RazerBladePlan
     public static readonly IReadOnlyList<PlanValue> Values =
     [
         // The processor.
-        new(Processor, "PERFEPP", 30, 60, "Energy performance preference"),
-        new(Processor, "PERFEPP1", 30, 60, "Energy performance preference, efficiency cores", Optional: true), // Only CPUs with two kinds of cores.
+        new(Processor, "PERFEPP", 20, 80, "Energy performance preference"),
+        new(Processor, "PERFEPP1", 20, 80, "Energy performance preference, efficiency cores", Optional: true), // Only CPUs with two kinds of cores.
         new(Processor, "PROCTHROTTLEMIN", 5, 5, "Minimum processor state, %"),
         new(Processor, "PROCTHROTTLEMAX", 100, 100, "Maximum processor state, %"),
         new(Processor, "PERFBOOSTMODE", 2, 3, "Boost mode: Aggressive plugged in, Efficient Aggressive on battery"),
-        new(Processor, "45bcc044-d885-43e2-8605-ee0ec6e96b59", 80, 40, "Boost policy, %: how much of the boost is used"),
-        new(Processor, "CPMINCORES", 100, 50, "Cores kept unparked, %"),
+        new(Processor, "45bcc044-d885-43e2-8605-ee0ec6e96b59", 60, 40, "Boost policy, %: how much of the boost is used"),
+        new(Processor, "CPMINCORES", 100, 30, "Cores kept unparked, %"),
         new(Processor, "943c8cb6-6f93-4227-ad87-e9a3feec08d1", 60, 85, "Core parking overutilization threshold, %"),
-        new(Processor, "465e1f50-b610-473a-ab58-00d1077dc418", 0, 1, "Performance increase policy: Ideal plugged in, Single (gradual) on battery"),
+        new(Processor, "465e1f50-b610-473a-ab58-00d1077dc418", 2, 1, "Performance increase policy: Rocket (straight to the top) plugged in, Single (gradual) on battery"),
         new(Processor, "984cf492-3bed-4488-a8f9-4286c97bf5aa", 1, 3, "Performance increase time, check intervals"),
         new(Processor, "40fbefc7-2e9d-4d25-a185-0cfd8574bac6", 1, 0, "Performance decrease policy: Single (gradual) plugged in, Ideal on battery"),
         new(Processor, "4d2b0152-7d5c-498b-88e2-34345392a2c5", 30, 100, "Performance check interval, ms"),

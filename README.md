@@ -106,11 +106,11 @@ permission.
 
 | Setting | Plugged in | On battery |
 | --- | --- | --- |
-| Energy performance preference (0 performance, 100 efficiency) | 30 | 60 |
-| Processor boost | Aggressive, 80% of it used | Efficient aggressive, 40% |
-| Frequency changes | Checked every 30 ms; rise at once, drop gradually | Checked every 100 ms; rise gradually |
+| Energy performance preference (0 performance, 100 efficiency) | 20 | 80 |
+| Processor boost | Aggressive, 60% of it used | Efficient aggressive, 40% |
+| Frequency changes | Checked every 30 ms; rise straight to the top, drop gradually | Checked every 100 ms; rise gradually |
 | Response to clicks and keys (latency hints) | 99% | 40% |
-| Cores kept awake | All; more woken at 60% load | Half; more woken at 85% |
+| Cores kept awake | All; more woken at 60% load | At least 30%; more woken at 85% |
 | PCI Express and NVMe power saving | Off | On |
 | Wi-Fi power saving | Off | Maximum |
 | Intel graphics | Maximum performance | Balanced |
