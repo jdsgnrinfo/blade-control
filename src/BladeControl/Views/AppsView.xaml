@@ -229,7 +229,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Power mode'}" />
+                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Power mode'}" ToolTip="{ui:T 'The performance mode while the app runs.'}" />
                         <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding ModeOptions}" SelectedIndex="{Binding ModeIndex}" />
                     </Grid>
 
@@ -240,7 +240,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'CPU preset'}" Margin="16,0,16,0" />
+                            <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'CPU preset'}" ToolTip="{ui:T 'How much power the processor may use.'}" Margin="16,0,16,0" />
                             <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding CpuOptions}" SelectedIndex="{Binding CpuIndex}" />
                         </Grid>
                         <Grid Style="{StaticResource SettingRow}">
@@ -248,7 +248,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'GPU preset'}" Margin="16,0,16,0" />
+                            <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'GPU preset'}" ToolTip="{ui:T 'How much power the graphics card may use.'}" Margin="16,0,16,0" />
                             <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding GpuOptions}" SelectedIndex="{Binding GpuIndex}" />
                         </Grid>
                     </StackPanel>
@@ -258,7 +258,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Fans'}" />
+                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Fans'}" ToolTip="{ui:T 'Automatic, or both fans at full speed.'}" />
                         <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding FanOptions}" SelectedIndex="{Binding FanIndex}" />
                     </Grid>
 
@@ -269,7 +269,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Refresh rate'}" />
+                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Refresh rate'}" ToolTip="{ui:T 'How many times per second the screen updates.'}" />
                         <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding RateOptions}" SelectedIndex="{Binding RateIndex}" />
                     </Grid>
 
@@ -278,7 +278,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Color profile'}" />
+                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Color profile'}" ToolTip="{ui:T 'The screen colors, such as Night light.'}" />
                         <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding ColorOptions}" SelectedIndex="{Binding ColorIndex}" />
                     </Grid>
 
@@ -289,7 +289,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Keyboard lighting'}" />
+                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Keyboard lighting'}" ToolTip="{ui:T 'The keyboard lighting effect.'}" />
                         <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding KeyboardOptions}" SelectedIndex="{Binding KeyboardIndex}" />
                     </Grid>
 
@@ -299,7 +299,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Keyboard color'}" Margin="16,0,16,0" />
+                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Keyboard color'}" ToolTip="{ui:T 'The color the keyboard lights up in.'}" Margin="16,0,16,0" />
                         <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding KeyboardColorOptions}" SelectedIndex="{Binding KeyboardColorIndex}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -322,7 +322,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Keyboard brightness'}" />
+                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Keyboard brightness'}" ToolTip="{ui:T 'How bright the keyboard light is.'}" />
                         <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding BrightnessOptions}" SelectedIndex="{Binding BrightnessIndex}" />
                     </Grid>
 
@@ -331,7 +331,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Game mode'}" />
+                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Game mode'}" ToolTip="{ui:T 'Blocks the Windows key (and Alt+Tab, Alt+F4) so you do not leave the game by accident.'}" />
                         <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding GameModeOptions}" SelectedIndex="{Binding GameModeIndex}" />
                     </Grid>
 
