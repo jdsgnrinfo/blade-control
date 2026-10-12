@@ -214,6 +214,16 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _hasDedicatedGpu;
 
+    /// <summary>What the switch does and its warnings are shown: hidden until the link under them is clicked.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(GraphicsInfoLink))]
+    private bool _showGraphicsInfo;
+
+    public string GraphicsInfoLink => ShowGraphicsInfo ? L.T("Less information") : L.T("More information");
+
+    [RelayCommand]
+    private void ToggleGraphicsInfo() => ShowGraphicsInfo = !ShowGraphicsInfo;
+
     /// <summary>The switch is busy asking, closing apps or waiting for Windows.</summary>
     [ObservableProperty]
     private bool _integratedOnlyChanging;

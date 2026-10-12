@@ -225,6 +225,8 @@ internal static class L
         ["Display"] = "Pantalla",
         ["Size"] = "Tamaño",
         ["Graphics"] = "Gráficos",
+        ["More information"] = "Más información",
+        ["Less information"] = "Menos información",
         ["Integrated graphics only"] = "Solo gráficos integrados (iGPU)",
         ["This laptop has no dedicated GPU to turn off."] = "Este portátil no tiene una GPU dedicada que apagar.",
         ["{0} is on: Windows uses it when an app needs it."] = "{0} está encendida: Windows la usa cuando una app la necesita.",
