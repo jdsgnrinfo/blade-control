@@ -26,6 +26,14 @@ internal static class DgpuAppSelector
         "windowsterminal", "wt", "openconsole", "powershell", "pwsh", "cmd", "devenv", "code", "cursor"
     };
 
+    // The core of Windows and its display stack: never something the user ran,
+    // so left out when showing which apps use the GPU.
+    private static readonly HashSet<string> WindowsCoreNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "dwm", "csrss", "winlogon", "services", "lsass", "smss", "wininit", "system", "registry",
+        "svchost", "fontdrvhost", "conhost", "audiodg", "wudfhost", "dllhost"
+    };
+
     // Whole families, so a renamed or versioned helper is still covered.
     private static readonly string[] ProtectedPrefixes = ["razer", "nvidia", "amd", "radeon"];
 
@@ -133,6 +141,9 @@ internal static class DgpuAppSelector
 
         return process.HasWindow ? DgpuAppVerdict.Close : DgpuAppVerdict.NoWindow;
     }
+
+    /// <summary>True for the core of Windows (System, dwm, csrss...), which no one runs as an app.</summary>
+    internal static bool IsPartOfWindows(string name) => WindowsCoreNames.Contains(WithoutExeSuffix(name));
 
     /// <summary>
     /// True for anything that must never be closed: the built-in list, the

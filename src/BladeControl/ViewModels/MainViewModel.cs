@@ -101,12 +101,14 @@ internal sealed partial class MainViewModel : ObservableObject
         Performance.Monitor.Stop();
         Lighting.SetPageOpen(false);
         Battery.SetPageOpen(false);
+        Display.SetPageOpen(false);
     }
 
     private void OpenPage(AppPage value)
     {
         Lighting.SetPageOpen(value == AppPage.Lighting);
         Battery.SetPageOpen(value == AppPage.Battery);
+        Display.SetPageOpen(value == AppPage.Display);
 
         if (value == AppPage.Performance)
             Performance.Monitor.Start();

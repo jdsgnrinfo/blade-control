@@ -6,8 +6,12 @@ using BladeControl.Core.Diagnostics;
 
 namespace BladeControl.Core.Platform;
 
-/// <summary>The dedicated GPU as Device Manager lists it: its device instance id, its name, and whether it is turned on.</summary>
-internal sealed record DedicatedGpu(string InstanceId, string Name, bool Enabled);
+/// <summary>
+/// The dedicated GPU as Device Manager lists it: its device instance id, its
+/// name, whether it is turned on and, when Windows says, whether it is awake
+/// (in D0) rather than asleep in a low power state.
+/// </summary>
+internal sealed record DedicatedGpu(string InstanceId, string Name, bool Enabled, bool? Awake = null);
 
 /// <summary>
 /// The NVIDIA card as a device: found and read through Windows' device setup
@@ -57,7 +61,7 @@ internal static class DedicatedGpuDevice
                 var disabled = CM_Get_DevNode_Status(out var status, out var problem, info.DevInst, 0) == CrSuccess
                     && (status & DnHasProblem) != 0 && problem == CmProbDisabled;
 
-                return new DedicatedGpu(id, name, Enabled: !disabled);
+                return new DedicatedGpu(id, name, Enabled: !disabled, Awake: disabled ? false : IsAwake(info.DevInst));
             }
 
             return null;
@@ -98,6 +102,35 @@ internal static class DedicatedGpuDevice
 
     /// <summary>pnputil's (and Windows') "done, but only after a restart".</summary>
     public const int RestartNeeded = 3010;
+
+    /// <summary>
+    /// Whether the device is in D0, from the power state Windows last recorded
+    /// for it (Device Manager's "Power data"). Reading it never wakes the card.
+    /// Null when Windows will not say.
+    /// </summary>
+    private static bool? IsAwake(uint devInst)
+    {
+        var key = PowerDataKey;
+        var buffer = new byte[64];
+        var size = (uint)buffer.Length;
+
+        if (CM_Get_DevNode_Property(devInst, ref key, out _, buffer, ref size, 0) != CrSuccess || size < 8)
+            return null;
+
+        // CM_POWER_DATA: its size, then the most recent DEVICE_POWER_STATE (1 is D0, 4 is D3).
+        return BitConverter.ToInt32(buffer, 4) switch
+        {
+            PowerDeviceD0 => true,
+            > PowerDeviceD0 and <= PowerDeviceD3 => false,
+            _ => null
+        };
+    }
+
+    private const int PowerDeviceD0 = 1;
+    private const int PowerDeviceD3 = 4;
+
+    // DEVPKEY_Device_PowerData.
+    private static readonly DevPropKey PowerDataKey = new() { FormatId = new("a45c254e-df1c-4efd-8020-67d146a850e0"), PropertyId = 32 };
 
     private static string? InstanceId(IntPtr set, ref SpDevinfoData info)
     {
@@ -142,6 +175,16 @@ internal static class DedicatedGpuDevice
     [DllImport("setupapi.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool SetupDiDestroyDeviceInfoList(IntPtr set);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct DevPropKey
+    {
+        public Guid FormatId;
+        public uint PropertyId;
+    }
+
+    [DllImport("cfgmgr32.dll", EntryPoint = "CM_Get_DevNode_PropertyW")]
+    private static extern int CM_Get_DevNode_Property(uint devInst, ref DevPropKey key, out uint type, byte[] buffer, ref uint size, uint flags);
 
     [DllImport("cfgmgr32.dll")]
     private static extern int CM_Get_DevNode_Status(out uint status, out uint problem, uint devInst, int flags);

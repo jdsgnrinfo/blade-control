@@ -193,6 +193,12 @@ internal static class L
         ["Ask them to close? Each one can still ask you to save your work first."] =
             "¿Pedirles que se cierren? Cada una puede pedirte antes que guardes tu trabajo.",
         ["{0} instances, "] = "{0} instancias, ",
+        ["Awake now"] = "Despierta ahora",
+        ["Asleep now: it uses almost no power"] = "Dormida ahora: casi no gasta energía",
+        ["No app is using it."] = "Ninguna app la está usando.",
+        ["Used by: {0}"] = "La usan: {0}",
+        ["Used by: {0} and {1} more"] = "La usan: {0} y {1} más",
+        ["Close these apps"] = "Cerrar estas apps",
         ["No dedicated GPU was found, so there is nothing to free up."] = "No se encontró GPU dedicada, así que no hay nada que liberar.",
         ["An external display is connected (or Windows could not say). It is driven by the dedicated GPU, so the GPU stays on whatever is closed. Disconnect it and try again."] =
             "Hay una pantalla externa conectada (o Windows no pudo confirmarlo). La mueve la GPU dedicada, así que la GPU sigue encendida aunque se cierre todo. Desconéctala y vuelve a intentarlo.",

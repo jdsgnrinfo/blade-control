@@ -131,6 +131,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         };
         SystemEvents.DisplaySettingsChanged += OnDisplayChanged;
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
+        _gpuActivityTimer.Tick += (_, _) => _ = ShowGpuActivityAsync();
         services.PowerSource.PowerSourceChanged += (_, _) =>
             Application.Current.Dispatcher.BeginInvoke(() =>
             {
@@ -368,6 +369,99 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
                 : L.F("{0} is off: everything runs on the integrated GPU.", gpu.Name);
     }
 
+    // ===== What the dedicated GPU is doing =====
+
+    private readonly DispatcherTimer _gpuActivityTimer = new() { Interval = TimeSpan.FromSeconds(3) };
+    private bool _readingGpuActivity;
+    private bool _gpuActivityProblemLogged;
+
+    /// <summary>The live lines under the switch are shown: the GPU is on and was read.</summary>
+    [ObservableProperty]
+    private bool _showGpuActivity;
+
+    /// <summary>The GPU is in D0 now, so it is using power; asleep otherwise.</summary>
+    [ObservableProperty]
+    private bool _gpuAwake;
+
+    /// <summary>"Awake now" or "Asleep now"; empty when Windows will not say.</summary>
+    [ObservableProperty]
+    private string _gpuState = string.Empty;
+
+    /// <summary>The apps using it, by name, or that none is.</summary>
+    [ObservableProperty]
+    private string _gpuUsers = string.Empty;
+
+    /// <summary>Some of those apps may be asked to close (none of Windows, and no external display).</summary>
+    [ObservableProperty]
+    private bool _canCloseGpuApps;
+
+    /// <summary>
+    /// While the page is open, whether the dedicated GPU is awake and which apps
+    /// use it are read every few seconds. Both are only read from Windows, so
+    /// looking never wakes the card.
+    /// </summary>
+    public void SetPageOpen(bool open)
+    {
+        if (!open)
+        {
+            _gpuActivityTimer.Stop();
+            return;
+        }
+
+        _gpuActivityTimer.Start();
+        _ = ShowGpuActivityAsync();
+    }
+
+    private async Task ShowGpuActivityAsync()
+    {
+        if (_readingGpuActivity)
+            return;
+
+        _readingGpuActivity = true;
+
+        try
+        {
+            var neverClose = _services.Settings.NeverCloseApps;
+            var (gpu, scan) = await Task.Run(() =>
+            {
+                var found = DedicatedGpuDevice.Find();
+                return (found, found is { Enabled: true } ? DgpuScanner.Scan(neverClose) : null);
+            });
+
+            ShowGpuActivity = gpu is { Enabled: true } && scan is { GpuFound: true };
+            GpuAwake = gpu?.Awake == true;
+            GpuState = DgpuText.StateLine(gpu?.Awake);
+            GpuUsers = scan is null ? string.Empty : DgpuText.UsersLine(scan.Apps);
+            CanCloseGpuApps = scan is not null && scan.Closable.Count > 0;
+        }
+        catch (Exception exception)
+        {
+            // Read every few seconds: said once in the log, not every time.
+            if (!_gpuActivityProblemLogged)
+                AppLog.Error("Could not read what the dedicated GPU is doing.", exception);
+
+            _gpuActivityProblemLogged = true;
+            ShowGpuActivity = false;
+            CanCloseGpuApps = false;
+        }
+        finally
+        {
+            _readingGpuActivity = false;
+        }
+    }
+
+    /// <summary>Optimize's "free up the dedicated GPU": lists the apps, asks, and closes them.</summary>
+    [RelayCommand]
+    private async Task CloseGpuAppsAsync()
+    {
+        var outcome = await _closeGpuApps();
+
+        if (DgpuText.DescribeOutcome(outcome) is { } message)
+            _report(message, outcome == DgpuFreeUpOutcome.Failed);
+
+        await ShowGpuActivityAsync();
+    }
+
     // Declining, a refusal or a problem leaves the card as it was and puts the switch back.
     private async Task SetIntegratedOnlyAsync(bool integratedOnly)
     {
@@ -386,6 +480,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
 
         IntegratedOnlyChanging = false;
         ShowIntegratedOnly();
+        _ = ShowGpuActivityAsync();
 
         if (problem is not null)
             IntegratedOnlyHint = problem;
@@ -495,6 +590,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
         _retryTimer.Stop();
         _reapplyTimer.Stop();
+        _gpuActivityTimer.Stop();
 
         // Without the app watching for the monitor to go, the lid gets its own action back.
         _services.LidClose.Restore();

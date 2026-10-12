@@ -146,6 +146,29 @@
                         </CheckBox>
                     </Grid>
 
+                    <!-- What the dedicated GPU is doing now, read every few seconds while the page is open. -->
+                    <StackPanel Margin="0,10,0,0" Visibility="{Binding ShowGpuActivity, Converter={StaticResource Visible}}">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,8,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{DynamicResource Brush.Accent}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding GpuAwake}" Value="True">
+                                                <Setter Property="Fill" Value="{DynamicResource Brush.Warning}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="13" Text="{Binding GpuState}" />
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource Text.Hint}" Margin="16,4,0,0" TextWrapping="Wrap" Text="{Binding GpuUsers}" />
+                        <TextBlock Margin="16,6,0,0" FontSize="13" Visibility="{Binding CanCloseGpuApps, Converter={StaticResource Visible}}">
+                            <Hyperlink Style="{StaticResource NoteLink}" Command="{Binding CloseGpuAppsCommand}"><Run Text="{ui:T 'Close these apps'}" /></Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+
                     <!-- What the switch does and its warnings, hidden until asked for. -->
                     <StackPanel Visibility="{Binding ShowGraphicsInfo, Converter={StaticResource Visible}}">
                         <ContentControl Style="{StaticResource NoteBox}" Margin="0,16,0,0"

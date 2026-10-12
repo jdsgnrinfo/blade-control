@@ -45,6 +45,39 @@ internal static class DgpuText
         _ => null
     };
 
+    /// <summary>The Graphics card's live line: whether the GPU is awake now. Empty when Windows will not say.</summary>
+    public static string StateLine(bool? awake) => awake switch
+    {
+        true => L.T("Awake now"),
+        false => L.T("Asleep now: it uses almost no power"),
+        _ => string.Empty
+    };
+
+    /// <summary>
+    /// The apps using the GPU, by name, those holding the most video memory
+    /// first. Only the core of Windows is left out: terminals, editors and
+    /// helpers that are never closed still keep the GPU awake, so they are
+    /// named. At most three by name.
+    /// </summary>
+    public static string UsersLine(IReadOnlyList<DgpuApp> apps)
+    {
+        var names = apps
+            .Where(app => !DgpuAppSelector.IsPartOfWindows(app.Name))
+            .GroupBy(app => app.Name, StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(group => group.Sum(app => app.DedicatedBytes))
+            .Select(group => group.Key)
+            .ToList();
+
+        return names.Count switch
+        {
+            0 => L.T("No app is using it."),
+            <= MaxNamed => L.F("Used by: {0}", string.Join(", ", names)),
+            _ => L.F("Used by: {0} and {1} more", string.Join(", ", names.Take(MaxNamed)), names.Count - MaxNamed)
+        };
+    }
+
+    private const int MaxNamed = 3;
+
     private static string Describe(string name, IReadOnlyList<DgpuApp> processes)
     {
         var megabytes = (long)Math.Round(processes.Sum(app => app.DedicatedBytes) / (1024.0 * 1024.0));
