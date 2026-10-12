@@ -27,6 +27,7 @@
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Margin" Value="0,0,0,6" />
+            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="AppItem_Click" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">

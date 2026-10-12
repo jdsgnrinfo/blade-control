@@ -143,8 +143,6 @@ internal sealed partial class AppsViewModel : ObservableObject
         KeyboardOptions = [L.T("No change"), .. _effects.Skip(1).Select(effect => lighting.EffectNameOf(effect!.Value))];
         BrightnessOptions = [L.T("No change"), .. Brightnesses.Skip(1).Select(percent => $"{percent}%")];
 
-        _selected = Apps.FirstOrDefault();
-
         _performance.AppOverrideTakenOver += (_, _) => AppLog.Info("The mode was changed by hand while an app profile held it; it is kept when the app closes.");
         _watch.Tick += async (_, _) => await CheckAsync();
     }
@@ -288,12 +286,11 @@ internal sealed partial class AppsViewModel : ObservableObject
         if (Selected is not { } row)
             return;
 
-        var index = Apps.IndexOf(row);
         Apps.Remove(row);
         Save();
         AppLog.Info($"App profile removed: {row.Name}.");
 
-        Selected = Apps.Count == 0 ? null : Apps[Math.Min(index, Apps.Count - 1)];
+        Selected = null;
         _ = CheckAsync();
 
         // It can be added again.
@@ -333,8 +330,12 @@ internal sealed partial class AppsViewModel : ObservableObject
     [ObservableProperty]
     private string _candidatesStatus = string.Empty;
 
-    /// <summary>When the page opens: the games, or the apps open now, to add are listed again.</summary>
-    public void Refresh() => _ = LoadCandidatesAsync();
+    /// <summary>When the page opens: no app picked, and the games, or the apps open now, to add are listed again.</summary>
+    public void Refresh()
+    {
+        Selected = null;
+        _ = LoadCandidatesAsync();
+    }
 
     [RelayCommand]
     private void AddCandidate(AppCandidate? candidate)
