@@ -279,6 +279,37 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         RefreshAll();
     }
 
+    /// <summary>
+    /// A mode shortcut (Ctrl+Shift+F1/F2/F3), maybe pressed in a game: the
+    /// mode for the power source the laptop is on now, as its button would,
+    /// and how it went, for the notice.
+    /// </summary>
+    public async Task<(bool Applied, string Status)> SelectFromShortcutAsync(PerformanceMode mode)
+    {
+        if (_unsupportedModes.Contains(mode))
+            return (false, L.T("Not supported on this laptop"));
+
+        if (!PowerProfileRules.IsModeAllowed(mode, IsPluggedIn))
+            return (false, L.T("Needs to be plugged in"));
+
+        if (_state.Mode == mode)
+            return (true, L.T("Active"));
+
+        if (_busy)
+            return (false, L.T("Busy, try again in a moment"));
+
+        // The page follows the laptop's own power source, which is the one changed.
+        EditingPluggedIn = IsPluggedIn;
+        await ChangeProfileAsync(profile => profile with { Mode = mode }, L.T("Could not change the performance mode."));
+
+        if (_state.Mode == mode)
+            return (true, L.T("Active"));
+
+        return (false, _unsupportedModes.Contains(mode)
+            ? L.T("Not supported on this laptop")
+            : L.T("Could not change the performance mode."));
+    }
+
     private void PickCpu(bool chosen, CpuBoost level)
     {
         if (chosen && CanChangeLevels && level != _state.Cpu)

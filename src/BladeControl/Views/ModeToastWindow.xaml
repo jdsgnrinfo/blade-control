@@ -1,0 +1,52 @@
+<Window x:Class="BladeControl.Views.ModeToastWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="300" Height="72" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False" ShowActivated="False" Topmost="True" Focusable="False"
+        FontFamily="{StaticResource Font.Main}" Title="Blade Control">
+
+    <Window.Resources>
+        <!-- Text with room between its letters, which a TextBlock cannot do on its own. -->
+        <DataTemplate x:Key="Letter">
+            <TextBlock Text="{Binding}" Margin="{Binding Tag, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="Row">
+            <StackPanel Orientation="Horizontal" />
+        </ItemsPanelTemplate>
+    </Window.Resources>
+
+    <!-- The HUD card: the top right corner cut on a slant. -->
+    <Grid>
+        <Grid.Clip>
+            <PathGeometry Figures="M0,0 L286,0 L300,14 L300,72 L0,72 Z" />
+        </Grid.Clip>
+        <Border Background="#FF0E0E0E" />
+
+        <!-- The edge at the left: Chroma's colors top to bottom, or amber when the mode was refused. -->
+        <Rectangle x:Name="Edge" Width="4" HorizontalAlignment="Left">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#FFFF2D55" Offset="0" />
+                    <GradientStop Color="#FFFF9F0A" Offset="0.1667" />
+                    <GradientStop Color="#FFFFD60A" Offset="0.3333" />
+                    <GradientStop Color="#FF44D62C" Offset="0.5" />
+                    <GradientStop Color="#FF32D2FF" Offset="0.6667" />
+                    <GradientStop Color="#FF5E5CE6" Offset="0.8333" />
+                    <GradientStop Color="#FFBF5AF2" Offset="1" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- The mode's icon, green, or grey when it was refused. -->
+        <Path x:Name="ModeIcon" Width="30" Height="30" Stretch="Uniform" HorizontalAlignment="Left" Margin="22,0,0,0"
+              Fill="{StaticResource Brush.Accent}" />
+
+        <StackPanel Margin="66,0,12,0" VerticalAlignment="Center">
+            <ItemsControl x:Name="Label" Tag="0,0,2.5,0" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.Accent}"
+                          ItemTemplate="{StaticResource Letter}" ItemsPanel="{StaticResource Row}" Focusable="False" />
+            <ItemsControl x:Name="ModeName" Tag="0,0,2,0" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,-2,0,0"
+                          ItemTemplate="{StaticResource Letter}" ItemsPanel="{StaticResource Row}" Focusable="False" />
+            <TextBlock x:Name="Status" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" Margin="0,-2,0,0" />
+        </StackPanel>
+    </Grid>
+</Window>

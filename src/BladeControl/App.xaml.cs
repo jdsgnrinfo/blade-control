@@ -24,6 +24,7 @@ public partial class App : Application
     private AppServices? _services;
     private MainViewModel? _viewModel;
     private TrayIcon? _tray;
+    private GlobalShortcuts? _shortcuts;
     private EventWaitHandle? _showWindow;
     private RegisteredWaitHandle? _showWindowWait;
     private bool _quitting;
@@ -158,6 +159,85 @@ public partial class App : Application
         _showWindowWait = ThreadPool.RegisterWaitForSingleObject(_showWindow, (_, _) => Dispatcher.BeginInvoke(ShowMainWindow), null, Timeout.Infinite, executeOnlyOnce: false);
 
         _trimTimer.Tick += (_, _) => BackgroundMemory.Trim();
+
+        StartShortcuts();
+    }
+
+    // Fn+Del shows or hides the window; Ctrl+Shift+F1/F2/F3 switch mode, unless
+    // turned off in Settings. A key another program owns is logged and said under
+    // the switch, and the others still work.
+    private void StartShortcuts()
+    {
+        _shortcuts = new GlobalShortcuts();
+        _shortcuts.WindowRequested += (_, _) => ToggleWindowFromShortcut();
+        _shortcuts.ModeRequested += async (_, mode) => await SwitchModeFromShortcutAsync(mode);
+
+        if (_shortcuts.TryRegisterWindow())
+            AppLog.Info($"Shortcut {GlobalShortcuts.WindowShortcutText} is on.");
+        else
+            AppLog.Error($"Shortcut {GlobalShortcuts.WindowShortcutText} could not be registered; another program uses it.");
+
+        if (_services!.Settings.ProfileShortcuts)
+            StartModeShortcuts();
+
+        _viewModel!.Settings.ProfileShortcutsChanged += (_, enabled) =>
+        {
+            if (enabled)
+            {
+                StartModeShortcuts();
+                return;
+            }
+
+            _shortcuts.UnregisterModes();
+            _viewModel.Settings.ProfileShortcutsHint = L.T("Ctrl+Shift+F1, F2 and F3: Silent, Balanced and Custom.");
+            AppLog.Info("Performance mode shortcuts are off.");
+        };
+    }
+
+    private void StartModeShortcuts()
+    {
+        var taken = _shortcuts!.TryRegisterModes();
+
+        if (taken.Count == 0)
+        {
+            AppLog.Info("Performance mode shortcuts are on.");
+            return;
+        }
+
+        AppLog.Error($"Shortcuts {string.Join(", ", taken)} could not be registered; another program uses them.");
+        _viewModel!.Settings.ProfileShortcutsHint = L.F("{0} shortcut is used by another program.", string.Join(", ", taken));
+    }
+
+    // Fn+Del, maybe in a game: the window to the front, or back to the tray if it already is.
+    private void ToggleWindowFromShortcut()
+    {
+        if (MainWindow is { IsActive: true } shown)
+        {
+            AppLog.Info($"{GlobalShortcuts.WindowShortcutText} pressed: back to the tray.");
+            shown.Close();
+            return;
+        }
+
+        ShowMainWindow();
+
+        // Above a game for this showing, even with Always on top off.
+        if (MainWindow is { } window)
+        {
+            window.Topmost = true;
+            window.Topmost = _services!.Settings.AlwaysOnTop;
+            window.Activate();
+        }
+
+        AppLog.Info($"{GlobalShortcuts.WindowShortcutText} pressed: showing the window.");
+    }
+
+    // A mode shortcut, maybe in a game: switch as the button would, then say how it
+    // went at the top right without taking the focus.
+    private async Task SwitchModeFromShortcutAsync(PerformanceMode mode)
+    {
+        var (applied, status) = await _viewModel!.Performance.SelectFromShortcutAsync(mode);
+        AppLog.Info($"Mode shortcut for {mode}: {status}");
+        ModeToastWindow.ShowNotice(mode, status, applied);
     }
 
     // The window is made each time it opens and let go when it closes to the
@@ -343,6 +423,7 @@ public partial class App : Application
         _showWindowWait?.Unregister(null);
         _showWindow?.Dispose();
         _tray?.Dispose();
+        _shortcuts?.Dispose();
         _services?.Dispose();
         _singleInstance?.Dispose();
         AppLog.Info("Blade Control exiting.");

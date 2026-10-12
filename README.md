@@ -40,6 +40,10 @@ power plan and temperatures.
   last hour's average.
 - **Tray**: closing the window keeps the app in the tray; a click on its icon
   opens it again, and Exit in its menu ends it. It can start with Windows.
+- **Shortcuts**, from any app or game: **Fn+Del** shows or hides the window,
+  and **Ctrl+Shift+F1 / F2 / F3** switch to Silent, Balanced and Custom, with a
+  small notice at the top right that never takes the focus. The mode
+  shortcuts can be turned off in Settings.
 - English and Spanish.
 
 ## Preview

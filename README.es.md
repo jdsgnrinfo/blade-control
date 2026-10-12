@@ -45,6 +45,10 @@ temperaturas.
 - **Bandeja del sistema**: al cerrar la ventana la app sigue en la bandeja; un
   clic en su icono la abre otra vez y Salir en su menú la cierra. Puede
   iniciarse con Windows.
+- **Atajos**, desde cualquier app o juego: **Fn+Supr** muestra u oculta la
+  ventana, y **Ctrl+Shift+F1 / F2 / F3** cambian a Silencio, Equilibrado y
+  Personalizado, con un pequeño aviso arriba a la derecha que nunca quita el
+  foco. Los atajos de modo se pueden desactivar en Ajustes.
 - Inglés y español.
 
 ## Vista previa
