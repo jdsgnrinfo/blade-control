@@ -85,15 +85,23 @@ public class AppProfileTests
     }
 
     [Fact]
-    public void GameMode_CountsAsAChange_AndIsInTheSummary()
+    public void GameMode_CountsAsAChange_AndSaysWhichKeys()
     {
-        var on = new AppProfile("Game", "game.exe", GameMode: true);
-        var off = new AppProfile("Game", "game.exe", GameMode: false);
+        var windowsKey = new AppProfile("Game", "game.exe", GameMode: GameModeBlock.WindowsKey);
+        var all = new AppProfile("Game", "game.exe", GameMode: GameModeBlock.WindowsKeyAltTabAndAltF4);
 
-        Assert.True(on.ChangesAnything);
-        Assert.True(off.ChangesAnything);
-        Assert.Equal("Game mode", AppProfileText.Summary(on));
-        Assert.Equal("Game mode off", AppProfileText.Summary(off));
+        Assert.True(windowsKey.ChangesAnything);
+        Assert.Equal("Game mode: Windows key", AppProfileText.Summary(windowsKey));
+        Assert.Equal("Game mode: Windows key, Alt+Tab and Alt+F4", AppProfileText.Summary(all));
+    }
+
+    [Theory]
+    [InlineData((int)GameModeBlock.WindowsKey, false, false)]
+    [InlineData((int)GameModeBlock.WindowsKeyAndAltTab, true, false)]
+    [InlineData((int)GameModeBlock.WindowsKeyAltTabAndAltF4, true, true)]
+    public void GameMode_BlocksTheKeysChosen(int block, bool altTab, bool altF4)
+    {
+        Assert.Equal(new GameModeOptions(altTab, altF4), GameModeOptions.For((GameModeBlock)block));
     }
 
     [Fact]

@@ -34,10 +34,17 @@ internal static class AppProfileText
             parts.Add(L.F("Keyboard {0}%", percent));
 
         if (profile.GameMode is { } gameMode)
-            parts.Add(gameMode ? L.T("Game mode") : L.T("Game mode off"));
+            parts.Add(L.F("Game mode: {0}", GameModeName(gameMode)));
 
         return parts.Count == 0 ? L.T("No changes yet") : string.Join(Separator, parts);
     }
+
+    public static string GameModeName(GameModeBlock block) => block switch
+    {
+        GameModeBlock.WindowsKeyAndAltTab => L.T("Windows key and Alt+Tab"),
+        GameModeBlock.WindowsKeyAltTabAndAltF4 => L.T("Windows key, Alt+Tab and Alt+F4"),
+        _ => L.T("Windows key")
+    };
 
     public static string ColorName(ColorProfile profile) => profile switch
     {

@@ -14,117 +14,65 @@
     <!-- Two cards side by side, or one under the other in a narrow window. -->
     <ui:AdaptiveColumns>
 
-        <!-- System lighting, and the keyboard's game mode under it. -->
-        <StackPanel>
-            <!-- ===== System lighting: brightness and when the light goes off ===== -->
-            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
-                <StackPanel>
-                    <Grid Margin="0,0,0,18" MinHeight="34">
-                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'System lighting'}" VerticalAlignment="Center" />
-                    </Grid>
+        <!-- ===== System lighting: brightness and when the light goes off ===== -->
+        <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <StackPanel>
+                <Grid Margin="0,0,0,18" MinHeight="34">
+                    <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'System lighting'}" VerticalAlignment="Center" />
+                </Grid>
 
-                    <!-- The name, and the value beside it. -->
-                    <Grid Margin="0,0,0,6">
-                        <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Keyboard brightness'}" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding KeyboardBrightness, StringFormat={}{0}%}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
-                    </Grid>
-                    <ui:SpringSlider Minimum="0" Maximum="100" Format="{}{0}%" Value="{Binding KeyboardBrightness}" Committed="KeyboardBrightness_Commit" />
-                    <Grid Margin="0,4,0,0">
-                        <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
-                        <TextBlock Style="{StaticResource Text.Scale}" Text="100%" HorizontalAlignment="Right" />
-                    </Grid>
+                <!-- The name, and the value beside it. -->
+                <Grid Margin="0,0,0,6">
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Keyboard brightness'}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding KeyboardBrightness, StringFormat={}{0}%}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
+                </Grid>
+                <ui:SpringSlider Minimum="0" Maximum="100" Format="{}{0}%" Value="{Binding KeyboardBrightness}" Committed="KeyboardBrightness_Commit" />
+                <Grid Margin="0,4,0,0">
+                    <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
+                    <TextBlock Style="{StaticResource Text.Scale}" Text="100%" HorizontalAlignment="Right" />
+                </Grid>
 
-                    <Border Style="{StaticResource Separator}" Margin="0,22,0,14" />
+                <Border Style="{StaticResource Separator}" Margin="0,22,0,14" />
 
-                    <Grid Style="{StaticResource OptionRow}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,16,0"
-                                   Text="{ui:T 'Turn off lighting when display is off'}" />
-                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding WithScreen}" />
-                    </Grid>
+                <Grid Style="{StaticResource OptionRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,16,0"
+                               Text="{ui:T 'Turn off lighting when display is off'}" />
+                    <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding WithScreen}" />
+                </Grid>
 
-                    <Grid Style="{StaticResource OptionRow}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,12,0"
-                                   Text="{ui:T 'Turn off lighting when idle for:'}" />
-                        <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" ItemsSource="{Binding IdleMinuteTexts}"
-                                  SelectedIndex="{Binding IdleMinutesIndex}" />
-                        <CheckBox Grid.Column="3" Style="{StaticResource Switch}" IsChecked="{Binding WhenIdle}" Margin="16,0,0,0" />
-                    </Grid>
+                <Grid Style="{StaticResource OptionRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,12,0"
+                               Text="{ui:T 'Turn off lighting when idle for:'}" />
+                    <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" ItemsSource="{Binding IdleMinuteTexts}"
+                              SelectedIndex="{Binding IdleMinutesIndex}" />
+                    <CheckBox Grid.Column="3" Style="{StaticResource Switch}" IsChecked="{Binding WhenIdle}" Margin="16,0,0,0" />
+                </Grid>
 
-                    <Grid Style="{StaticResource OptionRow}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,12,0"
-                                   Text="{ui:T 'Turn off lighting when battery is below:'}" />
-                        <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" ItemsSource="{Binding BatteryPercentTexts}"
-                                  SelectedIndex="{Binding BatteryPercentIndex}" />
-                        <CheckBox Grid.Column="3" Style="{StaticResource Switch}" IsChecked="{Binding OnLowBattery}" Margin="16,0,0,0" />
-                    </Grid>
-                </StackPanel>
-            </Border>
-
-            <!-- ===== Keyboard: game mode keeps the Windows key (and Alt+Tab, Alt+F4 if chosen) from Windows ===== -->
-            <Border Style="{StaticResource Card}" VerticalAlignment="Top"
-                    DataContext="{Binding DataContext.GameMode, RelativeSource={RelativeSource AncestorType=Window}}">
-                <StackPanel>
-                    <Grid Margin="0,0,0,18" MinHeight="34">
-                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Keyboard'}" VerticalAlignment="Center" />
-                    </Grid>
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Margin="0,0,24,0">
-                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Game mode'}" />
-                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0" TextWrapping="Wrap"
-                                       Text="{ui:T 'Blocks the Windows key, so it cannot take you out of a game. Apps can turn it on while they run.'}" />
-                        </StackPanel>
-                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding IsOn}" />
-                    </Grid>
-
-                    <Border Style="{StaticResource Separator}" Margin="0,18,0,10" />
-
-                    <Grid Style="{StaticResource OptionRow}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,16,0"
-                                   Text="{ui:T 'Also block Alt+Tab'}" />
-                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding BlockAltTab}" />
-                    </Grid>
-
-                    <Grid Style="{StaticResource OptionRow}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,16,0"
-                                   Text="{ui:T 'Also block Alt+F4'}" />
-                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding BlockAltF4}" />
-                    </Grid>
-
-                    <!-- Which app holds game mode now, if one does. -->
-                    <ContentControl Style="{StaticResource NoteBox}" Margin="0,14,0,0" Content="{Binding Status}"
-                                    Visibility="{Binding HasStatus, Converter={StaticResource Visible}}" />
-                </StackPanel>
-            </Border>
-        </StackPanel>
+                <Grid Style="{StaticResource OptionRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Style="{StaticResource Text.Body}" FontSize="14" VerticalAlignment="Center" Margin="0,0,12,0"
+                               Text="{ui:T 'Turn off lighting when battery is below:'}" />
+                    <ComboBox Grid.Column="1" Style="{StaticResource Dropdown}" ItemsSource="{Binding BatteryPercentTexts}"
+                              SelectedIndex="{Binding BatteryPercentIndex}" />
+                    <CheckBox Grid.Column="3" Style="{StaticResource Switch}" IsChecked="{Binding OnLowBattery}" Margin="16,0,0,0" />
+                </Grid>
+            </StackPanel>
+        </Border>
 
         <!-- ===== Lighting effects: keyboard, its color, and the logo ===== -->
         <Border Style="{StaticResource Card}" VerticalAlignment="Top">

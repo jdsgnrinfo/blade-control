@@ -116,13 +116,14 @@ internal sealed partial class AppsViewModel : ObservableObject
     private static readonly bool?[] Fans = [null, false, true];
     private static readonly ColorProfile?[] Colors = [null, ColorProfile.Standard, ColorProfile.Warm, ColorProfile.Cool, ColorProfile.Contrast];
     private static readonly int?[] Brightnesses = [null, 25, 50, 75, 100];
-    private static readonly bool?[] GameModes = [null, true, false];
+    private static readonly GameModeBlock?[] GameModes = [null, GameModeBlock.WindowsKey, GameModeBlock.WindowsKeyAndAltTab, GameModeBlock.WindowsKeyAltTabAndAltF4];
 
     private readonly AppServices _services;
     private readonly PerformanceViewModel _performance;
     private readonly DisplayViewModel _display;
     private readonly LightingViewModel _lighting;
-    private readonly GameModeViewModel _gameMode;
+    // Game mode's hold on the keyboard, while an app whose profile asks for it runs.
+    private readonly GameModeHook _gameMode = new();
     private readonly Action<string, bool> _report;
     private readonly DispatcherTimer _watch = new() { Interval = TimeSpan.FromSeconds(2) };
     private readonly RunningPrograms _programs = new();
@@ -142,14 +143,12 @@ internal sealed partial class AppsViewModel : ObservableObject
         PerformanceViewModel performance,
         DisplayViewModel display,
         LightingViewModel lighting,
-        GameModeViewModel gameMode,
         Action<string, bool> report)
     {
         _services = services;
         _performance = performance;
         _display = display;
         _lighting = lighting;
-        _gameMode = gameMode;
         _report = report;
 
         foreach (var profile in services.Settings.AppProfiles ?? [])
@@ -170,7 +169,7 @@ internal sealed partial class AppsViewModel : ObservableObject
         ColorOptions = [L.T("No change"), .. Colors.Skip(1).Select(colors => AppProfileText.ColorName(colors!.Value))];
         KeyboardOptions = [L.T("No change"), .. _effects.Skip(1).Select(effect => lighting.EffectNameOf(effect!.Value))];
         BrightnessOptions = [L.T("No change"), .. Brightnesses.Skip(1).Select(percent => $"{percent}%")];
-        GameModeOptions = [L.T("No change"), L.T("Turn on"), L.T("Turn off")];
+        GameModeOptions = [L.T("No change"), .. GameModes.Skip(1).Select(block => AppProfileText.GameModeName(block!.Value))];
 
         _keyboardColors = [null, .. lighting.OfferedColors.Select(choice => (RgbColor?)choice.Value)];
         KeyboardColorOptions = [new ColorOption(L.T("No change"), null), .. lighting.OfferedColors.Select(choice => new ColorOption(choice.Name, choice.Swatch))];
@@ -404,7 +403,7 @@ internal sealed partial class AppsViewModel : ObservableObject
     public int GameModeIndex
     {
         get => IndexOf(GameModes, Selected?.Profile.GameMode);
-        set => Edit(value, GameModes, (profile, on) => profile with { GameMode = on });
+        set => Edit(value, GameModes, (profile, block) => profile with { GameMode = block });
     }
 
     // A dropdown sends -1 while its list is swapped: ignored.
@@ -495,6 +494,8 @@ internal sealed partial class AppsViewModel : ObservableObject
 
         if (_active is not null)
             await SwitchAsync(null, notify: false);
+
+        _gameMode.Dispose();
     }
 
     private async Task CheckAsync()
@@ -551,7 +552,7 @@ internal sealed partial class AppsViewModel : ObservableObject
             await _performance.SetAppOverrideAsync(null, null);
             await _display.SetAppOverrideAsync(null, null);
             await _lighting.SetAppOverrideAsync(null, null);
-            _gameMode.SetAppOverride(null, null);
+            _gameMode.Block(null);
             return;
         }
 
@@ -565,7 +566,7 @@ internal sealed partial class AppsViewModel : ObservableObject
         var colors = target.ColorProfile is null ? (ColorProfile?)null : ColorProfiles.Parse(target.ColorProfile);
         var shown = await _display.SetAppOverrideAsync(target.RefreshHz, colors);
         await _lighting.SetAppOverrideAsync(target.Keyboard, target.KeyboardBrightness, target.KeyboardColor);
-        _gameMode.SetAppOverride(target.Name, target.GameMode);
+        _gameMode.Block(target.GameMode);
 
         var summary = AppProfileText.Summary(target);
         AppLog.Info($"App profile for {target.Name} on: {summary}{(applied ? string.Empty : $" ({status})")}{(shown ? string.Empty : " (screen change waiting or refused)")}.");

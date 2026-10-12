@@ -81,12 +81,7 @@ internal sealed record AppSettings(
     // The lid action that option replaced, kept until it is given back (the
     // monitor goes, the option is turned off, the app exits); null when the
     // lid action is the plan's own.
-    SavedPlanValue? LidActionBeforeKeepRunning = null,
-    // Game mode, off unless turned on: the Windows key is kept from Windows,
-    // and Alt+Tab and Alt+F4 too when chosen.
-    bool GameMode = false,
-    bool GameModeBlocksAltTab = false,
-    bool GameModeBlocksAltF4 = false);
+    SavedPlanValue? LidActionBeforeKeepRunning = null);
 
 /// <summary>The window's position and size in device-independent pixels, and whether it was maximized.</summary>
 internal sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool Maximized);

@@ -1,7 +1,14 @@
+using BladeControl.Core.Models;
+
 namespace BladeControl.Core.Services;
 
 /// <summary>What game mode blocks: the Windows keys always, Alt+Tab and Alt+F4 when chosen.</summary>
-internal sealed record GameModeOptions(bool BlockAltTab = false, bool BlockAltF4 = false);
+internal sealed record GameModeOptions(bool BlockAltTab = false, bool BlockAltF4 = false)
+{
+    /// <summary>The keys an app profile's choice blocks.</summary>
+    public static GameModeOptions For(GameModeBlock block) =>
+        new(block is not GameModeBlock.WindowsKey, block is GameModeBlock.WindowsKeyAltTabAndAltF4);
+}
 
 /// <summary>
 /// Decides, key by key, what game mode keeps from Windows. A key is blocked

@@ -28,6 +28,46 @@ public sealed class SettingsServiceTests : IDisposable
     }
 
     [Fact]
+    public void Load_AnUnreadableFile_KeepsACopyBesideIt_BeforeTheDefaultsCanReplaceIt()
+    {
+        WriteSettings("{ \"Language\": \"en\", broken");
+
+        Assert.Equal(new AppSettings(), new SettingsService(_directory).Load());
+
+        var copy = Assert.Single(Directory.GetFiles(_directory, "settings.json.unreadable-*"));
+        Assert.Equal("{ \"Language\": \"en\", broken", File.ReadAllText(copy));
+    }
+
+    [Fact]
+    public void Load_ReadsAnAppProfilesGameMode_ByName_AndAsTheTrueOrFalseOfAnEarlierVersion()
+    {
+        WriteSettings("""
+            { "Language": "en", "AppProfiles": [
+                { "Name": "Old on", "Path": "C:\\a.exe", "GameMode": true },
+                { "Name": "Old off", "Path": "C:\\b.exe", "GameMode": false },
+                { "Name": "New", "Path": "C:\\c.exe", "GameMode": "WindowsKeyAndAltTab" },
+                { "Name": "Unknown", "Path": "C:\\d.exe", "GameMode": "Everything" } ] }
+            """);
+
+        var settings = new SettingsService(_directory).Load();
+
+        Assert.Equal("en", settings.Language);
+        Assert.Equal(
+            [GameModeBlock.WindowsKey, null, GameModeBlock.WindowsKeyAndAltTab, null],
+            settings.AppProfiles!.Select(profile => profile.GameMode));
+    }
+
+    [Fact]
+    public void Save_ThenLoad_KeepsAnAppProfilesGameMode()
+    {
+        var service = new SettingsService(_directory);
+        service.Save(new AppSettings(AppProfiles: [new AppProfile("Game", @"C:\game.exe", GameMode: GameModeBlock.WindowsKeyAltTabAndAltF4)]));
+
+        Assert.Equal(GameModeBlock.WindowsKeyAltTabAndAltF4, Assert.Single(service.Load().AppProfiles!).GameMode);
+        Assert.Contains("\"GameMode\": \"WindowsKeyAltTabAndAltF4\"", File.ReadAllText(SettingsPath));
+    }
+
+    [Fact]
     public void Save_ThenLoad_RoundTripsEverything()
     {
         var service = new SettingsService(_directory);

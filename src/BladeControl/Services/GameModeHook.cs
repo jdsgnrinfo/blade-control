@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using BladeControl.Core.Diagnostics;
+using BladeControl.Core.Models;
 using BladeControl.Core.Services;
 
 namespace BladeControl.Services;
@@ -40,6 +41,15 @@ internal sealed class GameModeHook : IDisposable
     {
         get => _keys.Options;
         set => _keys.Options = value;
+    }
+
+    /// <summary>Blocks what an app profile chose, or with null lets every key through again.</summary>
+    public void Block(GameModeBlock? block)
+    {
+        if (block is { } chosen)
+            Options = GameModeOptions.For(chosen);
+
+        Set(block is not null);
     }
 
     /// <summary>Puts the hook in place, or takes it away.</summary>

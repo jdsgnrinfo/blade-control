@@ -29,13 +29,12 @@ temperaturas.
   Equilibrado y Personalizado lo devuelven. Un interruptor experimental en
   Ajustes lo desactiva.
 - **Apps**: un perfil para cada juego o app (modo, ventiladores, frecuencia,
-  colores de pantalla e iluminación del teclado) que se aplica mientras está
+  colores de pantalla, iluminación del teclado y modo juego, que bloquea la
+  tecla Windows y, si se elige, Alt+Tab y Alt+F4) que se aplica mientras está
   abierto y se deshace al cerrarlo, con un aviso. Encuentra solo los juegos
   instalados con Steam, Epic Games, Xbox y Battle.net.
 - **Iluminación**: efectos, color y brillo del teclado y del logo, y el
   teclado que se apaga con la pantalla, por inactividad o con poca batería.
-  El modo juego bloquea la tecla Windows (y Alt+Tab o Alt+F4, si se elige), a
-  mano o mientras corre un juego con perfil en Apps.
 - **Pantalla**: la frecuencia de actualización de la pantalla interna (Auto
   sigue al cargador), un perfil de color (Estándar, Luz nocturna, Neutro,
   Contraste) que se mantiene al cerrar la app, si hay una pantalla externa

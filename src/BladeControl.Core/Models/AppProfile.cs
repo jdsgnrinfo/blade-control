@@ -1,3 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace BladeControl.Core.Models;
 
 /// <summary>Where an app in the Apps page came from: picked by hand, or found in a game launcher's library.</summary>
@@ -8,6 +11,14 @@ internal enum AppSource
     Epic,
     Xbox,
     BattleNet
+}
+
+/// <summary>What game mode keeps from Windows while an app runs: the Windows key, and Alt+Tab and Alt+F4 with it.</summary>
+internal enum GameModeBlock
+{
+    WindowsKey,
+    WindowsKeyAndAltTab,
+    WindowsKeyAltTabAndAltF4
 }
 
 /// <summary>
@@ -38,8 +49,9 @@ internal sealed record AppProfile(
     // The keyboard's color, with an effect that takes one (Static, Breathing),
     // on the laptops that show one.
     RgbColor? KeyboardColor = null,
-    // Game mode (the Windows key blocked) on or off while the app runs.
-    bool? GameMode = null)
+    // Game mode while the app runs: which keys are kept from Windows.
+    // Read leniently: a version before the choice of keys saved it as true or false.
+    [property: JsonConverter(typeof(GameModeBlockConverter))] GameModeBlock? GameMode = null)
 {
     /// <summary>Whether the profile changes anything at all.</summary>
     public bool ChangesAnything =>
@@ -53,4 +65,36 @@ internal sealed record AppProfile(
     public PowerProfile? Performance => Mode is null
         ? null
         : new PowerProfile(Mode, Mode == PerformanceMode.Custom ? Cpu ?? CpuBoost.High : null, Mode == PerformanceMode.Custom ? Gpu ?? GpuBoost.High : null);
+}
+
+/// <summary>
+/// Reads an app profile's game mode by name ("WindowsKey"...) and also as the
+/// true or false an earlier version wrote: true is the Windows key, false is
+/// no change. Anything else unknown is no change too, so one odd value never
+/// stops the whole settings file from loading.
+/// </summary>
+internal sealed class GameModeBlockConverter : JsonConverter<GameModeBlock?>
+{
+    public override bool HandleNull => true;
+
+    public override GameModeBlock? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType switch
+    {
+        JsonTokenType.True => GameModeBlock.WindowsKey,
+        JsonTokenType.String when Enum.TryParse<GameModeBlock>(reader.GetString(), out var block) && Enum.IsDefined(block) => block,
+        _ => SkipUnknown(ref reader)
+    };
+
+    public override void Write(Utf8JsonWriter writer, GameModeBlock? value, JsonSerializerOptions options)
+    {
+        if (value is { } block)
+            writer.WriteStringValue(block.ToString());
+        else
+            writer.WriteNullValue();
+    }
+
+    private static GameModeBlock? SkipUnknown(ref Utf8JsonReader reader)
+    {
+        reader.Skip();
+        return null;
+    }
 }

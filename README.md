@@ -26,13 +26,12 @@ power plan and temperatures.
   is what quiets a Blade 15 Base (2020); Balanced and Custom give it back.
   An experimental switch in Settings turns this off.
 - **Apps**: a profile for each game or app (mode, fans, refresh rate, screen
-  colors and keyboard lighting) that goes on while it runs and is undone when
+  colors, keyboard lighting and game mode, which blocks the Windows key and
+  optionally Alt+Tab and Alt+F4) that goes on while it runs and is undone when
   it closes, with a notice. Games installed with Steam, Epic Games, Xbox and
   Battle.net are found for you.
 - **Lighting**: keyboard and logo effects, color and brightness, and the
-  keyboard going dark with the screen, when idle or on low battery. Game
-  mode blocks the Windows key (and Alt+Tab or Alt+F4, if chosen), by hand or
-  while a game with an app profile runs.
+  keyboard going dark with the screen, when idle or on low battery.
 - **Display**: the internal screen's refresh rate (Auto follows the charger),
   a color profile (Standard, Night light, Neutral, Contrast) that stays on
   after the app closes, whether an external display is connected (and an

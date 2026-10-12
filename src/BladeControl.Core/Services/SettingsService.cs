@@ -50,7 +50,24 @@ internal sealed class SettingsService
             JsonException)
         {
             AppLog.Error("Could not load Blade Control settings.", exception);
+            KeepUnreadableCopy();
             return new AppSettings();
+        }
+    }
+
+    // The defaults will be saved over the file on the next change: a copy of
+    // it is kept beside it first, so nothing the user set is lost for good.
+    private void KeepUnreadableCopy()
+    {
+        try
+        {
+            var copy = $"{_settingsPath}.unreadable-{DateTime.Now:yyyyMMdd-HHmmss}";
+            File.Copy(_settingsPath, copy, overwrite: true);
+            AppLog.Info($"The unreadable settings file was kept as {copy}.");
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            AppLog.Error("Could not keep a copy of the unreadable settings file.", exception);
         }
     }
 
