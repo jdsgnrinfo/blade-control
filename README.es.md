@@ -1,4 +1,9 @@
-# Blade Control
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo-dark.png">
+    <img src="docs/images/logo-light.png" alt="Blade Control" width="375">
+  </picture>
+</h1>
 
 [English](README.md) · **Español**
 
