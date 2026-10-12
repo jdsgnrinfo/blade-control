@@ -42,6 +42,13 @@
                     <TextBlock Text="{Binding Hint}" Margin="0,8,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{StaticResource Brush.Warm}"
                                Visibility="{Binding HintIsError, Converter={StaticResource Visible}}" />
                 </StackPanel>
+
+                <!-- The controller's firmware version, once the laptop has said it. -->
+                <Grid Margin="0,18,0,0" Visibility="{Binding HasFirmware, Converter={StaticResource Visible}}">
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Firmware'}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding FirmwareText}" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.TextMuted}" />
+                </Grid>
                 <Border Style="{StaticResource Separator}" Margin="0,24" />
             </StackPanel>
 

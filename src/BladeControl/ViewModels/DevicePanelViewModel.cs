@@ -128,6 +128,13 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
 
     public bool HasBatteryPower => BatteryPowerText is not null;
 
+    /// <summary>The controller's firmware version ("1.1"), read once; null until the laptop says.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasFirmware))]
+    private string? _firmwareText;
+
+    public bool HasFirmware => FirmwareText is not null;
+
     public void Start()
     {
         _ = ReadAsync();
@@ -149,14 +156,19 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
 
         try
         {
-            var (cpu, gpu, fans, battery) = await Task.Run(async () =>
+            var knowFirmware = HasFirmware;
+            var (cpu, gpu, fans, battery, firmware) = await Task.Run(async () =>
             {
                 var ec = Safe("EC temperatures", _services.EcTemperatures.Read);
                 var gpuTemperature = Safe("GPU temperature", _services.GpuTemperature.ReadCelsius) ?? ec?.GpuCelsius;
                 var fanReading = HasFanSpeeds ? await _services.FanTelemetry.ReadAsync() : null;
                 var batteryReading = Safe("Battery power", BatteryReader.Read);
-                return ((double?)ec?.CpuCelsius, gpuTemperature, fanReading, batteryReading);
+                var firmwareVersion = knowFirmware ? null : Safe("firmware version", _services.FirmwareVersion.Read);
+                return ((double?)ec?.CpuCelsius, gpuTemperature, fanReading, batteryReading, firmwareVersion);
             });
+
+            if (firmware is not null)
+                FirmwareText = firmware;
 
             var power = battery is null ? null : BatteryDetailsText.PowerParts(battery);
             BatteryPowerText = power?.Value;

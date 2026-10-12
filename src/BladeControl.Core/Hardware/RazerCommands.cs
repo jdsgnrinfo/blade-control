@@ -11,6 +11,10 @@ namespace BladeControl.Core.Hardware;
 /// </remarks>
 internal static class RazerCommands
 {
+    // Class 0x00: the controller's firmware version, [major, minor]. Read only;
+    // a Blade 15 Base (2020) answers [1, 1].
+    public const ushort GetFirmwareVersion = 0x0081;
+
     // Class 0x0D: performance and fans.
     public const ushort SetPerformanceMode = 0x0D02;
     public const ushort GetPerformanceMode = 0x0D82;

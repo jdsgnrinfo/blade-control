@@ -27,6 +27,7 @@ internal sealed class AppServices : IDisposable
         Performance = new PerformanceService(_transport, MaxFanMethod);
         FanTelemetry = new FanTelemetryService(_transport);
         EcTemperatures = new EcTemperatureService(_transport);
+        FirmwareVersion = new FirmwareVersionService(_transport);
         ChargeLimit = new BatteryChargeLimitService(_transport);
         Lighting = new LightingService(_transport, Model?.HasKeyboardColor == true);
 
@@ -77,6 +78,9 @@ internal sealed class AppServices : IDisposable
     public EcTemperatureService EcTemperatures { get; }
 
     public IGpuTemperatureSource GpuTemperature { get; } = new D3dkmtGpuTemperature();
+
+    /// <summary>The controller's firmware version, for the laptop panel.</summary>
+    public FirmwareVersionService FirmwareVersion { get; }
 
     public BatteryChargeLimitService ChargeLimit { get; }
 
