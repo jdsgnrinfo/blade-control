@@ -1,8 +1,10 @@
+using System.IO;
 using System.Reflection;
 using System.Windows;
 using BladeControl.Core.Diagnostics;
 using BladeControl.Core.Localization;
 using BladeControl.Core.Platform;
+using BladeControl.Core.Services;
 using BladeControl.Services;
 using BladeControl.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -157,6 +159,88 @@ internal sealed partial class SettingsViewModel : ObservableObject
 
     [RelayCommand]
     private static void OpenDonation() => ExternalLinks.OpenDonation();
+
+    private const string SettingsFileFilter = "Blade Control (*.json)|*.json";
+
+    /// <summary>Writes the settings to a file the user picks.</summary>
+    [RelayCommand]
+    private void ExportSettings()
+    {
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            Title = L.T("Export settings"),
+            Filter = SettingsFileFilter,
+            FileName = $"Blade Control {DateTime.Now:yyyy-MM-dd}.json"
+        };
+
+        if (dialog.ShowDialog() != true)
+            return;
+
+        try
+        {
+            File.WriteAllText(dialog.FileName, SettingsTransfer.Export(_services.Settings, AppVersion, DateTime.Now));
+            AppLog.Info($"Settings exported to {dialog.FileName}.");
+            _report(L.T("Settings exported."), false);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            AppLog.Error("Could not export the settings.", exception);
+            _report(L.T("Could not export the settings."), true);
+        }
+    }
+
+    /// <summary>Reads settings from a file, says what they bring before anything changes, then restarts with them.</summary>
+    [RelayCommand]
+    private void ImportSettings()
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog { Title = L.T("Import settings"), Filter = SettingsFileFilter };
+
+        if (dialog.ShowDialog() != true)
+            return;
+
+        string text;
+
+        try
+        {
+            text = File.ReadAllText(dialog.FileName);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            AppLog.Error("Could not read the settings file.", exception);
+            Dialogs.Tell(L.T("The file could not be read."), L.T("Import settings"));
+            return;
+        }
+
+        var imported = SettingsTransfer.Import(text, _services.Settings, path => File.Exists(path) || Directory.Exists(path), out var error);
+
+        if (imported is null)
+        {
+            Dialogs.Tell(error!, L.T("Import settings"));
+            return;
+        }
+
+        var missing = imported.MissingApps > 0
+            ? "\r\n\r\n" + L.F("Apps not on this PC: {0}. Their profiles are kept for when you install them.", imported.MissingApps)
+            : string.Empty;
+
+        var answer = Dialogs.Ask(
+            L.F("Replace your settings with the ones in this file?\r\n\r\n" +
+                "It brings your performance modes, {0}, and the display, lighting and Blade Control options.",
+                imported.AppProfiles == 1 ? L.T("1 app profile") : L.F("{0} app profiles", imported.AppProfiles)) +
+            missing + "\r\n\r\n" + L.T("Blade Control will restart."),
+            L.T("Import settings"),
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (answer != MessageBoxResult.Yes)
+            return;
+
+        _services.UpdateSettings(_ => imported.Settings);
+        AppLog.Info($"Settings imported from {dialog.FileName}: {imported.AppProfiles} app profiles, {imported.MissingApps} not on this PC.");
+        Restart();
+    }
+
+    private static string AppVersion => FormatVersion(Assembly.GetEntryAssembly()?.GetName().Version);
 
     /// <summary>Says exactly what will change before anything does; No is the default.</summary>
     [RelayCommand]

@@ -48,6 +48,9 @@ power plan and temperatures.
   and **Ctrl+Shift+F1 / F2 / F3** switch to Silent, Balanced and Custom, with a
   small notice at the top right that never takes the focus. The mode
   shortcuts can be turned off in Settings.
+- **Your settings in a file**: Settings exports the modes, app profiles and
+  options to a file and imports them back, for a Windows reinstall or another
+  Blade. What only applies to this PC stays out.
 - English and Spanish.
 
 ## Preview

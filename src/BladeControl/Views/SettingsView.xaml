@@ -131,7 +131,26 @@
                         <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Open'}" Command="{Binding OpenLogsCommand}"
                                 VerticalAlignment="Center" />
                     </Grid>
-    
+
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                    <!-- The settings to a file and back: for a Windows reinstall, or another Blade. -->
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Your settings'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap"
+                                       Text="{ui:T 'Save your modes, app profiles and options to a file, or bring them back from one.'}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Style="{StaticResource ActionButton}" Content="{ui:T 'Export'}" Command="{Binding ExportSettingsCommand}" />
+                            <Button Style="{StaticResource ActionButton}" Content="{ui:T 'Import'}" Command="{Binding ImportSettingsCommand}" Margin="8,0,0,0" />
+                        </StackPanel>
+                    </Grid>
+
                     <Border Style="{StaticResource Separator}" Margin="0,12" />
     
                     <Grid Margin="0,6">

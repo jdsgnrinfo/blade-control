@@ -53,6 +53,9 @@ temperaturas.
   ventana, y **Ctrl+Shift+F1 / F2 / F3** cambian a Silencio, Equilibrado y
   Personalizado, con un pequeño aviso arriba a la derecha que nunca quita el
   foco. Los atajos de modo se pueden desactivar en Ajustes.
+- **Tus ajustes en un archivo**: Ajustes exporta los modos, los perfiles de
+  apps y las opciones a un archivo y los vuelve a importar, para reinstalar
+  Windows o pasarlos a otro Blade. Lo que solo vale en este PC queda fuera.
 - Inglés y español.
 
 ## Vista previa
