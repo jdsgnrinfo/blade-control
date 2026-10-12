@@ -159,7 +159,7 @@
 
         <StackPanel>
             <!-- ===== The picked app's settings ===== -->
-            <Border Style="{StaticResource Card}" VerticalAlignment="Top" Visibility="{Binding ShowsEditor, Converter={StaticResource Visible}}">
+            <Border x:Name="EditorCard" Style="{StaticResource Card}" VerticalAlignment="Top" Visibility="{Binding ShowsEditor, Converter={StaticResource Visible}}">
                 <StackPanel>
                     <Grid Margin="0,0,0,18" MinHeight="34">
                         <Grid.ColumnDefinitions>
