@@ -19,6 +19,10 @@ internal static class BatteryDetailsText
             ? Math.Clamp((int)Math.Round(100.0 * now / full), 0, 100)
             : null;
 
+    /// <summary>The power on one line, as the tray icon shows it on hover: "Using 12.4 W". Null without a matching rate.</summary>
+    public static string? PowerLine(BatteryDetails? battery) =>
+        battery is not null && PowerParts(battery) is var (watts, direction) ? $"{direction} {watts}" : null;
+
     /// <summary>The Power card: the watts, and whether they are going in or out. Null without a matching rate.</summary>
     public static (string Value, string Caption)? PowerParts(BatteryDetails battery) => battery.RateMilliwatts switch
     {

@@ -57,6 +57,15 @@ public class BatteryDetailsTextTests
     }
 
     [Fact]
+    public void PowerLine_PutsTheDirectionBeforeTheWatts_AndIsNullWithoutARate()
+    {
+        Assert.Equal("Using 18.2 W", BatteryDetailsText.PowerLine(Discharging));
+        Assert.Equal("Charging 45.0 W", BatteryDetailsText.PowerLine(Charging));
+        Assert.Null(BatteryDetailsText.PowerLine(Charging with { Charging = false, RateMilliwatts = 0 }));
+        Assert.Null(BatteryDetailsText.PowerLine(null));
+    }
+
+    [Fact]
     public void OnBattery_PrefersWindowsOwnEstimate()
     {
         Assert.Equal(("2 h 0 min", "left"), BatteryDetailsText.TimeParts(Discharging with { EstimatedSecondsLeft = 7200 }));

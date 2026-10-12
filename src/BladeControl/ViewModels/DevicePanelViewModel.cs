@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using BladeControl.Core.Diagnostics;
+using BladeControl.Core.Hardware;
 using BladeControl.Core.Localization;
 using BladeControl.Core.Services;
 using BladeControl.Services;
@@ -116,6 +117,17 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
 
     public double BatteryFraction => (BatteryPercent ?? 0) / 100.0;
 
+    /// <summary>The power going out of the battery or into it ("12.4 W"), beside the percentage; null without a figure.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasBatteryPower))]
+    private string? _batteryPowerText;
+
+    /// <summary>Whether that power is going out ("Using") or in ("Charging"), on hover.</summary>
+    [ObservableProperty]
+    private string? _batteryPowerHint;
+
+    public bool HasBatteryPower => BatteryPowerText is not null;
+
     public void Start()
     {
         _ = ReadAsync();
@@ -137,13 +149,18 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
 
         try
         {
-            var (cpu, gpu, fans) = await Task.Run(async () =>
+            var (cpu, gpu, fans, battery) = await Task.Run(async () =>
             {
                 var ec = Safe("EC temperatures", _services.EcTemperatures.Read);
                 var gpuTemperature = Safe("GPU temperature", _services.GpuTemperature.ReadCelsius) ?? ec?.GpuCelsius;
                 var fanReading = HasFanSpeeds ? await _services.FanTelemetry.ReadAsync() : null;
-                return ((double?)ec?.CpuCelsius, gpuTemperature, fanReading);
+                var batteryReading = Safe("Battery power", BatteryReader.Read);
+                return ((double?)ec?.CpuCelsius, gpuTemperature, fanReading, batteryReading);
             });
+
+            var power = battery is null ? null : BatteryDetailsText.PowerParts(battery);
+            BatteryPowerText = power?.Value;
+            BatteryPowerHint = power?.Caption;
 
             var now = DateTime.UtcNow;
             Record(_cpuHistory, now, cpu);

@@ -22,6 +22,10 @@
                 <Grid>
                     <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Battery'}" VerticalAlignment="Center" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <!-- The power going out or in, beside the charge: "12.4 W". -->
+                        <TextBlock Text="{Binding BatteryPowerText}" ToolTip="{Binding BatteryPowerHint}" FontSize="11" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{StaticResource Brush.TextMuted}"
+                                   Visibility="{Binding HasBatteryPower, Converter={StaticResource Visible}}" />
                         <ui:BatteryIcon Width="24" Height="11" Margin="0,0,6,0" VerticalAlignment="Center"
                                         Fraction="{Binding BatteryFraction}" IsPluggedIn="{Binding IsPluggedIn}" Accent="{StaticResource Brush.Accent}" />
                         <TextBlock Text="{Binding BatteryText}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center"

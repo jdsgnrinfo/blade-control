@@ -1,6 +1,8 @@
 using BladeControl.Core.Diagnostics;
+using BladeControl.Core.Hardware;
 using BladeControl.Core.Localization;
 using BladeControl.Core.Models;
+using BladeControl.Core.Services;
 using Drawing = System.Drawing;
 using Forms = System.Windows.Forms;
 
@@ -39,16 +41,37 @@ internal sealed class TrayIcon : IDisposable
             if (e.Button == Forms.MouseButtons.Right)
                 MenuRequested?.Invoke(this, EventArgs.Empty);
         };
+
+        // The battery's power is read as the pointer comes over the icon, at most every
+        // two seconds, so nothing is read while nobody looks.
+        _icon.MouseMove += (_, _) =>
+        {
+            if (DateTime.UtcNow - _powerReadAt < TimeSpan.FromSeconds(2))
+                return;
+
+            _powerReadAt = DateTime.UtcNow;
+            _shownPower = ReadPower();
+            _icon.Text = HoverText(_shownMode, _shownPower);
+        };
     }
+
+    private DateTime _powerReadAt;
+    private string? _shownPower;
 
     public event EventHandler? OpenRequested;
 
     /// <summary>A right click: the menu opens where the pointer is.</summary>
     public event EventHandler? MenuRequested;
 
-    /// <summary>What the icon says on hover: "Blade Control (Balanced)", or just the name while the mode is unknown.</summary>
-    internal static string HoverText(PerformanceMode? mode) =>
-        mode is PerformanceMode known ? $"Blade Control ({L.T(known.ToString())})" : "Blade Control";
+    /// <summary>
+    /// What the icon says on hover: "Blade Control (Balanced)", or just the name while the mode
+    /// is unknown, and the battery's power under it when there is a figure ("Using 12.4 W").
+    /// </summary>
+    internal static string HoverText(PerformanceMode? mode, string? power = null)
+    {
+        var text = mode is PerformanceMode known ? $"Blade Control ({L.T(known.ToString())})" : "Blade Control";
+        return power is null ? text : $"{text}\n{power}";
+    }
 
     /// <summary>The hover text names the mode; the logo stays as it is.</summary>
     public void ShowMode(PerformanceMode? mode)
@@ -57,7 +80,20 @@ internal sealed class TrayIcon : IDisposable
             return;
 
         _shownMode = mode;
-        _icon.Text = HoverText(mode);
+        _icon.Text = HoverText(mode, _shownPower);
+    }
+
+    private static string? ReadPower()
+    {
+        try
+        {
+            return BatteryDetailsText.PowerLine(BatteryReader.Read());
+        }
+        catch (Exception exception)
+        {
+            AppLog.Error("Could not read the battery for the tray icon.", exception);
+            return null;
+        }
     }
 
     public void Dispose()
