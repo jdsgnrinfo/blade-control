@@ -85,6 +85,27 @@ turning the GPU off it offers to close the apps using it. While it is on:
 This is not a MUX switch: on laptops without one, such as the Blade 15 Base
 (2020), the internal screen is always driven by the integrated GPU.
 
+## Razer Blade power plan
+
+While Windows has no "Razer Blade" power plan, the device panel offers
+**Install Razer Blade plan**. It adds a copy of Windows' Balanced plan with
+the changes below and makes it the active plan, without administrator
+permission.
+
+| Setting | Plugged in | On battery |
+| --- | --- | --- |
+| Energy performance preference (0 performance, 100 efficiency) | 30 | 60 |
+| Processor boost | Aggressive, 80% of it used | Efficient aggressive, 40% |
+| Frequency changes | Checked every 30 ms; rise at once, drop gradually | Checked every 100 ms; rise gradually |
+| Response to clicks and keys (latency hints) | 99% | 40% |
+| Cores kept awake | All; more woken at 60% load | Half; more woken at 85% |
+| PCI Express and NVMe power saving | Off | On |
+| Wi-Fi power saving | Off | Maximum |
+| Intel graphics | Maximum performance | Balanced |
+
+Everything else, such as when the screen turns off or the laptop sleeps, is
+Balanced's. Silent still turns the CPU boost off in whatever plan is active.
+
 ## Supported laptops
 
 Verified on a **Razer Blade 15 Base (2020)**, a **Razer Blade 14 (2025)** and a
