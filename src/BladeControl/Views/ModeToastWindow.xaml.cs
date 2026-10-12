@@ -73,7 +73,6 @@ public partial class ModeToastWindow : Window
         ModeIcon.Data = (Geometry)FindResource(mode switch
         {
             PerformanceMode.Silent => "Icon.Silent",
-            PerformanceMode.Gaming => "Icon.Gaming",
             PerformanceMode.Custom => "Icon.Custom",
             _ => "Icon.Balanced"
         });

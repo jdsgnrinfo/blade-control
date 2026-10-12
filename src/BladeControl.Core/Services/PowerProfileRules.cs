@@ -13,7 +13,7 @@ internal static class PowerProfileRules
 
     /// <summary>
     /// On battery Balanced and Silent are offered (Synapse offers only
-    /// Balanced); Gaming and Custom stay plugged-in only. That is policy, not a hardware
+    /// Balanced); Custom stays plugged-in only. That is policy, not a hardware
     /// limit: the EC accepts every mode on battery.
     /// </summary>
     public static bool IsModeAllowed(PerformanceMode mode, bool pluggedIn) =>
@@ -44,11 +44,15 @@ internal static class PowerProfileRules
     /// <summary>
     /// Makes a stored profile safe to apply on <paramref name="pluggedIn"/>.
     /// A battery profile saved by an earlier version may hold a mode that is no
-    /// longer offered there; it falls back to Balanced. Plugged-in profiles are
-    /// never restricted.
+    /// longer offered there; it falls back to Balanced. Gaming, which no
+    /// version offers any more, becomes Balanced, whose place it took. Plugged-in
+    /// profiles are otherwise never restricted.
     /// </summary>
     public static PowerProfile Sanitize(PowerProfile profile, bool pluggedIn)
     {
+        if (profile.Mode == PerformanceMode.Gaming)
+            profile = profile with { Mode = PerformanceMode.Balanced };
+
         if (profile.Mode is not PerformanceMode mode || IsModeAllowed(mode, pluggedIn))
             return profile;
 

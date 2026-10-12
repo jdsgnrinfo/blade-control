@@ -8,8 +8,8 @@ namespace BladeControl.Services;
 /// The keyboard shortcuts that work from any program, a game in front
 /// included, as in Razer Helper: Fn+Del (which the Blade sends as Insert, it
 /// has no Insert key of its own) shows the window or hides it, and
-/// Ctrl+Shift+F1, F2 and F3 switch to Silent, Balanced and Custom, as they
-/// always have, and F4, added later, to Gaming. Windows delivers them to a hidden window of
+/// Ctrl+Shift+F1, F2 and F3 switch to Silent, Balanced and Custom, in the
+/// order of the mode buttons. Windows delivers them to a hidden window of
 /// ours, so nothing watches the keyboard. (Fn+1/2/3 cannot be used: the
 /// Blade's Fn key never reaches Windows, so Fn+1 looks exactly like 1.)
 /// </summary>
@@ -32,8 +32,7 @@ internal sealed class GlobalShortcuts : IDisposable
     [
         (PerformanceMode.Silent, "Ctrl+Shift+F1"),
         (PerformanceMode.Balanced, "Ctrl+Shift+F2"),
-        (PerformanceMode.Custom, "Ctrl+Shift+F3"),
-        (PerformanceMode.Gaming, "Ctrl+Shift+F4")
+        (PerformanceMode.Custom, "Ctrl+Shift+F3")
     ];
 
     private readonly HwndSource _window;

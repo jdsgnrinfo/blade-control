@@ -97,7 +97,7 @@ internal sealed partial class SettingsViewModel : ObservableObject
         }
     }
 
-    /// <summary>Ctrl+Shift+F1 to F4 switch performance mode from any program. Off frees them for another program.</summary>
+    /// <summary>Ctrl+Shift+F1, F2 and F3 switch performance mode from any program. Off frees them for another program.</summary>
     public bool ProfileShortcuts
     {
         get => _services.Settings.ProfileShortcuts;
@@ -117,7 +117,7 @@ internal sealed partial class SettingsViewModel : ObservableObject
 
     /// <summary>Under the switch: the shortcuts, or which ones another program already owns.</summary>
     [ObservableProperty]
-    private string _profileShortcutsHint = L.T("Ctrl+Shift+F1 to F4: Silent, Balanced, Custom and Gaming.");
+    private string _profileShortcutsHint = L.T("Ctrl+Shift+F1, F2 and F3: Silent, Balanced and Custom.");
 
     /// <summary>Windows can change Start at login meanwhile (Task Manager's Startup apps): read again when the page opens.</summary>
     public void Refresh()
