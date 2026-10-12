@@ -8,7 +8,7 @@
   <br>
 </p>
 
-**English** · [Español](README.es.md)
+<p align="center"><strong>English</strong> · <a href="README.es.md">Español</a></p>
 
 A light control center for Razer Blade laptops, in a full Windows window. It
 changes the performance mode, the fans, the keyboard lighting, the screen and

@@ -8,7 +8,7 @@
   <br>
 </p>
 
-[English](README.md) · **Español**
+<p align="center"><a href="README.md">English</a> · <strong>Español</strong></p>
 
 Un centro de control ligero para portátiles Razer Blade, en una ventana
 completa de Windows. Cambia el modo de rendimiento, los ventiladores, la
