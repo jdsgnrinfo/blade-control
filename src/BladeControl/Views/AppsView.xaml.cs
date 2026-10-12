@@ -47,7 +47,7 @@ public partial class AppsView : UserControl
         if (!IsVisible || DataContext is not AppsViewModel { Selected: not null } apps || e.OriginalSource is not DependencyObject clicked)
             return;
 
-        if (IsInside(clicked, EditorCard) || FindAncestor<ListBoxItem>(clicked) is not null)
+        if (IsInside(clicked, EditorCard) || FindAncestor<ListBoxItem>(clicked) is not null || FindAncestor<System.Windows.Controls.Primitives.ScrollBar>(clicked) is not null)
             return;
 
         apps.Selected = null;

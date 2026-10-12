@@ -22,17 +22,17 @@
             </DataTemplate.Triggers>
         </DataTemplate>
 
-        <!-- An app in the list: lit while picked, a shade lighter under the pointer. -->
+        <!-- An app in the list: grey while picked, and under the pointer. -->
         <Style x:Key="AppItem" TargetType="ListBoxItem">
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Margin" Value="0,0,0,6" />
+            <Setter Property="Margin" Value="0,0,0,4" />
             <EventSetter Event="PreviewMouseLeftButtonDown" Handler="AppItem_Click" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border x:Name="Back" Background="Transparent" BorderBrush="Transparent" BorderThickness="2"
-                                CornerRadius="{StaticResource Radius.Control}" Padding="11,9">
+                        <Border x:Name="Back" Background="Transparent" BorderBrush="Transparent" BorderThickness="1"
+                                CornerRadius="{StaticResource Radius.Control}" Padding="12,9">
                             <ContentPresenter />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -40,8 +40,8 @@
                                 <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.Tile}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Back" Property="Background" Value="Transparent" />
-                                <Setter TargetName="Back" Property="BorderBrush" Value="{StaticResource Brush.Accent}" />
+                                <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.Tile}" />
+                                <Setter TargetName="Back" Property="BorderBrush" Value="{StaticResource Brush.AccentDim}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -49,25 +49,35 @@
             </Setter>
         </Style>
 
-        <!-- A game or app to add: the whole line is the button. -->
-        <Style x:Key="CandidateButton" TargetType="Button">
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <!-- The search box over the list. -->
+        <Style x:Key="SearchBox" TargetType="TextBox">
             <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Margin" Value="0,0,0,4" />
+            <Setter Property="CaretBrush" Value="{StaticResource Brush.Text}" />
+            <Setter Property="SelectionBrush" Value="{StaticResource Brush.Accent}" />
+            <Setter Property="FontSize" Value="13" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="Back" Background="Transparent" CornerRadius="{StaticResource Radius.Control}" Padding="10,8">
-                            <ContentPresenter HorizontalAlignment="Stretch" />
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="Back" Background="{StaticResource Brush.Tile}" CornerRadius="{StaticResource Radius.Control}"
+                                BorderBrush="Transparent" BorderThickness="1" Height="36">
+                            <Grid Margin="12,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="&#xE721;" FontFamily="{StaticResource Font.Symbols}" FontSize="13"
+                                           Foreground="{StaticResource Brush.TextMuted}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                                <TextBlock x:Name="Placeholder" Grid.Column="1" Text="{ui:T 'Search apps'}" Foreground="{StaticResource Brush.TextMuted}"
+                                           VerticalAlignment="Center" Visibility="Collapsed" IsHitTestVisible="False" />
+                                <ScrollViewer x:Name="PART_ContentHost" Grid.Column="1" VerticalAlignment="Center" />
+                            </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.Tile}" />
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
                             </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TilePressed}" />
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Back" Property="BorderBrush" Value="{StaticResource Brush.AccentDim}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -98,7 +108,7 @@
     <!-- Two columns, or one under the other in a narrow window. -->
     <ui:AdaptiveColumns>
 
-        <!-- ===== The apps with a profile ===== -->
+        <!-- ===== Every app on the PC ===== -->
         <Border Style="{StaticResource Card}" VerticalAlignment="Top">
             <StackPanel>
                 <Grid Margin="0,0,0,8" MinHeight="34">
@@ -110,33 +120,29 @@
                     <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding ProfilesOn}"
                               ToolTip="{ui:T 'Turn every app profile on or off'}" />
                 </Grid>
-                <TextBlock Style="{StaticResource Text.Hint}" Margin="0,0,0,18" TextWrapping="Wrap"
-                           Text="{ui:T 'While one of these apps is running, its settings are used. When it closes, everything goes back as it was.'}" />
+                <TextBlock Style="{StaticResource Text.Hint}" Margin="0,0,0,16" TextWrapping="Wrap"
+                           Text="{ui:T 'Pick an app to choose its settings. While it is running they are used; when it closes, everything goes back as it was.'}" />
 
-                <ListBox ItemsSource="{Binding Apps}" SelectedItem="{Binding Selected}" ItemContainerStyle="{StaticResource AppItem}"
+                <TextBox Style="{StaticResource SearchBox}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" />
+
+                <Path Style="{StaticResource Spinner}" HorizontalAlignment="Center" Margin="0,12"
+                      Visibility="{Binding Scanning, Converter={StaticResource Visible}}" />
+
+                <!-- Its own scroll, so the settings at the right stay in view. -->
+                <ListBox ItemsSource="{Binding AppsView}" SelectedItem="{Binding Selected}" ItemContainerStyle="{StaticResource AppItem}"
                          Background="Transparent" Foreground="{StaticResource Brush.Text}" BorderThickness="0" Padding="0"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                         ScrollViewer.CanContentScroll="False"
-                         Visibility="{Binding HasApps, Converter={StaticResource Visible}}">
+                         MaxHeight="560" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.ScrollUnit="Pixel">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource AppIconTemplate}" Width="31" Height="31" />
-                                <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
-                                    <StackPanel.Style>
-                                        <!-- Switched off: kept, but greyed. -->
-                                        <Style TargetType="StackPanel">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Enabled}" Value="False">
-                                                    <Setter Property="Opacity" Value="0.5" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </StackPanel.Style>
+                                <StackPanel Grid.Column="1" Margin="12,0,8,0" VerticalAlignment="Center">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                                         <!-- Its app is running and its profile is on. -->
@@ -145,22 +151,52 @@
                                             <TextBlock Text="{ui:T 'Active'}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.Accent}" />
                                         </Border>
                                     </StackPanel>
-                                    <TextBlock Text="{Binding Summary}" Style="{StaticResource Text.Hint}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Hint}" Margin="0,2,0,0"
+                                               TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
+
+                                <!-- Something is set for it: a small green bubble with a check. -->
+                                <Grid Grid.Column="2" Width="20" Height="20" VerticalAlignment="Center" ToolTip="{ui:T 'Has its own settings'}"
+                                      Visibility="{Binding IsConfigured, Converter={StaticResource Visible}}">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <!-- Switched off: kept, but greyed. -->
+                                                <DataTrigger Binding="{Binding Enabled}" Value="False">
+                                                    <Setter Property="Opacity" Value="0.35" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Ellipse Fill="{StaticResource Brush.Accent}" />
+                                    <Path Data="M5.5,10.5 L8.6,13.5 L14.5,7" Stroke="{StaticResource Brush.OnAccent}" StrokeThickness="2"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                                </Grid>
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
 
-                <ContentControl Style="{StaticResource NoteBox}" Visibility="{Binding HasApps, Converter={StaticResource Hidden}}"
-                                Content="{ui:T 'No apps yet. Add a game or an app to give it its own mode, fans, refresh rate, colors and keyboard lighting.'}" />
+                <TextBlock Text="{Binding ListStatus}" Style="{StaticResource Text.Hint}" />
+
+                <Button Style="{StaticResource ActionButton}" Margin="0,16,0,0" HorizontalAlignment="Left"
+                        Content="{ui:T 'Find a program...'}" Command="{Binding BrowseCommand}" />
             </StackPanel>
         </Border>
 
-        <StackPanel>
-            <!-- ===== The picked app's settings ===== -->
-            <Border x:Name="EditorCard" Style="{StaticResource Card}" VerticalAlignment="Top" Visibility="{Binding ShowsEditor, Converter={StaticResource Visible}}">
-                <StackPanel>
+        <!-- ===== The picked app's settings, or "No app" ===== -->
+        <Border x:Name="EditorCard" Style="{StaticResource Card}" VerticalAlignment="Top">
+            <Grid>
+                <!-- Nothing picked. -->
+                <StackPanel Visibility="{Binding ShowsEditor, Converter={StaticResource Hidden}}" Margin="0,40" HorizontalAlignment="Center">
+                    <TextBlock Text="&#xE71D;" FontFamily="{StaticResource Font.Symbols}" FontSize="36" HorizontalAlignment="Center"
+                               Foreground="{StaticResource Brush.TextMuted}" />
+                    <TextBlock Text="{ui:T 'No app'}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,16,0,0" />
+                    <TextBlock Style="{StaticResource Text.Hint}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,6,0,0" MaxWidth="280"
+                               Text="{ui:T 'Pick an app in the list to choose what changes while it runs.'}" />
+                </StackPanel>
+
+                <StackPanel Visibility="{Binding ShowsEditor, Converter={StaticResource Visible}}">
                     <Grid Margin="0,0,0,18" MinHeight="34">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -264,64 +300,9 @@
                                     Content="{ui:T 'No change leaves that setting as it is. Custom and maximum fans need the charger: on battery, the battery mode stays.'}" />
 
                     <Button Style="{StaticResource ActionButton}" Margin="0,16,0,0" HorizontalAlignment="Left"
-                            Content="{ui:T 'Remove app'}" Command="{Binding RemoveCommand}" />
+                            Content="{ui:T 'Reset'}" Command="{Binding ResetCommand}" />
                 </StackPanel>
-            </Border>
-
-            <!-- ===== Adding an app: the games found, or the apps open now, or any program ===== -->
-            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
-                <StackPanel>
-                    <Grid Margin="0,0,0,18" MinHeight="34">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Add app'}" VerticalAlignment="Center" />
-                        <Border Grid.Column="1" Style="{StaticResource SegmentStrip}">
-                            <StackPanel Orientation="Horizontal">
-                                <RadioButton Style="{StaticResource Segment}" GroupName="AddFrom" Content="{ui:T 'Games'}" IsChecked="{Binding AddingGames}" />
-                                <RadioButton Style="{StaticResource Segment}" GroupName="AddFrom" Content="{ui:T 'Open apps'}" IsChecked="{Binding AddingOpenApps}" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-
-                    <Path Style="{StaticResource Spinner}" HorizontalAlignment="Center" Margin="0,8"
-                          Visibility="{Binding Scanning, Converter={StaticResource Visible}}" />
-
-                    <ItemsControl ItemsSource="{Binding Candidates}" Margin="-10,0">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Style="{StaticResource CandidateButton}" ToolTip="{Binding Path}"
-                                        Command="{Binding DataContext.AddCandidateCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                        CommandParameter="{Binding}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource AppIconTemplate}" Width="26" Height="26" />
-                                        <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Name}" FontSize="14" TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Hint}" TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" Text="{ui:T 'Add'}" FontSize="13" FontWeight="SemiBold"
-                                                   Foreground="{StaticResource Brush.Accent}" VerticalAlignment="Center" />
-                                    </Grid>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-
-                    <TextBlock Text="{Binding CandidatesStatus}" Style="{StaticResource Text.Hint}" TextWrapping="Wrap" />
-
-                    <ContentControl Style="{StaticResource NoteBox}" Margin="0,16,0,0" Visibility="{Binding AddingGames, Converter={StaticResource Visible}}"
-                                    Content="{ui:T 'Games installed with Steam, Epic Games, Xbox and Battle.net. Anything that runs from the game\'s folder counts, its own launcher too.'}" />
-
-                    <Button Style="{StaticResource ActionButton}" Margin="0,16,0,0" HorizontalAlignment="Left"
-                            Content="{ui:T 'Find a program...'}" Command="{Binding BrowseCommand}" />
-                </StackPanel>
-            </Border>
-        </StackPanel>
+            </Grid>
+        </Border>
     </ui:AdaptiveColumns>
 </UserControl>

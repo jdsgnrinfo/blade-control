@@ -525,6 +525,13 @@ internal static class L
         ["App profile"] = "Perfil de app",
         ["App profile applied."] = "Perfil de app aplicado.",
         ["Use this profile"] = "Usar este perfil",
+        ["Pick an app to choose its settings. While it is running they are used; when it closes, everything goes back as it was."] =
+            "Elige una app para ajustar su perfil. Mientras está abierta se usan sus ajustes; al cerrarla, todo vuelve a como estaba.",
+        ["Search apps"] = "Buscar apps",
+        ["Has its own settings"] = "Tiene ajustes propios",
+        ["No app"] = "Ninguna app",
+        ["Pick an app in the list to choose what changes while it runs."] = "Elige una app de la lista para decidir qué cambia mientras está abierta.",
+        ["No apps found."] = "No se encontraron apps.",
         ["Turn every app profile on or off"] = "Activar o pausar todos los perfiles de apps",
         ["While one of these apps is running, its settings are used. When it closes, everything goes back as it was."] =
             "Mientras una de estas apps está abierta, se usan sus ajustes. Al cerrarla, todo vuelve a como estaba.",

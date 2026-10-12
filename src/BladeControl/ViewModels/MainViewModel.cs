@@ -134,6 +134,7 @@ internal sealed partial class MainViewModel : ObservableObject
     private Task Refresh() => Page switch
     {
         AppPage.Display => RefreshDisplay(),
+        AppPage.Apps => Apps.RescanAsync(),
         AppPage.Lighting => Lighting.RefreshAsync(),
         AppPage.Battery => Battery.RefreshAsync(),
         AppPage.Optimize => Optimize.RefreshAsync(),

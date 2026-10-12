@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Threading;
 using BladeControl.Core.Diagnostics;
@@ -17,17 +19,24 @@ using Microsoft.Win32;
 
 namespace BladeControl.ViewModels;
 
-/// <summary>An app in the Apps page's list: its icon, name, what its profile changes, and its switch.</summary>
+/// <summary>
+/// An app in the Apps page's list: its icon and name, and its profile, which
+/// changes nothing until one of its settings is chosen; from then on it has a
+/// green check beside it.
+/// </summary>
 internal sealed partial class AppRow : ObservableObject
 {
     private readonly Action<AppRow> _changed;
+    private readonly string _foundIn;
     private AppProfile _profile;
+    private ImageSource? _icon;
+    private bool _iconRead;
 
     public AppRow(AppProfile profile, Action<AppRow> changed)
     {
         _profile = profile;
         _changed = changed;
-        Icon = AppIcons.For(profile.IconPath ?? (AppProfileMatcher.IsProgram(profile.Path) ? profile.Path : null));
+        _foundIn = AppProfileText.SourceName(profile.Source);
     }
 
     public AppProfile Profile
@@ -38,24 +47,42 @@ internal sealed partial class AppRow : ObservableObject
             if (!SetProperty(ref _profile, value))
                 return;
 
-            OnPropertyChanged(nameof(Summary));
+            OnPropertyChanged(nameof(Detail));
             OnPropertyChanged(nameof(Enabled));
+            OnPropertyChanged(nameof(IsConfigured));
             _changed(this);
         }
     }
 
     public string Name => _profile.Name;
 
-    public string Summary => AppProfileText.Summary(_profile);
-
-    /// <summary>Where it came from ("Steam"), and the program or folder it follows, for the editor.</summary>
-    public string SourceName => AppProfileText.SourceName(_profile.Source);
-
     public string Path => _profile.Path;
 
-    public ImageSource? Icon { get; }
+    /// <summary>What its profile changes, or where it was found while it changes nothing.</summary>
+    public string Detail => IsConfigured ? AppProfileText.Summary(_profile) : _foundIn;
 
-    /// <summary>The switch beside it: off keeps the profile but does not use it.</summary>
+    /// <summary>Where it was found ("Steam"), for the settings' title.</summary>
+    public string SourceName => _foundIn;
+
+    /// <summary>Read the first time the row is shown, so a long list opens quickly.</summary>
+    public ImageSource? Icon
+    {
+        get
+        {
+            if (!_iconRead)
+            {
+                _iconRead = true;
+                _icon = AppIcons.For(_profile.IconPath ?? (AppProfileMatcher.IsProgram(_profile.Path) ? _profile.Path : null));
+            }
+
+            return _icon;
+        }
+    }
+
+    /// <summary>One of its settings is chosen: the green check.</summary>
+    public bool IsConfigured => _profile.ChangesAnything;
+
+    /// <summary>The switch in its settings: off keeps the profile but does not use it.</summary>
     public bool Enabled
     {
         get => _profile.Enabled;
@@ -71,28 +98,12 @@ internal sealed partial class AppRow : ObservableObject
     private bool _isRunning;
 }
 
-/// <summary>An app or game that can be added: one running now, or one found in a launcher's library.</summary>
-internal sealed class AppCandidate(string name, string path, string? iconPath, AppSource source, string detail)
-{
-    public string Name { get; } = name;
-
-    public string Path { get; } = path;
-
-    public string? IconPath { get; } = iconPath;
-
-    public AppSource Source { get; } = source;
-
-    /// <summary>The launcher, or the program's file name.</summary>
-    public string Detail { get; } = detail;
-
-    public ImageSource? Icon => AppIcons.For(IconPath);
-}
-
 /// <summary>
-/// The Apps page: a profile for each app or game (the mode, fans, refresh
-/// rate, screen colors and keyboard to use while it runs), and what puts them
-/// on. Every two seconds it looks at what is running; when an app with a
-/// profile starts, its profile goes on with a notice, and when it closes
+/// The Apps page: every app installed on the PC (the Start menu's programs
+/// and the games found in Steam, Epic Games, Xbox and Battle.net), and for the
+/// one picked, the mode, fans, refresh rate, screen colors and keyboard to use
+/// while it runs. Every two seconds it looks at what is running; when an app
+/// with settings starts, they go on with a notice, and when it closes
 /// everything goes back as it was. Something changed by hand meanwhile stays
 /// as it is. With two such apps running, the one started last wins.
 /// </summary>
@@ -112,8 +123,13 @@ internal sealed partial class AppsViewModel : ObservableObject
     private readonly RunningPrograms _programs = new();
     private readonly KeyboardEffect?[] _effects;
     private readonly int?[] _rates;
+
+    // The saved profiles, by the program or folder they follow: what the watch puts on.
+    private readonly Dictionary<string, AppProfile> _profiles = new(StringComparer.OrdinalIgnoreCase);
     private AppProfile? _active;
     private bool _checking;
+    private bool _listed;
+    private bool _listing;
 
     public AppsViewModel(
         AppServices services,
@@ -128,8 +144,12 @@ internal sealed partial class AppsViewModel : ObservableObject
         _lighting = lighting;
         _report = report;
 
-        Apps = [.. (services.Settings.AppProfiles ?? []).Select(profile => new AppRow(profile, OnRowChanged))];
-        Apps.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasApps));
+        foreach (var profile in services.Settings.AppProfiles ?? [])
+            _profiles[profile.Path] = profile;
+
+        AppsView = CollectionViewSource.GetDefaultView(Apps);
+        AppsView.Filter = item => item is AppRow row &&
+            (string.IsNullOrWhiteSpace(SearchText) || row.Name.Contains(SearchText.Trim(), StringComparison.CurrentCultureIgnoreCase));
 
         _effects = [null, .. lighting.OfferedEffects.Select(effect => (KeyboardEffect?)effect)];
         _rates = [null, .. display.FixedRates.Select(hertz => (int?)hertz)];
@@ -149,9 +169,23 @@ internal sealed partial class AppsViewModel : ObservableObject
 
     // ===== The list =====
 
-    public ObservableCollection<AppRow> Apps { get; }
+    public ObservableCollection<AppRow> Apps { get; } = [];
 
-    public bool HasApps => Apps.Count > 0;
+    /// <summary>The list as shown: filtered by the search box.</summary>
+    public ICollectionView AppsView { get; }
+
+    [ObservableProperty]
+    private string _searchText = string.Empty;
+
+    partial void OnSearchTextChanged(string value) => AppsView.Refresh();
+
+    /// <summary>The apps are being looked for.</summary>
+    [ObservableProperty]
+    private bool _scanning;
+
+    /// <summary>Under the list: nothing found.</summary>
+    [ObservableProperty]
+    private string _listStatus = string.Empty;
 
     /// <summary>The switch at the top of the list: off pauses every profile and puts back what was changed.</summary>
     public bool ProfilesOn
@@ -175,10 +209,93 @@ internal sealed partial class AppsViewModel : ObservableObject
 
     partial void OnSelectedChanged(AppRow? value) => RaiseEditor();
 
-    /// <summary>The right column shows the selected app's settings above the apps to add.</summary>
+    /// <summary>An app is picked: its settings show; otherwise "No app".</summary>
     public bool ShowsEditor => Selected is not null;
 
-    // ===== The selected app's settings =====
+    /// <summary>When the page opens: no app picked; the first time, the apps on the PC are looked for.</summary>
+    public void Refresh()
+    {
+        Selected = null;
+
+        if (!_listed)
+            _ = ListAppsAsync();
+    }
+
+    /// <summary>The refresh button: the apps on the PC are looked for again (one just installed, say).</summary>
+    public Task RescanAsync() => ListAppsAsync();
+
+    private async Task ListAppsAsync()
+    {
+        if (_listing)
+            return;
+
+        _listing = true;
+        Scanning = true;
+        ListStatus = string.Empty;
+
+        try
+        {
+            var found = await Task.Run(InstalledPrograms.Scan);
+            var picked = Selected?.Path;
+
+            // Each app found, with its saved profile if it has one; then the saved ones not found (a program picked by hand).
+            var rows = found
+                .Select(app => _profiles.GetValueOrDefault(app.Path) ?? new AppProfile(app.Name, app.Path, app.IconPath, app.Source))
+                .Concat(_profiles.Values.Where(profile => !found.Any(app => SameApp(app.Path, profile.Path))))
+                .Select(profile => new AppRow(profile, OnRowChanged))
+                .OrderByDescending(row => row.IsConfigured)
+                .ThenBy(row => row.Name, StringComparer.CurrentCultureIgnoreCase)
+                .ToList();
+
+            Apps.Clear();
+
+            foreach (var row in rows)
+                Apps.Add(row);
+
+            Selected = picked is null ? null : Apps.FirstOrDefault(row => SameApp(row.Path, picked));
+            ShowRunning();
+            _listed = true;
+            ListStatus = Apps.Count == 0 ? L.T("No apps found.") : string.Empty;
+            AppLog.Info($"Apps page: {found.Count} apps found.");
+        }
+        catch (Exception exception)
+        {
+            AppLog.Error("Could not list the apps.", exception);
+            ListStatus = L.T("Could not list the apps.");
+        }
+
+        Scanning = false;
+        _listing = false;
+    }
+
+    [RelayCommand]
+    private void Browse()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Title = L.T("Choose the app's program"),
+            Filter = L.T("Programs") + " (*.exe)|*.exe",
+            CheckFileExists = true
+        };
+
+        if (dialog.ShowDialog() != true)
+            return;
+
+        var path = dialog.FileName;
+
+        // One already listed is just picked; another goes at the top.
+        if (Apps.FirstOrDefault(row => SameApp(row.Path, path)) is not { } row)
+        {
+            row = new AppRow(new AppProfile(ProgramName(path), path, path), OnRowChanged);
+            Apps.Insert(0, row);
+            AppLog.Info($"Apps page: {row.Name} added by hand.");
+        }
+
+        SearchText = string.Empty;
+        Selected = row;
+    }
+
+    // ===== The picked app's settings =====
 
     public IReadOnlyList<string> ModeOptions { get; }
 
@@ -280,183 +397,29 @@ internal sealed partial class AppsViewModel : ObservableObject
             OnPropertyChanged(name);
     }
 
+    /// <summary>Every setting of the picked app back to No change: it no longer changes anything.</summary>
     [RelayCommand]
-    private void Remove()
+    private void Reset()
     {
-        if (Selected is not { } row)
+        if (Selected is not { } row || !row.IsConfigured && row.Enabled)
             return;
 
-        Apps.Remove(row);
-        Save();
-        AppLog.Info($"App profile removed: {row.Name}.");
-
-        Selected = null;
-        _ = CheckAsync();
-
-        // It can be added again.
-        _ = LoadCandidatesAsync();
+        var profile = row.Profile;
+        row.Profile = new AppProfile(profile.Name, profile.Path, profile.IconPath, profile.Source);
+        AppLog.Info($"App profile reset: {row.Name}.");
+        RaiseEditor();
     }
 
+    // A setting changed: an app that now changes something is saved, one that changes nothing is let go.
     private void OnRowChanged(AppRow row)
     {
-        Save();
+        if (row.Profile.ChangesAnything)
+            _profiles[row.Path] = row.Profile;
+        else
+            _profiles.Remove(row.Path);
+
+        _services.UpdateSettings(settings => settings with { AppProfiles = [.. _profiles.Values] });
         _ = CheckAsync();
-    }
-
-    private void Save() =>
-        _services.UpdateSettings(settings => settings with { AppProfiles = [.. Apps.Select(row => row.Profile)] });
-
-    // ===== Adding an app =====
-
-    /// <summary>Which list to add from: games found in launchers, or the apps open now.</summary>
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(AddingOpenApps))]
-    private bool _addingGames = true;
-
-    public bool AddingOpenApps
-    {
-        get => !AddingGames;
-        set => AddingGames = !value;
-    }
-
-    partial void OnAddingGamesChanged(bool value) => _ = LoadCandidatesAsync();
-
-    public ObservableCollection<AppCandidate> Candidates { get; } = [];
-
-    [ObservableProperty]
-    private bool _scanning;
-
-    /// <summary>Under the list: nothing found, and where it was looked for.</summary>
-    [ObservableProperty]
-    private string _candidatesStatus = string.Empty;
-
-    /// <summary>When the page opens: no app picked, and the games, or the apps open now, to add are listed again.</summary>
-    public void Refresh()
-    {
-        Selected = null;
-        _ = LoadCandidatesAsync();
-    }
-
-    [RelayCommand]
-    private void AddCandidate(AppCandidate? candidate)
-    {
-        if (candidate is not null)
-            Add(candidate.Name, candidate.Path, candidate.IconPath, candidate.Source);
-    }
-
-    [RelayCommand]
-    private void Browse()
-    {
-        var dialog = new OpenFileDialog
-        {
-            Title = L.T("Choose the app's program"),
-            Filter = L.T("Programs") + " (*.exe)|*.exe",
-            CheckFileExists = true
-        };
-
-        if (dialog.ShowDialog() == true)
-            Add(ProgramName(dialog.FileName), dialog.FileName, dialog.FileName, AppSource.Manual);
-    }
-
-    private void Add(string name, string path, string? iconPath, AppSource source)
-    {
-        if (Apps.FirstOrDefault(row => string.Equals(row.Path, path, StringComparison.OrdinalIgnoreCase)) is { } existing)
-        {
-            Selected = existing;
-            return;
-        }
-
-        var row = new AppRow(new AppProfile(name, path, iconPath, source), OnRowChanged);
-        Apps.Add(row);
-        Save();
-        AppLog.Info($"App profile added: {name} ({source}).");
-        Selected = row;
-
-        // Added: no longer offered.
-        foreach (var offered in Candidates.Where(candidate => string.Equals(candidate.Path, path, StringComparison.OrdinalIgnoreCase)).ToList())
-            Candidates.Remove(offered);
-    }
-
-    private bool _loading;
-
-    private async Task LoadCandidatesAsync()
-    {
-        if (_loading)
-            return;
-
-        _loading = true;
-        Scanning = true;
-        Candidates.Clear();
-        CandidatesStatus = string.Empty;
-        var games = AddingGames;
-
-        try
-        {
-            var found = await Task.Run(() => games ? FindGames() : FindOpenApps());
-            var added = new HashSet<string>(Apps.Select(row => row.Path), StringComparer.OrdinalIgnoreCase);
-
-            // The list may have been switched meanwhile: only the latest is shown.
-            if (games == AddingGames)
-            {
-                foreach (var candidate in found.Where(candidate => !added.Contains(candidate.Path)))
-                    Candidates.Add(candidate);
-
-                if (Candidates.Count == 0)
-                    CandidatesStatus = games
-                        ? L.T("No games found in Steam, Epic Games, Xbox or Battle.net.")
-                        : L.T("No other apps with a window are open.");
-            }
-        }
-        catch (Exception exception)
-        {
-            AppLog.Error("Could not list the apps to add.", exception);
-            CandidatesStatus = L.T("Could not list the apps.");
-        }
-
-        Scanning = false;
-        _loading = false;
-
-        // Switched while this one was loading.
-        if (games != AddingGames)
-            _ = LoadCandidatesAsync();
-    }
-
-    private static List<AppCandidate> FindGames() =>
-        [.. GameLibrary.Scan().Select(game => new AppCandidate(
-            game.Name, game.Folder, GameLibrary.FindProgram(game), game.Source, AppProfileText.SourceName(game.Source)))];
-
-    // The apps with a window open now, Windows' own and Blade Control left out.
-    private static List<AppCandidate> FindOpenApps()
-    {
-        var windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
-        var found = new List<AppCandidate>();
-
-        foreach (var process in Process.GetProcesses())
-        {
-            using (process)
-            {
-                try
-                {
-                    if (process.Id == Environment.ProcessId || process.MainWindowHandle == IntPtr.Zero)
-                        continue;
-
-                    var path = process.MainModule?.FileName;
-
-                    if (path is null || path.StartsWith(windows, StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    found.Add(new AppCandidate(ProgramName(path), path, path, AppSource.Manual, System.IO.Path.GetFileName(path)));
-                }
-                catch (Exception exception) when (exception is System.ComponentModel.Win32Exception or InvalidOperationException or UnauthorizedAccessException)
-                {
-                    // One we may not look at (running as administrator): left out.
-                }
-            }
-        }
-
-        return [.. found
-            .DistinctBy(candidate => candidate.Path, StringComparer.OrdinalIgnoreCase)
-            .OrderBy(candidate => candidate.Name, StringComparer.CurrentCultureIgnoreCase)];
     }
 
     // The name a program gives itself ("Google Chrome"), else its file name.
@@ -504,7 +467,7 @@ internal sealed partial class AppsViewModel : ObservableObject
 
         try
         {
-            var profiles = ProfilesOn ? Apps.Select(row => row.Profile).Where(profile => profile.Enabled && profile.ChangesAnything).ToList() : [];
+            var profiles = ProfilesOn ? _profiles.Values.Where(profile => profile.Enabled && profile.ChangesAnything).ToList() : [];
             AppProfile? target = null;
 
             if (profiles.Count > 0)
@@ -526,13 +489,17 @@ internal sealed partial class AppsViewModel : ObservableObject
         }
     }
 
+    private void ShowRunning()
+    {
+        foreach (var row in Apps)
+            row.IsRunning = _active is not null && SameApp(row.Path, _active.Path);
+    }
+
     private async Task SwitchAsync(AppProfile? target, bool notify = true)
     {
         var previous = _active;
         _active = target;
-
-        foreach (var row in Apps)
-            row.IsRunning = target is not null && SameApp(row.Profile, target);
+        ShowRunning();
 
         if (target is null)
         {
@@ -548,7 +515,7 @@ internal sealed partial class AppsViewModel : ObservableObject
             return;
         }
 
-        var sameApp = previous is not null && SameApp(previous, target);
+        var sameApp = previous is not null && SameApp(previous.Path, target.Path);
 
         // Another app's: the keyboard goes back to how it was first, so the next one starts from there.
         if (previous is not null && !sameApp)
@@ -572,8 +539,8 @@ internal sealed partial class AppsViewModel : ObservableObject
             ModeToastWindow.ShowAppNotice(target.Name, IconOf(target), target.Mode, applied ? summary : status, applied);
     }
 
-    private static bool SameApp(AppProfile one, AppProfile other) =>
-        string.Equals(one.Path, other.Path, StringComparison.OrdinalIgnoreCase);
+    private static bool SameApp(string one, string other) =>
+        string.Equals(one.TrimEnd('\\'), other.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase);
 
     private static ImageSource? IconOf(AppProfile profile) =>
         AppIcons.For(profile.IconPath ?? (AppProfileMatcher.IsProgram(profile.Path) ? profile.Path : null));
