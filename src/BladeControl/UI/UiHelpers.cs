@@ -16,6 +16,17 @@ public sealed class NotConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture) => value is not true;
 }
 
+/// <summary>A name's first letter, in capitals: the stand-in for an app with no icon.</summary>
+public sealed class FirstLetterConverter : IValueConverter
+{
+    public static FirstLetterConverter Instance { get; } = new();
+
+    public object Convert(object value, Type targetType, object? parameter, CultureInfo culture) =>
+        value is string { Length: > 0 } text ? text[..1].ToUpper(culture) : "?";
+
+    public object ConvertBack(object value, Type targetType, object? parameter, CultureInfo culture) => Binding.DoNothing;
+}
+
 /// <summary>True when every value is true: a control enabled only while all its conditions hold.</summary>
 public sealed class AllTrueConverter : IMultiValueConverter
 {

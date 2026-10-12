@@ -517,5 +517,45 @@ internal static class L
             "Lo que guarda una carga completa hoy frente a cuando era nueva. Las baterías pierden un poco cada año.",
         ["The charge limit is on the Performance page, under Battery health."] =
             "El límite de carga está en la página Rendimiento, en Salud de la batería.",
+
+        // Apps: a profile for each app or game.
+        ["Apps"] = "Apps",
+        ["App"] = "App",
+        ["App profiles"] = "Perfiles de apps",
+        ["App profile"] = "Perfil de app",
+        ["App profile applied."] = "Perfil de app aplicado.",
+        ["Turn every app profile on or off"] = "Activar o pausar todos los perfiles de apps",
+        ["While one of these apps is running, its settings are used. When it closes, everything goes back as it was."] =
+            "Mientras una de estas apps está abierta, se usan sus ajustes. Al cerrarla, todo vuelve a como estaba.",
+        ["No apps yet. Add a game or an app to give it its own mode, fans, refresh rate, colors and keyboard lighting."] =
+            "Aún no hay apps. Añade un juego o una app para darle su propio modo, ventiladores, frecuencia, colores e iluminación del teclado.",
+        ["Add app"] = "Añadir app",
+        ["Add"] = "Añadir",
+        ["Remove app"] = "Quitar app",
+        ["Cancel"] = "Cancelar",
+        ["Games"] = "Juegos",
+        ["Open apps"] = "Apps abiertas",
+        ["Find a program..."] = "Buscar un programa...",
+        ["Choose the app's program"] = "Elige el programa de la app",
+        ["Programs"] = "Programas",
+        ["Games installed with Steam, Epic Games, Xbox and Battle.net. Anything that runs from the game's folder counts, its own launcher too."] =
+            "Juegos instalados con Steam, Epic Games, Xbox y Battle.net. Cuenta todo lo que se abre desde la carpeta del juego, también su propio launcher.",
+        ["No games found in Steam, Epic Games, Xbox or Battle.net."] = "No se encontraron juegos de Steam, Epic Games, Xbox ni Battle.net.",
+        ["No other apps with a window are open."] = "No hay otras apps abiertas con ventana.",
+        ["Could not list the apps."] = "No se pudieron listar las apps.",
+        ["No change"] = "Sin cambios",
+        ["No changes yet"] = "Aún sin cambios",
+        ["Automatic"] = "Automático",
+        ["Maximum"] = "Al máximo",
+        ["Max fan"] = "Ventiladores al máximo",
+        ["Auto fan"] = "Ventiladores automáticos",
+        ["Keyboard lighting"] = "Iluminación del teclado",
+        ["Keyboard off"] = "Teclado apagado",
+        ["Keyboard: {0}"] = "Teclado: {0}",
+        ["Keyboard {0}%"] = "Teclado {0}%",
+        ["No change leaves that setting as it is. Custom and maximum fans need the charger: on battery, the battery mode stays."] =
+            "Sin cambios deja ese ajuste como está. Personalizado y los ventiladores al máximo necesitan el cargador: con batería se mantiene el modo de batería.",
+        ["Settings put back"] = "Ajustes restaurados",
+        ["Max fan speed is not available in this mode"] = "Ventiladores al máximo no disponible en este modo",
     };
 }

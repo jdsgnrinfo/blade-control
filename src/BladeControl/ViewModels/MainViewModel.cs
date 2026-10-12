@@ -10,6 +10,7 @@ namespace BladeControl.ViewModels;
 internal enum AppPage
 {
     Performance,
+    Apps,
     Lighting,
     Display,
     Battery,
@@ -31,6 +32,7 @@ internal sealed partial class MainViewModel : ObservableObject
         Battery = new BatteryViewModel(services);
         Optimize = new OptimizeViewModel(services, Report);
         Settings = new SettingsViewModel(services, Report);
+        Apps = new AppsViewModel(services, Performance, Display, Lighting, Report);
         Device = new DevicePanelViewModel(services);
 
         _statusTimer.Tick += (_, _) =>
@@ -43,6 +45,8 @@ internal sealed partial class MainViewModel : ObservableObject
     public AppServices Services { get; }
 
     public PerformanceViewModel Performance { get; }
+
+    public AppsViewModel Apps { get; }
 
     public LightingViewModel Lighting { get; }
 
@@ -57,12 +61,14 @@ internal sealed partial class MainViewModel : ObservableObject
     public DevicePanelViewModel Device { get; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsPerformance), nameof(IsLighting), nameof(IsDisplay), nameof(IsBattery),
+    [NotifyPropertyChangedFor(nameof(IsPerformance), nameof(IsApps), nameof(IsLighting), nameof(IsDisplay), nameof(IsBattery),
         nameof(IsOptimize), nameof(IsSettings))]
     private AppPage _page = AppPage.Performance;
 
     // The radio buttons: setting one to true opens it.
     public bool IsPerformance { get => Page == AppPage.Performance; set { if (value) Page = AppPage.Performance; } }
+
+    public bool IsApps { get => Page == AppPage.Apps; set { if (value) Page = AppPage.Apps; } }
 
     public bool IsLighting { get => Page == AppPage.Lighting; set { if (value) Page = AppPage.Lighting; } }
 
@@ -109,6 +115,8 @@ internal sealed partial class MainViewModel : ObservableObject
 
         if (value == AppPage.Display)
             Display.Refresh();
+        else if (value == AppPage.Apps)
+            Apps.Refresh();
         else if (value == AppPage.Optimize)
             _ = Optimize.RefreshAsync();
         else if (value == AppPage.Settings)

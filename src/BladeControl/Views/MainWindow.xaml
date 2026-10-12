@@ -59,6 +59,7 @@
 
             <StackPanel Orientation="Horizontal">
                 <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Performance'}" IsChecked="{Binding IsPerformance}" />
+                <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Apps'}" IsChecked="{Binding IsApps}" />
                 <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Lighting'}" IsChecked="{Binding IsLighting}" />
                 <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Display'}" IsChecked="{Binding IsDisplay}" />
                 <RadioButton Style="{StaticResource SubTab}" Content="{ui:T 'Battery'}" IsChecked="{Binding IsBattery}" />
@@ -107,6 +108,9 @@
 
                 <views:PerformanceView ui:Reveal.OnShow="True" DataContext="{Binding Performance}"
                                        Visibility="{Binding DataContext.IsPerformance, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
+
+                <views:AppsView ui:Reveal.OnShow="True" DataContext="{Binding Apps}"
+                                Visibility="{Binding DataContext.IsApps, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />
 
                 <views:LightingView ui:Reveal.OnShow="True" DataContext="{Binding Lighting}"
                                     Visibility="{Binding DataContext.IsLighting, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource Visible}}" />

@@ -40,7 +40,17 @@ public partial class ModeToastWindow : Window
 
     /// <summary>Shows (or updates) the notice at the top right of the screen the pointer is on.</summary>
     /// <param name="applied">Whether the mode is now on: green, and amber and grey when it was refused.</param>
-    internal static void ShowNotice(PerformanceMode mode, string status, bool applied)
+    internal static void ShowNotice(PerformanceMode mode, string status, bool applied) =>
+        Current().Fill(L.T("Performance mode"), L.T(mode.ToString()), status, applied, mode, null);
+
+    /// <summary>
+    /// Shows (or updates) the notice for an app's profile: "APP PROFILE", the
+    /// app's name and what it changed, with the app's icon when it has one.
+    /// </summary>
+    internal static void ShowAppNotice(string appName, ImageSource? icon, PerformanceMode? mode, string status, bool applied) =>
+        Current().Fill(L.T("App profile"), appName, status, applied, mode ?? PerformanceMode.Balanced, icon);
+
+    private static ModeToastWindow Current()
     {
         var app = Application.Current;
         var mainWindow = app.MainWindow;
@@ -51,11 +61,10 @@ public partial class ModeToastWindow : Window
         if (app.MainWindow == _current)
             app.MainWindow = mainWindow;
 
-        _current.Fill(mode, status, applied);
-        _current.ShowAtTopRight();
+        return _current;
     }
 
-    private void Fill(PerformanceMode mode, string status, bool applied)
+    private void Fill(string label, string name, string status, bool applied, PerformanceMode mode, ImageSource? icon)
     {
         var culture = CultureInfo.CurrentCulture;
         var accent = (Brush)FindResource("Brush.Accent");
@@ -68,10 +77,19 @@ public partial class ModeToastWindow : Window
             _ => "Icon.Balanced"
         });
         ModeIcon.Fill = applied ? accent : (Brush)FindResource("Brush.TextMuted");
+        ModeIcon.Visibility = icon is null ? Visibility.Visible : Visibility.Collapsed;
+        AppIcon.Source = icon;
+        AppIcon.Visibility = icon is null ? Visibility.Collapsed : Visibility.Visible;
+        AppIcon.Opacity = applied ? 1 : 0.5;
         Label.Foreground = applied ? accent : Refused;
-        Label.ItemsSource = L.T("Performance mode").ToUpper(culture);
-        ModeName.ItemsSource = L.T(mode.ToString()).ToUpper(culture);
+        Label.ItemsSource = label.ToUpper(culture);
+
+        // A long app name gets smaller letters so more of it fits.
+        var upper = name.ToUpper(culture);
+        ModeName.FontSize = upper.Length > 16 ? 16 : 21;
+        ModeName.ItemsSource = upper;
         Status.Text = status;
+        ShowAtTopRight();
     }
 
     private void ShowAtTopRight()

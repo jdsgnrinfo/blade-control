@@ -66,6 +66,10 @@ internal sealed record AppSettings(
     int LightsOffIdleMinutes = 10,
     bool LightsOffOnLowBattery = false,
     int LightsOffBatteryPercent = 20,
+    // The Apps page: what changes while each app or game runs, and the switch
+    // that pauses them all (on unless turned off).
+    AppProfile[]? AppProfiles = null,
+    bool AppProfilesOn = true,
     // The main window's sidebar folded down to its icons, as it was left.
     bool SidebarCollapsed = false,
     // Where the window was and how big, as it was left (its size before it

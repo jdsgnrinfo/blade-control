@@ -118,7 +118,12 @@ public partial class App : Application
             RefreshStartupEntry();
         // A screenshot run leaves the screen's rate and colors to the open app.
         if (e.Args is not ["--screenshot", ..])
+        {
             _viewModel.Display.Restore();
+
+            // Then the apps with a profile are watched for, on top of what was just put back.
+            _viewModel.Apps.Start();
+        }
 
         // "--screenshot file.png [page] [width] [custom] [scrolled]": draws the window into a picture a few
         // seconds after it opens, then closes. For the README and for checking
@@ -323,13 +328,27 @@ public partial class App : Application
     }
 
     /// <summary>Ends the app: Exit in the tray menu, or a restart. The window closes for good and the tray icon goes.</summary>
-    public static void Quit()
+    public static async void Quit()
     {
-        if (Current is not App app)
+        if (Current is not App app || app._quitting)
             return;
 
         app._quitting = true;
         app.MainWindow?.Close();
+
+        // An app profile still on is taken off first, so the laptop is left as the user set it.
+        if (app._viewModel is { } viewModel)
+        {
+            try
+            {
+                await viewModel.Apps.StopAsync().WaitAsync(TimeSpan.FromSeconds(5));
+            }
+            catch (Exception exception)
+            {
+                AppLog.Error("Could not put back what an app profile changed before exiting.", exception);
+            }
+        }
+
         app.Shutdown();
     }
 

@@ -28,6 +28,10 @@ temperaturas.
   Windows, que es lo que hace silencioso a un Blade 15 Base (2020);
   Equilibrado y Personalizado lo devuelven. Un interruptor experimental en
   Ajustes lo desactiva.
+- **Apps**: un perfil para cada juego o app (modo, ventiladores, frecuencia,
+  colores de pantalla e iluminación del teclado) que se aplica mientras está
+  abierto y se deshace al cerrarlo, con un aviso. Encuentra solo los juegos
+  instalados con Steam, Epic Games, Xbox y Battle.net.
 - **Iluminación**: efectos, color y brillo del teclado y del logo, y el
   teclado que se apaga con la pantalla, por inactividad o con poca batería.
 - **Pantalla**: la frecuencia de actualización de la pantalla interna (Auto

@@ -120,7 +120,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         _retryTimer.Tick += (_, _) =>
         {
             if (_fullscreenGuard.ReadyToRetry)
-                _ = ApplyAutoAsync();
+                _ = ApplyRateTargetAsync();
         };
 
         // Windows may reset the screens' ramps a moment after waking or a change of screen.
@@ -134,7 +134,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         services.PowerSource.PowerSourceChanged += (_, _) =>
             Application.Current.Dispatcher.BeginInvoke(() =>
             {
-                if (_selected?.IsAuto == true)
+                if (_rateOverride is null && _selected?.IsAuto == true)
                     _ = ApplyAutoAsync();
             });
     }
@@ -166,6 +166,8 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
 
     private void PickProfile(ColorProfile profile)
     {
+        // Picked by hand: an app's profile lets go of the colors.
+        _colorOverride = null;
         ShowProfile(profile);
 
         if (profile == _colors.Current)
@@ -175,6 +177,77 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         AppLog.Info(applied ? $"Color profile: {profile}." : $"Color profile {profile} was not taken by every screen.");
         ProfileStatus = applied ? string.Empty : L.T("This screen does not take it");
         _services.UpdateSettings(settings => settings with { ColorProfile = ColorProfiles.ToSetting(profile) });
+    }
+
+    // ===== App profiles =====
+
+    // The rate and colors an app's profile holds while it runs; null when none
+    // does. Neither is saved: the choices on this page stay as they were.
+    private int? _rateOverride;
+    private ColorProfile? _colorOverride;
+
+    /// <summary>The fixed rates offered, for the Apps page.</summary>
+    public IReadOnlyList<int> FixedRates => [.. RefreshChoices.Select(choice => choice.Mode.FixedHz).OfType<int>()];
+
+    /// <summary>
+    /// Puts an app's rate and colors on the screen, or, with null, the ones
+    /// chosen on this page back. A rate or profile picked by hand meanwhile
+    /// has let go of the app's, so it is not touched. False when the screen
+    /// did not take it.
+    /// </summary>
+    public async Task<bool> SetAppOverrideAsync(int? hertz, ColorProfile? colors)
+    {
+        var applied = true;
+
+        if (colors is { } wanted)
+        {
+            _colorOverride = wanted;
+            applied &= _colors.Apply(wanted);
+            ShowProfile(wanted);
+        }
+        else if (_colorOverride is not null)
+        {
+            _colorOverride = null;
+            var saved = ColorProfiles.Parse(_services.Settings.ColorProfile);
+            _colors.Apply(saved);
+            ShowProfile(saved);
+        }
+
+        if (hertz is not null || _rateOverride is not null)
+        {
+            _rateOverride = hertz;
+            applied &= await ApplyRateTargetAsync();
+        }
+
+        return applied;
+    }
+
+    // The rate the screen should be at: an app's, else Auto's, else the fixed one picked.
+    private async Task<bool> ApplyRateTargetAsync()
+    {
+        if (_rateOverride is null && _selected?.IsAuto == true)
+        {
+            await ApplyAutoAsync();
+            return RateStatus.Length == 0;
+        }
+
+        if ((_rateOverride ?? _selected?.FixedHz) is not int target)
+            return true;
+
+        // Not under a game that already has the screen: tried again when it lets go.
+        if (!_fullscreenGuard.CanApplyNow())
+        {
+            _retryTimer.Start();
+            return false;
+        }
+
+        if (_display.GetInternalDisplayInfo()?.RefreshRateHz == target)
+            return true;
+
+        var (applied, message) = await SetRateAsync(target);
+        AppLog.Info(applied ? $"Refresh rate {target} Hz for an app profile." : $"Refresh rate {target} Hz not taken: {message}");
+        ShowResolution();
+        return applied;
     }
 
     private void ShowProfile(ColorProfile profile)
@@ -382,7 +455,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
             ShowCurrentRate();
 
         if (_fullscreenGuard.ReadyToRetry)
-            _ = ApplyAutoAsync();
+            _ = ApplyRateTargetAsync();
 
         ShowResolution();
         ShowExternalDisplay();
@@ -405,6 +478,9 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
 
     private async void PickRate(DisplayRefreshMode mode)
     {
+        // Picked by hand: an app's profile lets go of the rate.
+        _rateOverride = null;
+
         if (mode.IsAuto)
         {
             Select(mode);

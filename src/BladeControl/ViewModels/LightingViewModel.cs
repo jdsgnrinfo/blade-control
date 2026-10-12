@@ -314,6 +314,62 @@ internal sealed partial class LightingViewModel : ObservableObject
             ? _services.Lighting.SetKeyboardBreathingAsync(color)
             : _services.Lighting.SetKeyboardColorAsync(color);
 
+    // ===== App profiles =====
+
+    // The keyboard as it was before an app's profile changed it, and what the
+    // profile set; null while no app profile holds the keyboard.
+    private LightingState? _beforeApp;
+    private (KeyboardEffect? Effect, int? Brightness) _appSet;
+
+    /// <summary>The keyboard's effects offered on this laptop, for the Apps page.</summary>
+    public IReadOnlyList<KeyboardEffect> OfferedEffects => [.. KeyboardEffects.Select(choice => choice.Value)];
+
+    /// <summary>An effect's name as this page shows it.</summary>
+    public string EffectNameOf(KeyboardEffect effect) => NameOf(effect);
+
+    /// <summary>
+    /// Puts an app's keyboard effect and brightness on, or with both null puts
+    /// back what the keyboard had before. Something changed by hand meanwhile
+    /// (the Fn keys, this page) stays as it is.
+    /// </summary>
+    public async Task SetAppOverrideAsync(KeyboardEffect? effect, int? brightness)
+    {
+        if (effect is null && brightness is null)
+        {
+            if (_beforeApp is { } before)
+                await RestoreBeforeAppAsync(before);
+
+            _beforeApp = null;
+            return;
+        }
+
+        _beforeApp ??= await ReadStateOrUnknownAsync(L.T("Could not read the lighting state."));
+        _appSet = (effect, brightness);
+
+        if (effect is { } wanted)
+            await ApplyAsync(EffectChange(wanted, _color), L.T("Could not change the keyboard lighting."));
+
+        if (brightness is { } percent)
+            await ApplyAsync(() => _services.Lighting.SetKeyboardBrightnessAsync(Math.Clamp(percent, 0, 100)), L.T("Could not change the keyboard brightness."));
+    }
+
+    private async Task RestoreBeforeAppAsync(LightingState before)
+    {
+        var now = await ReadStateOrUnknownAsync(L.T("Could not read the lighting state."));
+
+        if (_appSet.Effect is { } set && now.Keyboard == set && before.Keyboard is { } effect && effect != set)
+            await ApplyAsync(EffectChange(effect, before.KeyboardColor ?? _color), L.T("Could not change the keyboard lighting."));
+
+        if (_appSet.Brightness is { } setPercent && before.KeyboardBrightness is { } percent && percent != setPercent &&
+            now.KeyboardBrightness is { } shown && Math.Abs(shown - setPercent) <= 1)
+            await ApplyAsync(() => _services.Lighting.SetKeyboardBrightnessAsync(percent), L.T("Could not change the keyboard brightness."));
+    }
+
+    private Func<Task> EffectChange(KeyboardEffect effect, RgbColor color) =>
+        _offersColor && IsColored(effect)
+            ? () => SetColoredEffectAsync(effect, color)
+            : () => _services.Lighting.SetKeyboardEffectAsync(effect);
+
     // ===== Talking to the laptop =====
 
     // Runs one change, then shows what the laptop really did. A change asked

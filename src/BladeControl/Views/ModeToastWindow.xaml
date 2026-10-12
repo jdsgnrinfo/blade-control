@@ -41,12 +41,16 @@
         <Path x:Name="ModeIcon" Width="30" Height="30" Stretch="Uniform" HorizontalAlignment="Left" Margin="22,0,0,0"
               Fill="{StaticResource Brush.Accent}" />
 
-        <StackPanel Margin="66,0,12,0" VerticalAlignment="Center">
+        <!-- For an app's profile: the app's own icon in its place. -->
+        <Image x:Name="AppIcon" Width="30" Height="30" HorizontalAlignment="Left" Margin="22,0,0,0" Visibility="Collapsed"
+               RenderOptions.BitmapScalingMode="HighQuality" />
+
+        <StackPanel Margin="66,0,12,0" VerticalAlignment="Center" ClipToBounds="True">
             <ItemsControl x:Name="Label" Tag="0,0,2.5,0" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.Accent}"
                           ItemTemplate="{StaticResource Letter}" ItemsPanel="{StaticResource Row}" Focusable="False" />
             <ItemsControl x:Name="ModeName" Tag="0,0,2,0" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,-2,0,0"
                           ItemTemplate="{StaticResource Letter}" ItemsPanel="{StaticResource Row}" Focusable="False" />
-            <TextBlock x:Name="Status" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" Margin="0,-2,0,0" />
+            <TextBlock x:Name="Status" FontSize="12" Foreground="{StaticResource Brush.TextMuted}" Margin="0,-2,0,0" TextTrimming="CharacterEllipsis" />
         </StackPanel>
     </Grid>
 </Window>

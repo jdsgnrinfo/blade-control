@@ -126,7 +126,13 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     public bool MaxFan
     {
         get => _state.MaxFan == true;
-        set => _ = SetMaxFanAsync(value);
+        set
+        {
+            if (value != MaxFan)
+                TakeOverFromApp();
+
+            _ = SetMaxFanAsync(value);
+        }
     }
 
     public bool CanUseMaxFan =>
@@ -260,9 +266,14 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         if (EditingCurrentSource)
         {
             if (mode != _state.Mode)
+            {
+                TakeOverFromApp();
                 _ = ChangeProfileAsync(profile => profile with { Mode = mode }, L.T("Could not change the performance mode."));
+            }
             else
+            {
                 RefreshLater();
+            }
 
             return;
         }
@@ -299,6 +310,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
             return (false, L.T("Busy, try again in a moment"));
 
         // The page follows the laptop's own power source, which is the one changed.
+        TakeOverFromApp();
         EditingPluggedIn = IsPluggedIn;
         await ChangeProfileAsync(profile => profile with { Mode = mode }, L.T("Could not change the performance mode."));
 
@@ -313,7 +325,10 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     private void PickCpu(bool chosen, CpuBoost level)
     {
         if (chosen && CanChangeLevels && level != _state.Cpu)
+        {
+            TakeOverFromApp();
             _ = ChangeProfileAsync(profile => profile with { Cpu = level }, L.T("Could not change the boost level."));
+        }
         else
             RefreshLater();
     }
@@ -321,12 +336,15 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     private void PickGpu(bool chosen, GpuBoost level)
     {
         if (chosen && CanChangeLevels && level != _state.Gpu)
+        {
+            TakeOverFromApp();
             _ = ChangeProfileAsync(profile => profile with { Gpu = level }, L.T("Could not change the boost level."));
+        }
         else
             RefreshLater();
     }
 
-    private async Task SetMaxFanAsync(bool enabled)
+    private async Task SetMaxFanAsync(bool enabled, bool quiet = false)
     {
         if (_busy || enabled == MaxFan ||
             (enabled && !PowerProfileRules.CanUseMaxFan(_state, IsPluggedIn, _services.MaxFanMethod)))
@@ -338,7 +356,118 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         await RunAsync(
             () => _services.Performance.SetMaxFanAsync(enabled),
             L.T("Could not change max fan speed."),
-            _ => { }); // Not part of a profile: a one-off.
+            _ => { }, // Not part of a profile: a one-off.
+            quiet);
+    }
+
+    // ===== App profiles =====
+
+    // What the profile of the app running now asks for, on top of the power
+    // source's profile; null when no app profile holds the mode. Never saved:
+    // the power sources' own profiles stay as they were.
+    private (PowerProfile? Profile, bool? MaxFan)? _appOverride;
+    private bool _appTurnedMaxFanOn;
+
+    /// <summary>
+    /// The mode was changed by hand (a button, a shortcut) while an app's
+    /// profile held it: the app's profile lets go, and nothing is put back
+    /// when the app closes.
+    /// </summary>
+    public event EventHandler? AppOverrideTakenOver;
+
+    /// <summary>
+    /// Puts an app profile's mode and fans on, without saving them, or with
+    /// both null takes them off again and puts back the power source's own
+    /// profile. Returns whether it all applied, and how it went for the notice.
+    /// A mode the power source does not allow (Custom on battery) is refused
+    /// and the power source's own profile stays.
+    /// </summary>
+    public async Task<(bool Applied, string Status)> SetAppOverrideAsync(PowerProfile? profile, bool? maxFan)
+    {
+        await WaitUntilIdleAsync();
+
+        var had = _appOverride is not null;
+        _appOverride = profile is null && maxFan is null ? null : (profile, maxFan);
+
+        if (_appOverride is null)
+        {
+            if (!had)
+                return (true, L.T("Active"));
+
+            await ApplyActiveProfileAsync();
+
+            if (_appTurnedMaxFanOn && _state.MaxFan == true)
+                await SetMaxFanAsync(false, quiet: true);
+
+            _appTurnedMaxFanOn = false;
+            return (true, L.T("Active"));
+        }
+
+        var source = IsPluggedIn;
+        var (effective, refusal) = EffectiveProfile(source);
+
+        await RunAsync(
+            () => _services.Performance.ApplyProfileAsync(effective),
+            L.T("Could not apply the power profile."),
+            _ => _appliedSource = source,
+            quiet: true);
+
+        if (profile?.Mode is { } wanted && refusal is null && _state.Mode != wanted)
+            refusal = L.T("Could not change the performance mode.");
+
+        refusal ??= await ApplyAppFanAsync();
+        return (refusal is null, refusal ?? L.T("Active"));
+    }
+
+    // The power source's profile, with the app's mode on it when the source allows it.
+    private (PowerProfile Profile, string? Refusal) EffectiveProfile(bool pluggedIn)
+    {
+        var own = _profiles[pluggedIn];
+
+        if (_appOverride?.Profile is not { Mode: { } mode } wanted)
+            return (own, null);
+
+        if (_unsupportedModes.Contains(mode))
+            return (own, L.T("Not supported on this laptop"));
+
+        if (!PowerProfileRules.IsModeAllowed(mode, pluggedIn))
+            return (own, L.T("Needs to be plugged in"));
+
+        return (wanted, null);
+    }
+
+    // The app's fan choice, when the mode allows it; returns why not otherwise.
+    private async Task<string?> ApplyAppFanAsync()
+    {
+        if (_appOverride?.MaxFan is not bool fan || _state.MaxFan == fan || !HasMaxFan)
+            return null;
+
+        if (fan && !PowerProfileRules.CanUseMaxFan(_state, IsPluggedIn, _services.MaxFanMethod))
+            return IsPluggedIn ? L.T("Max fan speed is not available in this mode") : L.T("Needs to be plugged in");
+
+        await SetMaxFanAsync(fan, quiet: true);
+
+        if (fan && _state.MaxFan == true)
+            _appTurnedMaxFanOn = true;
+
+        return _state.MaxFan == fan ? null : L.T("Could not change max fan speed.");
+    }
+
+    private void TakeOverFromApp()
+    {
+        if (_appOverride is null)
+            return;
+
+        _appOverride = null;
+        _appTurnedMaxFanOn = false;
+        AppOverrideTakenOver?.Invoke(this, EventArgs.Empty);
+    }
+
+    // Another change to the EC may be under way; an app profile waits for it, a few seconds at most.
+    private async Task WaitUntilIdleAsync()
+    {
+        for (var tries = 0; _busy && tries < 50; tries++)
+            await Task.Delay(100);
     }
 
     // ===== Talking to the EC =====
@@ -367,7 +496,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         }
 
         var source = IsPluggedIn;
-        var profile = _profiles[source];
+        var (profile, _) = EffectiveProfile(source);
 
         return RunAsync(
             async () =>
@@ -380,7 +509,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
             },
             L.T("Could not apply the power profile."),
             _ => _appliedSource = source,
-            quiet: atStartup);
+            quiet: atStartup || _appOverride is not null);
     }
 
     private Task ChangeProfileAsync(Func<PowerProfile, PowerProfile> edit, string failureMessage)
