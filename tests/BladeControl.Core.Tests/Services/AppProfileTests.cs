@@ -84,6 +84,35 @@ public class AppProfileTests
             AppProfileText.Summary(new AppProfile("Game", "game.exe", Keyboard: KeyboardEffect.Spectrum, KeyboardBrightness: 75)));
     }
 
+    [Fact]
+    public void OnlyStaticAndBreathing_TakeAColor()
+    {
+        Assert.True(AppProfile.TakesColor(KeyboardEffect.StaticGreen));
+        Assert.True(AppProfile.TakesColor(KeyboardEffect.Breathing));
+        Assert.False(AppProfile.TakesColor(KeyboardEffect.Spectrum));
+        Assert.False(AppProfile.TakesColor(KeyboardEffect.Wave));
+        Assert.False(AppProfile.TakesColor(null));
+    }
+
+    [Fact]
+    public void AProfileWithAKeyboardColor_IsSavedAndReadBackTheSame()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "BladeControlTests", Guid.NewGuid().ToString("N"));
+        var service = new SettingsService(folder);
+        var profile = new AppProfile("Game", @"C:\Games\game.exe", Keyboard: KeyboardEffect.Breathing, KeyboardColor: new RgbColor(0xFF, 0x80, 0x00));
+
+        try
+        {
+            service.Save(new AppSettings(AppProfiles: [profile]));
+
+            Assert.Equal(profile, Assert.Single(service.Load().AppProfiles!));
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
+    }
+
     // ===== Reading the launchers =====
 
     [Fact]

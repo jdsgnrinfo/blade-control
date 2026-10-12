@@ -659,7 +659,7 @@
                             </ToggleButton.Template>
                         </ToggleButton>
                         <ContentPresenter x:Name="Choice" Margin="12,0,30,0" VerticalAlignment="Center" IsHitTestVisible="False"
-                                          Content="{TemplateBinding SelectionBoxItem}" />
+                                          Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
                         <Path x:Name="Chevron" Width="9" Height="5" Margin="0,0,12,0" HorizontalAlignment="Right" VerticalAlignment="Center" IsHitTestVisible="False"
                               Data="M0,0 L4.5,4.5 L9,0" Stroke="{StaticResource Brush.TextSoft}" StrokeThickness="1.5" Stretch="Uniform" />
                         <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True" Focusable="False"

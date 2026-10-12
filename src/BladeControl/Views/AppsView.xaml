@@ -293,6 +293,30 @@
                         <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding KeyboardOptions}" SelectedIndex="{Binding KeyboardIndex}" />
                     </Grid>
 
+                    <!-- The color, only with an effect that shows one. -->
+                    <Grid Style="{StaticResource SettingRow}" Visibility="{Binding OffersKeyboardColor, Converter={StaticResource Visible}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource SettingName}" Text="{ui:T 'Keyboard color'}" Margin="16,0,16,0" />
+                        <ComboBox Style="{StaticResource SettingChoice}" ItemsSource="{Binding KeyboardColorOptions}" SelectedIndex="{Binding KeyboardColorIndex}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse x:Name="Dot" Width="12" Height="12" Fill="{Binding Swatch}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding Swatch}" Value="{x:Null}">
+                                            <Setter TargetName="Dot" Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+
                     <Grid Style="{StaticResource SettingRow}" Visibility="{Binding OffersBrightness, Converter={StaticResource Visible}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />

@@ -525,6 +525,7 @@ internal static class L
         ["App profile"] = "Perfil de app",
         ["App profile applied."] = "Perfil de app aplicado.",
         ["Use this profile"] = "Usar este perfil",
+        ["Keyboard color"] = "Color del teclado",
         ["Pick an app to choose its settings. While it is running they are used; when it closes, everything goes back as it was."] =
             "Elige una app para ajustar su perfil. Mientras está abierta se usan sus ajustes; al cerrarla, todo vuelve a como estaba.",
         ["Search apps"] = "Buscar apps",

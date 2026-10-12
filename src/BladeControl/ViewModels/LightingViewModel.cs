@@ -319,22 +319,29 @@ internal sealed partial class LightingViewModel : ObservableObject
     // The keyboard as it was before an app's profile changed it, and what the
     // profile set; null while no app profile holds the keyboard.
     private LightingState? _beforeApp;
-    private (KeyboardEffect? Effect, int? Brightness) _appSet;
+    private (KeyboardEffect? Effect, int? Brightness, RgbColor? Color) _appSet;
 
     /// <summary>The keyboard's effects offered on this laptop, for the Apps page.</summary>
     public IReadOnlyList<KeyboardEffect> OfferedEffects => [.. KeyboardEffects.Select(choice => choice.Value)];
+
+    /// <summary>The colors offered, with their names and swatches, for the Apps page; none where the keyboard shows only green.</summary>
+    public IReadOnlyList<LightingChoice<RgbColor>> OfferedColors => Colors;
 
     /// <summary>An effect's name as this page shows it.</summary>
     public string EffectNameOf(KeyboardEffect effect) => NameOf(effect);
 
     /// <summary>
-    /// Puts an app's keyboard effect and brightness on, or with both null puts
-    /// back what the keyboard had before. Something changed by hand meanwhile
-    /// (the Fn keys, this page) stays as it is.
+    /// Puts an app's keyboard effect, color and brightness on, or with all
+    /// null puts back what the keyboard had before. Something changed by hand
+    /// meanwhile (the Fn keys, this page) stays as it is. A color goes with an
+    /// effect that takes one; without an effect, on the effect shown when it does.
     /// </summary>
-    public async Task SetAppOverrideAsync(KeyboardEffect? effect, int? brightness)
+    public async Task SetAppOverrideAsync(KeyboardEffect? effect, int? brightness, RgbColor? color = null)
     {
-        if (effect is null && brightness is null)
+        if (!_offersColor)
+            color = null;
+
+        if (effect is null && brightness is null && color is null)
         {
             if (_beforeApp is { } before)
                 await RestoreBeforeAppAsync(before);
@@ -344,10 +351,16 @@ internal sealed partial class LightingViewModel : ObservableObject
         }
 
         _beforeApp ??= await ReadStateOrUnknownAsync(L.T("Could not read the lighting state."));
-        _appSet = (effect, brightness);
+        // Only an effect that shows a color takes one.
+        var colored = effect ?? (_keyboardEffect is { } shown && IsColored(shown) ? shown : null);
 
-        if (effect is { } wanted)
-            await ApplyAsync(EffectChange(wanted, _color), L.T("Could not change the keyboard lighting."));
+        if (colored is null || !IsColored(colored.Value))
+            color = null;
+
+        _appSet = (effect, brightness, color);
+
+        if (effect is not null || color is not null)
+            await ApplyAsync(EffectChange((effect ?? colored)!.Value, color ?? _color), L.T("Could not change the keyboard lighting."));
 
         if (brightness is { } percent)
             await ApplyAsync(() => _services.Lighting.SetKeyboardBrightnessAsync(Math.Clamp(percent, 0, 100)), L.T("Could not change the keyboard brightness."));
@@ -357,7 +370,11 @@ internal sealed partial class LightingViewModel : ObservableObject
     {
         var now = await ReadStateOrUnknownAsync(L.T("Could not read the lighting state."));
 
-        if (_appSet.Effect is { } set && now.Keyboard == set && before.Keyboard is { } effect && effect != set)
+        // The effect, or only the color, the app set and still on: put back as it was.
+        var effectStill = _appSet.Effect is { } set && now.Keyboard == set && before.Keyboard != set;
+        var colorStill = _appSet.Color is { } setColor && now.KeyboardColor == setColor && before.KeyboardColor != setColor;
+
+        if ((effectStill || colorStill) && before.Keyboard is { } effect)
             await ApplyAsync(EffectChange(effect, before.KeyboardColor ?? _color), L.T("Could not change the keyboard lighting."));
 
         if (_appSet.Brightness is { } setPercent && before.KeyboardBrightness is { } percent && percent != setPercent &&

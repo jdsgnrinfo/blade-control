@@ -98,6 +98,9 @@ internal sealed partial class AppRow : ObservableObject
     private bool _isRunning;
 }
 
+/// <summary>A keyboard color in the Apps page's dropdown: its name, and its swatch ("No change" has none).</summary>
+internal sealed record ColorOption(string Name, Brush? Swatch);
+
 /// <summary>
 /// The Apps page: every app installed on the PC (the Start menu's programs
 /// and the games found in Steam, Epic Games, Xbox and Battle.net), and for the
@@ -123,6 +126,7 @@ internal sealed partial class AppsViewModel : ObservableObject
     private readonly RunningPrograms _programs = new();
     private readonly KeyboardEffect?[] _effects;
     private readonly int?[] _rates;
+    private readonly RgbColor?[] _keyboardColors;
 
     // The saved profiles, by the program or folder they follow: what the watch puts on.
     private readonly Dictionary<string, AppProfile> _profiles = new(StringComparer.OrdinalIgnoreCase);
@@ -162,6 +166,9 @@ internal sealed partial class AppsViewModel : ObservableObject
         ColorOptions = [L.T("No change"), .. Colors.Skip(1).Select(colors => AppProfileText.ColorName(colors!.Value))];
         KeyboardOptions = [L.T("No change"), .. _effects.Skip(1).Select(effect => lighting.EffectNameOf(effect!.Value))];
         BrightnessOptions = [L.T("No change"), .. Brightnesses.Skip(1).Select(percent => $"{percent}%")];
+
+        _keyboardColors = [null, .. lighting.OfferedColors.Select(choice => (RgbColor?)choice.Value)];
+        KeyboardColorOptions = [new ColorOption(L.T("No change"), null), .. lighting.OfferedColors.Select(choice => new ColorOption(choice.Name, choice.Swatch))];
 
         _performance.AppOverrideTakenOver += (_, _) => AppLog.Info("The mode was changed by hand while an app profile held it; it is kept when the app closes.");
         _watch.Tick += async (_, _) => await CheckAsync();
@@ -357,7 +364,25 @@ internal sealed partial class AppsViewModel : ObservableObject
     public int KeyboardIndex
     {
         get => IndexOf(_effects, Selected?.Profile.Keyboard);
-        set => Edit(value, _effects, (profile, effect) => profile with { Keyboard = effect });
+
+        // An effect that runs through its own colors drops the color chosen.
+        set => Edit(value, _effects, (profile, effect) => profile with
+        {
+            Keyboard = effect,
+            KeyboardColor = AppProfile.TakesColor(effect) ? profile.KeyboardColor : null
+        });
+    }
+
+    /// <summary>"No change", then each color with its swatch.</summary>
+    public IReadOnlyList<ColorOption> KeyboardColorOptions { get; }
+
+    /// <summary>A color to choose: on a laptop that shows one, with an effect that takes one (Static, Breathing).</summary>
+    public bool OffersKeyboardColor => _keyboardColors.Length > 1 && AppProfile.TakesColor(Selected?.Profile.Keyboard);
+
+    public int KeyboardColorIndex
+    {
+        get => IndexOf(_keyboardColors, Selected?.Profile.KeyboardColor);
+        set => Edit(value, _keyboardColors, (profile, color) => profile with { KeyboardColor = color });
     }
 
     /// <summary>No brightness to choose while the profile turns the keyboard off.</summary>
@@ -392,7 +417,8 @@ internal sealed partial class AppsViewModel : ObservableObject
         foreach (var name in new[]
                  {
                      nameof(ModeIndex), nameof(IsCustomMode), nameof(CpuIndex), nameof(GpuIndex), nameof(FanIndex), nameof(RateIndex),
-                     nameof(ColorIndex), nameof(KeyboardIndex), nameof(OffersBrightness), nameof(BrightnessIndex), nameof(ShowsEditor)
+                     nameof(ColorIndex), nameof(KeyboardIndex), nameof(OffersKeyboardColor), nameof(KeyboardColorIndex),
+                     nameof(OffersBrightness), nameof(BrightnessIndex), nameof(ShowsEditor)
                  })
             OnPropertyChanged(name);
     }
@@ -524,7 +550,7 @@ internal sealed partial class AppsViewModel : ObservableObject
         var (applied, status) = await _performance.SetAppOverrideAsync(target.Performance, target.MaxFan);
         var colors = target.ColorProfile is null ? (ColorProfile?)null : ColorProfiles.Parse(target.ColorProfile);
         var shown = await _display.SetAppOverrideAsync(target.RefreshHz, colors);
-        await _lighting.SetAppOverrideAsync(target.Keyboard, target.KeyboardBrightness);
+        await _lighting.SetAppOverrideAsync(target.Keyboard, target.KeyboardBrightness, target.KeyboardColor);
 
         var summary = AppProfileText.Summary(target);
         AppLog.Info($"App profile for {target.Name} on: {summary}{(applied ? string.Empty : $" ({status})")}{(shown ? string.Empty : " (screen change waiting or refused)")}.");
