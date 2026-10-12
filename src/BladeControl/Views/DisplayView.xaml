@@ -183,6 +183,22 @@
                     <TextBlock Style="{StaticResource MonitorStatus}" HorizontalAlignment="Center" Margin="0,14,0,0"
                                FontSize="16" FontWeight="SemiBold" />
 
+                    <Border Style="{StaticResource Separator}" Margin="0,24,0,20" />
+
+                    <!-- Closing the lid leaves the laptop running while a monitor is connected. -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0">
+                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Keep running with the lid closed'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0" TextWrapping="Wrap"
+                                       Text="{ui:T 'With a monitor connected and the charger plugged in, closing the lid does not put the laptop to sleep. On battery it still does.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding KeepRunningWithLidClosed}" />
+                    </Grid>
+
                     <!-- With the dedicated GPU off, a monitor on its ports shows nothing. -->
                     <ContentControl Style="{StaticResource WarningBox}" Margin="0,22,0,0"
                                     Visibility="{Binding ExternalDisplayDark, Converter={StaticResource Visible}}"

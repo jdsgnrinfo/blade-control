@@ -74,7 +74,14 @@ internal sealed record AppSettings(
     bool SidebarCollapsed = false,
     // Where the window was and how big, as it was left (its size before it
     // was maximized, if it was); null until it has been closed once.
-    WindowPlacement? Window = null);
+    WindowPlacement? Window = null,
+    // Off unless the user turns it on: with a monitor connected and the
+    // charger in, closing the lid leaves the laptop running.
+    bool KeepRunningWithLidClosed = false,
+    // The lid action that option replaced, kept until it is given back (the
+    // monitor goes, the option is turned off, the app exits); null when the
+    // lid action is the plan's own.
+    SavedPlanValue? LidActionBeforeKeepRunning = null);
 
 /// <summary>The window's position and size in device-independent pixels, and whether it was maximized.</summary>
 internal sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool Maximized);

@@ -260,8 +260,10 @@ internal sealed partial class SettingsViewModel : ObservableObject
         if (answer != MessageBoxResult.Yes)
             return;
 
-        // Before the settings holding it are cleared: the CPU boost Silent took away comes back.
+        // Before the settings holding them are cleared: the CPU boost Silent took
+        // away and the lid action the lid option changed come back.
         _services.SilentBoost.Restore();
+        _services.LidClose.Restore();
 
         var result = await _services.FactoryReset.RunAsync(_services.Settings);
 

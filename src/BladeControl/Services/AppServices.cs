@@ -47,6 +47,12 @@ internal sealed class AppServices : IDisposable
         if (!Settings.SilentTurnsBoostOff)
             SilentBoost.SetEnabled(false);
 
+        // With a monitor connected and the charger in, closing the lid can leave the laptop running.
+        LidClose = new LidCloseOverride(
+            PowerPlanValue.LidAction(),
+            Settings.LidActionBeforeKeepRunning,
+            saved => UpdateSettings(settings => settings with { LidActionBeforeKeepRunning = saved }));
+
         StartupRegistration = new RunKeyStartupRegistration(Environment.ProcessPath ?? string.Empty);
         RazerSoftware = new RazerSoftwareManager(
             new RazerServiceManager(new WindowsServiceControl()),
@@ -79,6 +85,8 @@ internal sealed class AppServices : IDisposable
     public KeyboardScreenOffService KeyboardLightsOff { get; }
 
     public SilentPlanOverride SilentBoost { get; }
+
+    public LidCloseOverride LidClose { get; }
 
     /// <summary>Starting with Windows, through the Run key.</summary>
     public IStartupRegistration StartupRegistration { get; }

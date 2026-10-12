@@ -48,8 +48,13 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         services.PowerSource.PowerSourceChanged += (_, _) =>
             System.Windows.Application.Current.Dispatcher.BeginInvoke(OnPowerSourceChanged);
 
-        // In Silent, the boost stays off in whatever power plan is active.
-        _silentTimer.Tick += (_, _) => _services.SilentBoost.Recheck();
+        // In Silent, the boost stays off in whatever power plan is active; with
+        // the lid option on and a monitor connected, so does the lid action.
+        _silentTimer.Tick += (_, _) =>
+        {
+            _services.SilentBoost.Recheck();
+            _services.LidClose.Recheck();
+        };
         _silentTimer.Start();
     }
 

@@ -24,8 +24,9 @@ internal sealed record ImportedSettings(
 /// Windows reinstall or take them to another Blade. Only what the user chose
 /// travels: the modes, app profiles, display, lighting and window options.
 /// What only means something on this PC (what Razer's services and login
-/// entries were before "Stop", the CPU boost Silent is holding, the window's
-/// place) is left out, and on import this PC's own is kept.
+/// entries were before "Stop", the CPU boost and lid action the app is
+/// holding, the window's place) is left out, and on import this PC's own is
+/// kept.
 /// </summary>
 internal static class SettingsTransfer
 {
@@ -82,6 +83,7 @@ internal static class SettingsTransfer
             CpuBoostBeforeSilent = current.CpuBoostBeforeSilent,
             CpuEfficiencyBeforeSilent = current.CpuEfficiencyBeforeSilent,
             PlanBeforeIdle = current.PlanBeforeIdle,
+            LidActionBeforeKeepRunning = current.LidActionBeforeKeepRunning,
             WindowScale = current.WindowScale,
             Window = current.Window
         };
@@ -103,6 +105,7 @@ internal static class SettingsTransfer
             CpuBoostBeforeSilent = null,
             CpuEfficiencyBeforeSilent = null,
             PlanBeforeIdle = null,
+            LidActionBeforeKeepRunning = null,
             WindowScale = null,
             Window = null,
             PerformanceMode = null,

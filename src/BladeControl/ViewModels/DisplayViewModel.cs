@@ -137,6 +137,9 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
                 if (_rateOverride is null && _selected?.IsAuto == true)
                     _ = ApplyAutoAsync();
             });
+
+        // A monitor may already be connected, or gone since a lid action was left changed.
+        ShowExternalDisplay();
     }
 
     // ===== Refresh rate =====
@@ -275,6 +278,26 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     {
         HasExternalDisplay = DisplayTopology.HasExternalDisplay() == true;
         ExternalDisplayDark = HasExternalDisplay && _integratedOnly;
+        _services.LidClose.Update(KeepRunningWithLidClosed, HasExternalDisplay);
+    }
+
+    /// <summary>
+    /// With a monitor connected and the charger in, closing the lid leaves the laptop
+    /// running; on battery it still sleeps. The lid action is given back when the
+    /// monitor goes, this is turned off or the app exits.
+    /// </summary>
+    public bool KeepRunningWithLidClosed
+    {
+        get => _services.Settings.KeepRunningWithLidClosed;
+        set
+        {
+            if (value == KeepRunningWithLidClosed)
+                return;
+
+            _services.UpdateSettings(settings => settings with { KeepRunningWithLidClosed = value });
+            OnPropertyChanged();
+            _services.LidClose.Update(value, HasExternalDisplay);
+        }
     }
 
     /// <summary>A monitor is connected while the dedicated GPU, which drives the video ports, is off: it shows nothing.</summary>
@@ -472,6 +495,9 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
         _retryTimer.Stop();
         _reapplyTimer.Stop();
+
+        // Without the app watching for the monitor to go, the lid gets its own action back.
+        _services.LidClose.Restore();
     }
 
     // ===== Picking a rate =====

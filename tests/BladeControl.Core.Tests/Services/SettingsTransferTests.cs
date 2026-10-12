@@ -28,6 +28,7 @@ public sealed class SettingsTransferTests
         RazerLoginApprovals: new() { ["Razer Synapse"] = "02" },
         CpuBoostBeforeSilent: new SavedPlanValue(Guid.NewGuid(), 2, 1),
         PlanBeforeIdle: Guid.NewGuid(),
+        LidActionBeforeKeepRunning: new SavedPlanValue(Guid.NewGuid(), 1, 1),
         WindowScale: 1.25,
         Window: new WindowPlacement(10, 20, 1200, 800, false));
 
@@ -61,6 +62,7 @@ public sealed class SettingsTransferTests
         Assert.DoesNotContain("Razer Synapse", text);
         Assert.DoesNotContain(nameof(AppSettings.CpuBoostBeforeSilent), text);
         Assert.DoesNotContain(nameof(AppSettings.PlanBeforeIdle), text);
+        Assert.DoesNotContain(nameof(AppSettings.LidActionBeforeKeepRunning), text);
         Assert.DoesNotContain(nameof(AppSettings.WindowScale), text);
         Assert.DoesNotContain("\"Window\"", text);
         Assert.Contains(SettingsTransfer.Format, text);
@@ -79,6 +81,7 @@ public sealed class SettingsTransferTests
         Assert.Same(Chosen.RazerLoginApprovals, imported.RazerLoginApprovals);
         Assert.Equal(Chosen.CpuBoostBeforeSilent, imported.CpuBoostBeforeSilent);
         Assert.Equal(Chosen.PlanBeforeIdle, imported.PlanBeforeIdle);
+        Assert.Equal(Chosen.LidActionBeforeKeepRunning, imported.LidActionBeforeKeepRunning);
         Assert.Equal(Chosen.WindowScale, imported.WindowScale);
         Assert.Equal(Chosen.Window, imported.Window);
         // The file had no app profiles: none are kept from before.

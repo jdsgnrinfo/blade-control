@@ -280,6 +280,9 @@ internal static class L
         ["The colors as the panel shows them."] = "Los colores tal como los muestra el panel.",
         ["External display"] = "Pantalla externa",
         ["External display detected"] = "Pantalla externa detectada",
+        ["Keep running with the lid closed"] = "Seguir funcionando con la tapa cerrada",
+        ["With a monitor connected and the charger plugged in, closing the lid does not put the laptop to sleep. On battery it still does."] =
+            "Con un monitor conectado y el cargador enchufado, cerrar la tapa no suspende el portátil. Con batería sí lo hace.",
         ["No external display"] = "Sin pantalla externa",
         ["To choose the refresh rate on a secondary monitor connected by HDMI, use the Windows "] = "Para elegir la frecuencia de un monitor secundario conectado por HDMI, usa la opción de Windows ",
         ["Display Settings"] = "Configuración de pantalla",
