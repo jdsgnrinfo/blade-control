@@ -91,9 +91,11 @@
             <Setter Property="Margin" Value="0,3" />
         </Style>
 
+        <!-- As wide as its words only, so its tooltip shows over the text and not the empty space beside it. -->
         <Style x:Key="SettingName" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
             <Setter Property="FontSize" Value="14" />
             <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="Margin" Value="0,0,16,0" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
