@@ -113,7 +113,7 @@
                            Text="{ui:T 'While one of these apps is running, its settings are used. When it closes, everything goes back as it was.'}" />
 
                 <ListBox ItemsSource="{Binding Apps}" SelectedItem="{Binding Selected}" ItemContainerStyle="{StaticResource AppItem}"
-                         Background="Transparent" Foreground="{StaticResource Brush.Text}" BorderThickness="0" Padding="0" Margin="-12,0"
+                         Background="Transparent" Foreground="{StaticResource Brush.Text}" BorderThickness="0" Padding="0"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"
                          ScrollViewer.CanContentScroll="False"
                          Visibility="{Binding HasApps, Converter={StaticResource Visible}}">
@@ -123,10 +123,9 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource AppIconTemplate}" Width="28" Height="28" />
-                                <StackPanel Grid.Column="1" Margin="12,0,12,0" VerticalAlignment="Center">
+                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource AppIconTemplate}" Width="31" Height="31" />
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
                                     <StackPanel.Style>
                                         <!-- Switched off: kept, but greyed. -->
                                         <Style TargetType="StackPanel">
@@ -147,7 +146,6 @@
                                     </StackPanel>
                                     <TextBlock Text="{Binding Summary}" Style="{StaticResource Text.Hint}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
-                                <CheckBox Grid.Column="2" Style="{StaticResource Switch}" IsChecked="{Binding Enabled}" />
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -155,9 +153,6 @@
 
                 <ContentControl Style="{StaticResource NoteBox}" Visibility="{Binding HasApps, Converter={StaticResource Hidden}}"
                                 Content="{ui:T 'No apps yet. Add a game or an app to give it its own mode, fans, refresh rate, colors and keyboard lighting.'}" />
-
-                <Button Style="{StaticResource ActionButton}" Margin="0,16,0,0" HorizontalAlignment="Left"
-                        Content="{ui:T 'Add app'}" Command="{Binding StartAddCommand}" />
             </StackPanel>
         </Border>
 
@@ -169,14 +164,21 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <ContentControl Content="{Binding Selected}" ContentTemplate="{StaticResource AppIconTemplate}" Width="32" Height="32"
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ContentControl Grid.RowSpan="2" Content="{Binding Selected}" ContentTemplate="{StaticResource AppIconTemplate}" Width="35" Height="35"
                                         VerticalAlignment="Center" Margin="0,0,12,0" />
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Style="{StaticResource Text.CardTitle}" Text="{Binding Selected.Name}" TextTrimming="CharacterEllipsis" />
-                            <TextBlock Style="{StaticResource Text.Hint}" Text="{Binding Selected.SourceName}" Margin="0,2,0,0"
-                                       ToolTip="{Binding Selected.Path}" />
-                        </StackPanel>
+                        <TextBlock Grid.Column="1" Style="{StaticResource Text.CardTitle}" Text="{Binding Selected.Name}" TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center" />
+                        <!-- On the name's line, at the right: this app's profile on or off. -->
+                        <CheckBox Grid.Column="2" Style="{StaticResource Switch}" IsChecked="{Binding Selected.Enabled}" Margin="12,0,0,0"
+                                  VerticalAlignment="Center" ToolTip="{ui:T 'Use this profile'}" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource Text.Hint}" Text="{Binding Selected.SourceName}"
+                                   Margin="0,2,0,0" ToolTip="{Binding Selected.Path}" />
                     </Grid>
 
                     <Grid Style="{StaticResource SettingRow}">
@@ -266,7 +268,7 @@
             </Border>
 
             <!-- ===== Adding an app: the games found, or the apps open now, or any program ===== -->
-            <Border Style="{StaticResource Card}" VerticalAlignment="Top" Visibility="{Binding IsAdding, Converter={StaticResource Visible}}">
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
                 <StackPanel>
                     <Grid Margin="0,0,0,18" MinHeight="34">
                         <Grid.ColumnDefinitions>
@@ -297,7 +299,7 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource AppIconTemplate}" Width="24" Height="24" />
+                                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource AppIconTemplate}" Width="26" Height="26" />
                                         <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Name}" FontSize="14" TextTrimming="CharacterEllipsis" />
                                             <TextBlock Text="{Binding Detail}" Style="{StaticResource Text.Hint}" TextTrimming="CharacterEllipsis" />
@@ -315,11 +317,8 @@
                     <ContentControl Style="{StaticResource NoteBox}" Margin="0,16,0,0" Visibility="{Binding AddingGames, Converter={StaticResource Visible}}"
                                     Content="{ui:T 'Games installed with Steam, Epic Games, Xbox and Battle.net. Anything that runs from the game\'s folder counts, its own launcher too.'}" />
 
-                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
-                        <Button Style="{StaticResource ActionButton}" Content="{ui:T 'Find a program...'}" Command="{Binding BrowseCommand}" />
-                        <Button Style="{StaticResource ActionButton}" Margin="8,0,0,0" Content="{ui:T 'Cancel'}" Command="{Binding CancelAddCommand}"
-                                Visibility="{Binding HasApps, Converter={StaticResource Visible}}" />
-                    </StackPanel>
+                    <Button Style="{StaticResource ActionButton}" Margin="0,16,0,0" HorizontalAlignment="Left"
+                            Content="{ui:T 'Find a program...'}" Command="{Binding BrowseCommand}" />
                 </StackPanel>
             </Border>
         </StackPanel>

@@ -144,7 +144,6 @@ internal sealed partial class AppsViewModel : ObservableObject
         BrightnessOptions = [L.T("No change"), .. Brightnesses.Skip(1).Select(percent => $"{percent}%")];
 
         _selected = Apps.FirstOrDefault();
-        _isAdding = Apps.Count == 0;
 
         _performance.AppOverrideTakenOver += (_, _) => AppLog.Info("The mode was changed by hand while an app profile held it; it is kept when the app closes.");
         _watch.Tick += async (_, _) => await CheckAsync();
@@ -176,16 +175,10 @@ internal sealed partial class AppsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ShowsEditor))]
     private AppRow? _selected;
 
-    partial void OnSelectedChanged(AppRow? value)
-    {
-        if (value is not null)
-            IsAdding = false;
+    partial void OnSelectedChanged(AppRow? value) => RaiseEditor();
 
-        RaiseEditor();
-    }
-
-    /// <summary>The right column shows the selected app's settings (otherwise the list of apps to add).</summary>
-    public bool ShowsEditor => Selected is not null && !IsAdding;
+    /// <summary>The right column shows the selected app's settings above the apps to add.</summary>
+    public bool ShowsEditor => Selected is not null;
 
     // ===== The selected app's settings =====
 
@@ -301,8 +294,10 @@ internal sealed partial class AppsViewModel : ObservableObject
         AppLog.Info($"App profile removed: {row.Name}.");
 
         Selected = Apps.Count == 0 ? null : Apps[Math.Min(index, Apps.Count - 1)];
-        IsAdding = Apps.Count == 0;
         _ = CheckAsync();
+
+        // It can be added again.
+        _ = LoadCandidatesAsync();
     }
 
     private void OnRowChanged(AppRow row)
@@ -315,16 +310,6 @@ internal sealed partial class AppsViewModel : ObservableObject
         _services.UpdateSettings(settings => settings with { AppProfiles = [.. Apps.Select(row => row.Profile)] });
 
     // ===== Adding an app =====
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowsEditor))]
-    private bool _isAdding;
-
-    partial void OnIsAddingChanged(bool value)
-    {
-        if (value)
-            _ = LoadCandidatesAsync();
-    }
 
     /// <summary>Which list to add from: games found in launchers, or the apps open now.</summary>
     [ObservableProperty]
@@ -348,32 +333,8 @@ internal sealed partial class AppsViewModel : ObservableObject
     [ObservableProperty]
     private string _candidatesStatus = string.Empty;
 
-    /// <summary>When the page opens: with no apps yet, the games to add are listed straight away.</summary>
-    public void Refresh()
-    {
-        if (IsAdding && Candidates.Count == 0)
-            _ = LoadCandidatesAsync();
-    }
-
-    [RelayCommand]
-    private void StartAdd()
-    {
-        if (IsAdding)
-            _ = LoadCandidatesAsync();
-        else
-            IsAdding = true;
-    }
-
-    /// <summary>Back to the selected app's settings; with none yet there is nothing to go back to.</summary>
-    [RelayCommand]
-    private void CancelAdd()
-    {
-        if (HasApps)
-        {
-            IsAdding = false;
-            Selected ??= Apps[0];
-        }
-    }
+    /// <summary>When the page opens: the games, or the apps open now, to add are listed again.</summary>
+    public void Refresh() => _ = LoadCandidatesAsync();
 
     [RelayCommand]
     private void AddCandidate(AppCandidate? candidate)
@@ -409,7 +370,10 @@ internal sealed partial class AppsViewModel : ObservableObject
         Save();
         AppLog.Info($"App profile added: {name} ({source}).");
         Selected = row;
-        IsAdding = false;
+
+        // Added: no longer offered.
+        foreach (var offered in Candidates.Where(candidate => string.Equals(candidate.Path, path, StringComparison.OrdinalIgnoreCase)).ToList())
+            Candidates.Remove(offered);
     }
 
     private bool _loading;
@@ -452,7 +416,7 @@ internal sealed partial class AppsViewModel : ObservableObject
         _loading = false;
 
         // Switched while this one was loading.
-        if (games != AddingGames && IsAdding)
+        if (games != AddingGames)
             _ = LoadCandidatesAsync();
     }
 

@@ -524,6 +524,7 @@ internal static class L
         ["App profiles"] = "Perfiles de apps",
         ["App profile"] = "Perfil de app",
         ["App profile applied."] = "Perfil de app aplicado.",
+        ["Use this profile"] = "Usar este perfil",
         ["Turn every app profile on or off"] = "Activar o pausar todos los perfiles de apps",
         ["While one of these apps is running, its settings are used. When it closes, everything goes back as it was."] =
             "Mientras una de estas apps está abierta, se usan sus ajustes. Al cerrarla, todo vuelve a como estaba.",
