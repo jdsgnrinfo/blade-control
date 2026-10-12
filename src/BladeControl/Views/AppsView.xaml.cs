@@ -21,6 +21,10 @@ public partial class AppsView : UserControl
 
             if (_window is not null)
                 _window.PreviewMouseLeftButtonDown += Window_Click;
+
+            // The list glides under the wheel as every page does.
+            if (FindDescendant<ScrollViewer>(AppList) is { } listScroll)
+                UI.SmoothScroll.SetIsEnabled(listScroll, true);
         };
         Unloaded += (_, _) =>
         {
@@ -109,6 +113,22 @@ public partial class AppsView : UserControl
         }
 
         return false;
+    }
+
+    private static T? FindDescendant<T>(DependencyObject element) where T : DependencyObject
+    {
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(element); index++)
+        {
+            var child = VisualTreeHelper.GetChild(element, index);
+
+            if (child is T found)
+                return found;
+
+            if (FindDescendant<T>(child) is { } deeper)
+                return deeper;
+        }
+
+        return null;
     }
 
     private static T? FindAncestor<T>(DependencyObject element) where T : DependencyObject

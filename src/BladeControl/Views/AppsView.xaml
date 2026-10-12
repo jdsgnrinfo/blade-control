@@ -138,10 +138,10 @@
                       Visibility="{Binding Scanning, Converter={StaticResource Visible}}" />
 
                 <!-- Its own scroll, so the settings at the right stay in view. -->
-                <ListBox ItemsSource="{Binding AppsView}" SelectedItem="{Binding Selected}" ItemContainerStyle="{StaticResource AppItem}"
+                <ListBox x:Name="AppList" ItemsSource="{Binding AppsView}" SelectedItem="{Binding Selected}" ItemContainerStyle="{StaticResource AppItem}"
                          Background="Transparent" Foreground="{StaticResource Brush.Text}" BorderThickness="0" Padding="0"
                          MaxHeight="560" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
-                         ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.ScrollUnit="Pixel">
+                         ScrollViewer.CanContentScroll="False">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
