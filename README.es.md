@@ -39,7 +39,8 @@ temperaturas.
   sigue al cargador), un perfil de color (Estándar, Luz nocturna, Neutro,
   Contraste) que se mantiene al cerrar la app, si hay una pantalla externa
   conectada (con la opción de seguir funcionando con la tapa cerrada mientras
-  lo está, enchufado) y *Solo gráficos integrados* (ver abajo).
+  lo está, enchufado) y *Solo gráficos integrados* (ver abajo), con si la GPU
+  dedicada está despierta o dormida en ese momento y qué apps la usan.
 - **Batería**: la carga, la potencia y el tiempo restante, las últimas 24
   horas según el informe de batería de Windows y la salud de la batería.
 - **Optimizar**: liberar memoria, archivos temporales y la caché de shaders,
@@ -48,8 +49,10 @@ temperaturas.
 - **Panel del portátil**: la foto y el modelo, la batería y los vatios que
   entran o salen (también al pasar el ratón por el icono de la bandeja), el
   plan de energía de Windows (con un plan "Razer Blade" para instalar:
-  rendimiento enchufado, duración con batería) y las temperaturas de CPU y GPU
-  (azul, que pasa a rojo por encima de 60 °C) con la media de la última hora.
+  rendimiento enchufado, duración con batería), la versión del firmware del
+  controlador, el cargador conectado (USB-C y sus vatios, o el del propio
+  portátil; oculto con batería) y las temperaturas de CPU y GPU (azul, que pasa
+  a rojo por encima de 60 °C) con la media de la última hora.
 - **Bandeja del sistema**: al cerrar la ventana la app sigue en la bandeja; un
   clic en su icono la abre otra vez y Salir en su menú la cierra. Puede
   iniciarse con Windows.

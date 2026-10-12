@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.1.2
+
+- **Apps**: a new page with a profile for each game or app (mode, fans,
+  refresh rate, screen colors, keyboard lighting and game mode), put on while
+  it runs and undone when it closes. Games installed with Steam, Epic Games,
+  Xbox and Battle.net are found for you.
+- **Game mode**, in app profiles: blocks the Windows key, and optionally
+  Alt+Tab and Alt+F4, while the game runs.
+- **Shortcuts**: Fn+Del shows or hides the window, and Ctrl+Shift+F1 / F2 / F3
+  switch to Silent, Balanced and Custom, with a small notice.
+- **Performance**: Custom's CPU and GPU levels as dropdowns, and a short
+  description on each mode.
+- **Display**: keep running with the lid closed while a monitor is connected
+  and the charger is in; whether the dedicated GPU is awake or asleep and which
+  apps use it; Night light warmer, at about 4500 K.
+- **Device panel**: the battery's watts (also on the tray icon's hover), the
+  controller's firmware version and the charger in.
+- **Razer Blade power plan**: also tunes the processor, Wi-Fi, PCI Express,
+  NVMe and Intel graphics, for performance plugged in and battery life on
+  battery. A plan installed by an earlier version keeps its old values until
+  it is removed in Windows and installed again.
+- **Settings**: export and import your settings to a file. An unreadable
+  settings file is kept as a copy instead of being replaced.
+- The battery chart's guide lines line up with their labels.
+
 ## 0.1.1
 
 - Recognizes every Razer Blade from 2021 on, including the Blade 14 (2025),

@@ -36,7 +36,8 @@ power plan and temperatures.
   a color profile (Standard, Night light, Neutral, Contrast) that stays on
   after the app closes, whether an external display is connected (and an
   option to keep running with the lid closed while one is, plugged in), and
-  *Integrated graphics only* (see below).
+  *Integrated graphics only* (see below), with whether the dedicated GPU is
+  awake or asleep right now and which apps are using it.
 - **Battery**: the charge, power and time left, the last 24 hours from
   Windows' own battery report, and the battery's health.
 - **Optimize**: freeing memory, temporary files and the shader cache, the
@@ -44,8 +45,9 @@ power plan and temperatures.
 - **Device panel**: the laptop's picture and model, battery and the watts
   going in or out (also on the tray icon's hover), Windows' power plan
   (with a "Razer Blade" plan to install: performance plugged in, battery life
-  on battery), and CPU and GPU temperatures (blue, turning red past 60 °C)
-  with the last hour's average.
+  on battery), the controller's firmware version, the charger in (USB-C and
+  its watts, or the laptop's own; hidden on battery), and CPU and GPU
+  temperatures (blue, turning red past 60 °C) with the last hour's average.
 - **Tray**: closing the window keeps the app in the tray; a click on its icon
   opens it again, and Exit in its menu ends it. It can start with Windows.
 - **Shortcuts**, from any app or game: **Fn+Del** shows or hides the window,
