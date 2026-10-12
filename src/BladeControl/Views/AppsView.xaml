@@ -123,7 +123,16 @@
                 <TextBlock Style="{StaticResource Text.Hint}" Margin="0,0,0,16" TextWrapping="Wrap"
                            Text="{ui:T 'Pick an app to choose its settings. While it is running they are used; when it closes, everything goes back as it was.'}" />
 
-                <TextBox Style="{StaticResource SearchBox}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" />
+                <!-- The search, and beside it any other program to add. -->
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Style="{StaticResource SearchBox}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button Grid.Column="1" Style="{StaticResource ActionButton}" Height="36" Margin="8,0,0,0"
+                            Content="{ui:T 'Find a program...'}" Command="{Binding BrowseCommand}" />
+                </Grid>
 
                 <Path Style="{StaticResource Spinner}" HorizontalAlignment="Center" Margin="0,12"
                       Visibility="{Binding Scanning, Converter={StaticResource Visible}}" />
@@ -178,9 +187,6 @@
                 </ListBox>
 
                 <TextBlock Text="{Binding ListStatus}" Style="{StaticResource Text.Hint}" />
-
-                <Button Style="{StaticResource ActionButton}" Margin="0,16,0,0" HorizontalAlignment="Left"
-                        Content="{ui:T 'Find a program...'}" Command="{Binding BrowseCommand}" />
             </StackPanel>
         </Border>
 
