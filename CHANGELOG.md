@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **Battery modes on the 2025 and later Blades**: on battery, Silent is sent
+  as the firmware's Battery Saver and Balanced as Battery Balanced, as Synapse
+  does. On that firmware, Silent and Balanced ran alike on battery. The first
+  time, the app checks that the firmware keeps the battery mode, and falls
+  back to the plain modes if it does not; the result and the BIOS version go
+  to the log.
 - **Razer Blade power plan**, from a user's tuning: plugged in, the energy
   performance preference goes to 20, 60% of the boost is used and the
   frequency rises straight to the top; on battery, the preference goes to 80

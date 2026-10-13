@@ -4,8 +4,9 @@ namespace BladeControl.Core.Models;
 /// Performance modes Razer Synapse offers on the Blade 16 (2023), plus the
 /// 2020 Blades' Gaming, which the laptop may still report but the app no
 /// longer offers. The values are the EC's wire
-/// bytes. The EC knows a few more (Battery, Hyperboost) that are deliberately
-/// left out.
+/// bytes. The 2025 and later firmware's battery modes (Battery Saver 3,
+/// Battery Balanced 6) are sent and read as Silent and Balanced on battery
+/// (see <see cref="Services.PerformanceService"/>); Hyperboost is left out.
 /// </summary>
 internal enum PerformanceMode : byte
 {

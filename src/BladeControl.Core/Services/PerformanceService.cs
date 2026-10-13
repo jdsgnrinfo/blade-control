@@ -1,15 +1,45 @@
 using BladeControl.Core.Diagnostics;
 using BladeControl.Core.Hardware;
 using BladeControl.Core.Models;
+using BladeControl.Core.Platform;
 
 namespace BladeControl.Core.Services;
 
 /// <summary>Reads and changes the EC's performance mode and, in Custom, its CPU and GPU boost levels.</summary>
 /// <param name="maxFanMethod">How this laptop runs its fans flat out (see <see cref="MaxFanMethod"/>).</param>
-internal sealed class PerformanceService(IRazerTransport transport, MaxFanMethod maxFanMethod = MaxFanMethod.ControllerFlag)
+/// <param name="mayHaveBatteryModes">
+/// A 2025 or later Blade (see <see cref="RazerLaptopModel.MayHaveBatteryModes"/>):
+/// on battery, Silent is sent as Battery Saver and Balanced as Battery Balanced,
+/// once the firmware is found to keep them.
+/// </param>
+/// <param name="onBattery">Whether the laptop is on battery now; the battery modes are only sent then.</param>
+internal sealed class PerformanceService(
+    IRazerTransport transport,
+    MaxFanMethod maxFanMethod = MaxFanMethod.ControllerFlag,
+    bool mayHaveBatteryModes = false,
+    Func<bool>? onBattery = null)
 {
     private const byte FanModeAuto = 0x00;
     private const byte FanModeManual = 0x01;
+
+    // The battery modes of the newer firmware, from OpenBlade's captures of
+    // Synapse on the Blade 16 (2025 and 2026). They stand in for Silent and
+    // Balanced on battery and are shown as those.
+    internal const byte BatterySaverWire = 0x03;
+    internal const byte BatteryBalancedWire = 0x06;
+
+    // Null until a battery mode is first set; then whether the firmware kept it.
+    private bool? _hasBatteryModes;
+
+    // The mode byte the EC reported last, which may be a battery mode.
+    private byte? _lastWireMode;
+
+    /// <summary>
+    /// The mode sent depends on the power source, so a mode kept across a
+    /// plug or unplug is sent again: the laptop may have one and not have
+    /// found out yet whether its firmware keeps the battery modes.
+    /// </summary>
+    public bool FollowsPowerSource => mayHaveBatteryModes && _hasBatteryModes != false;
 
     // The speed the manual fan method asks for, in hundreds of RPM: 10000, far
     // above what these fans can reach (about 5000 on a Blade 15 Base 2020), so
@@ -42,7 +72,9 @@ internal sealed class PerformanceService(IRazerTransport transport, MaxFanMethod
     {
         var state = ReadState();
 
-        if (profile.Mode is PerformanceMode mode && state.Mode != mode)
+        // Compared by the byte the EC holds, so Balanced plugged in and Battery
+        // Balanced on battery count as different and are switched between.
+        if (profile.Mode is PerformanceMode mode && _lastWireMode != WireFor(mode))
         {
             SetMode(mode);
             state = ReadState();
@@ -152,11 +184,14 @@ internal sealed class PerformanceService(IRazerTransport transport, MaxFanMethod
         if (GetMode() is not PerformanceMode mode || (enabled && mode == PerformanceMode.Silent))
             throw new InvalidOperationException("Max fan speed is not available in this mode.");
 
+        // The byte the EC holds, so a battery mode is rewritten as itself.
+        var wire = _lastWireMode ?? (byte)mode;
+
         foreach (var zone in Zones)
         {
             transport.SendAndConfirm(
                 RazerCommands.SetPerformanceMode,
-                [0x01, zone, (byte)mode, enabled ? FanModeManual : FanModeAuto],
+                [0x01, zone, wire, enabled ? FanModeManual : FanModeAuto],
                 $"fan mode {(enabled ? "manual" : "automatic")} for zone {zone}");
 
             if (enabled)
@@ -211,14 +246,34 @@ internal sealed class PerformanceService(IRazerTransport transport, MaxFanMethod
             if (cpuZone != gpuZone)
                 continue;
 
-            return Enum.IsDefined((PerformanceMode)cpuZone)
-                ? (PerformanceMode)cpuZone
-                : null;
+            _lastWireMode = cpuZone;
+            return Decode(cpuZone);
         }
 
+        _lastWireMode = null;
         AppLog.Error("The EC reported different performance modes for its two zones.");
         return null;
     }
+
+    /// <summary>The mode a byte from the EC stands for: the battery modes show as Silent and Balanced.</summary>
+    internal static PerformanceMode? Decode(byte wire) => wire switch
+    {
+        BatterySaverWire => PerformanceMode.Silent,
+        BatteryBalancedWire => PerformanceMode.Balanced,
+        _ => Enum.IsDefined((PerformanceMode)wire) ? (PerformanceMode)wire : null
+    };
+
+    // The byte to send for a mode: on battery, on a laptop whose firmware may
+    // have them, Silent and Balanced become the battery modes.
+    private byte WireFor(PerformanceMode mode) =>
+        mayHaveBatteryModes && _hasBatteryModes != false && onBattery?.Invoke() == true
+            ? mode switch
+            {
+                PerformanceMode.Silent => BatterySaverWire,
+                PerformanceMode.Balanced => BatteryBalancedWire,
+                _ => (byte)mode
+            }
+            : (byte)mode;
 
     private byte ReadZoneMode(byte zone)
     {
@@ -232,12 +287,56 @@ internal sealed class PerformanceService(IRazerTransport transport, MaxFanMethod
 
     private void SetMode(PerformanceMode mode)
     {
+        var wire = WireFor(mode);
+
+        if (wire == (byte)mode)
+        {
+            WriteMode(wire, mode.ToString());
+            return;
+        }
+
+        // A battery mode. The first one sent is read back: firmware without
+        // them refuses it or keeps another mode, and from then on gets the
+        // plain modes, as before.
+        var name = wire == BatterySaverWire ? "Battery Saver" : "Battery Balanced";
+
+        try
+        {
+            WriteMode(wire, name);
+        }
+        catch (Exception exception) when (exception is InvalidOperationException or RazerCommandNotSupportedException)
+        {
+            Settle(false, name);
+            WriteMode((byte)mode, mode.ToString());
+            return;
+        }
+
+        if (_hasBatteryModes is not null)
+            return;
+
+        var kept = ReadZoneMode(Zones[0]) == wire && ReadZoneMode(Zones[1]) == wire;
+        Settle(kept, name);
+
+        if (!kept)
+            WriteMode((byte)mode, mode.ToString());
+    }
+
+    private void Settle(bool kept, string name)
+    {
+        _hasBatteryModes = kept;
+        AppLog.Info(kept
+            ? $"The firmware kept {name}: on battery, Silent and Balanced are sent as Battery Saver and Battery Balanced. BIOS {BiosInfo.Describe()}."
+            : $"The firmware did not keep {name}: Silent and Balanced are sent as they are. BIOS {BiosInfo.Describe()}.");
+    }
+
+    private void WriteMode(byte wire, string name)
+    {
         foreach (var zone in Zones)
         {
             transport.SendAndConfirm(
                 RazerCommands.SetPerformanceMode,
-                [0x01, zone, (byte)mode, FanModeAuto],
-                $"performance mode {mode} for zone {zone}");
+                [0x01, zone, wire, FanModeAuto],
+                $"performance mode {name} for zone {zone}");
         }
     }
 

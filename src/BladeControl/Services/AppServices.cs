@@ -24,7 +24,11 @@ internal sealed class AppServices : IDisposable
         AppLog.Info(Model is null ? "No supported Razer Blade was found." : $"Found {Model.Name}.");
 
         MaxFanMethod = Model?.MaxFan ?? MaxFanMethod.ControllerFlag;
-        Performance = new PerformanceService(_transport, MaxFanMethod);
+        Performance = new PerformanceService(
+            _transport,
+            MaxFanMethod,
+            Model?.MayHaveBatteryModes == true,
+            () => _powerSource.IsPluggedIn == false);
         FanTelemetry = new FanTelemetryService(_transport);
         EcTemperatures = new EcTemperatureService(_transport);
         FirmwareVersion = new FirmwareVersionService(_transport);

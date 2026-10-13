@@ -495,6 +495,25 @@ internal sealed partial class PerformanceViewModel : ObservableObject
             _ = ApplyActiveProfileAsync();
         else if (!IsPluggedIn && _state.MaxFan == true)
             _ = SetMaxFanAsync(false); // Max is a plugged-in setting.
+        else if (_services.Performance.FollowsPowerSource && _state.Mode is PerformanceMode.Silent or PerformanceMode.Balanced)
+            _ = KeepModeAsync(_state.Mode.Value);
+    }
+
+    // The same mode, sent again for the new power source: on a laptop with
+    // battery modes, Silent and Balanced are sent differently on battery.
+    private Task KeepModeAsync(PerformanceMode mode)
+    {
+        if (_busy)
+        {
+            _reapplyRequested = true;
+            return Task.CompletedTask;
+        }
+
+        return RunAsync(
+            () => _services.Performance.ApplyProfileAsync(new PowerProfile(mode)),
+            L.T("Could not apply the power profile."),
+            _ => _appliedSource = IsPluggedIn,
+            quiet: true);
     }
 
     /// <param name="atStartup">Also turn off a Max left on from before the app started: it is never part of a profile.</param>
@@ -584,6 +603,8 @@ internal sealed partial class PerformanceViewModel : ObservableObject
 
             if (AutoSwitchProfiles && IsPluggedIn != _appliedSource)
                 await ApplyActiveProfileAsync();
+            else if (_services.Performance.FollowsPowerSource && _state.Mode is PerformanceMode.Silent or PerformanceMode.Balanced)
+                await KeepModeAsync(_state.Mode.Value);
         }
     }
 

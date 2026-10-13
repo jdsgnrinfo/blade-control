@@ -29,7 +29,9 @@ power plan and temperatures.
   Boost) and GPU (Low to High) levels. Each power source keeps its own mode,
   and plugging in or unplugging switches between them. Max fan speed, plugged
   in, on the models that have it, and the battery charge limit (60 to 99%) on
-  controllers that accept one.
+  controllers that accept one. On the 2025 and later Blades, on battery,
+  Silent and Balanced use the firmware's Battery Saver and Battery Balanced,
+  as Synapse does.
 - **Silent really is quiet**: Silent also turns Windows' CPU boost off, which
   is what quiets a Blade 15 Base (2020); Balanced and Custom give it back.
   An experimental switch in Settings turns this off.

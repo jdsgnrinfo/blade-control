@@ -35,6 +35,13 @@ namespace BladeControl.Core.Hardware;
 /// The keyboard can show a wave. A single-zone keyboard (the whole board one
 /// light) cannot, whichever command is sent, so Wave is not offered there.
 /// </param>
+/// <param name="MayHaveBatteryModes">
+/// The 2025 and later Blades, whose newer BIOS and firmware give the battery
+/// modes of their own: Battery Saver and Battery Balanced. On battery, that
+/// firmware runs Silent and Balanced alike; Synapse offers only the battery
+/// modes there. Whether this laptop's firmware has them is checked the first
+/// time one is set (see <see cref="Services.PerformanceService"/>).
+/// </param>
 internal sealed record RazerLaptopModel(
     int ProductId,
     string Name,
@@ -43,4 +50,5 @@ internal sealed record RazerLaptopModel(
     MaxFanMethod MaxFan = MaxFanMethod.ControllerFlag,
     bool HasKeyboardColor = false,
     bool HasFanSpeeds = true,
-    bool HasWaveEffect = true);
+    bool HasWaveEffect = true,
+    bool MayHaveBatteryModes = false);

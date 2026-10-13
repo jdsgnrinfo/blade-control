@@ -86,7 +86,6 @@ public class PerformanceServiceTests
 
     [Theory]
     [InlineData(2)]   // Performance: real to the EC, not offered on this model
-    [InlineData(6)]   // Battery
     [InlineData(7)]   // Hyperboost
     [InlineData(200)]
     public void ReadState_ReportsNoModeForAValueThisAppDoesNotOffer(byte wireMode)
@@ -515,5 +514,135 @@ public class PerformanceServiceTests
         var state = service.ApplyProfile(new PowerProfile(PerformanceMode.Gaming));
 
         Assert.False(state.MaxFan);
+    }
+
+    // ---- Battery modes (2025 and later Blades) ---------------------------
+
+    private const byte BatterySaver = 3;
+    private const byte BatteryBalanced = 6;
+
+    private static (FakeEc Ec, PerformanceService Service, Func<bool> Battery, Action<bool> SetBattery) CreateWithBatteryModes(
+        byte mode = Balanced, bool battery = true, IRazerTransport? transport = null)
+    {
+        var ec = new FakeEc();
+        ec.SetBothZones(mode);
+        var onBattery = battery;
+        return (ec, new PerformanceService(transport ?? ec, mayHaveBatteryModes: true, onBattery: () => onBattery), () => onBattery, value => onBattery = value);
+    }
+
+    [Theory]
+    [InlineData((int)PerformanceMode.Silent, BatterySaver)]
+    [InlineData((int)PerformanceMode.Balanced, BatteryBalanced)]
+    public void OnBattery_SilentAndBalanced_AreSentAsTheBatteryModes(int mode, byte wire)
+    {
+        var (ec, service, _, _) = CreateWithBatteryModes(Custom);
+
+        var state = service.ApplyProfile(new PowerProfile((PerformanceMode)mode));
+
+        Assert.Equal(
+            [$"0D02:0101{wire:X2}00", $"0D02:0102{wire:X2}00"],
+            ec.Writes.Select(Describe));
+        Assert.Equal((PerformanceMode)mode, state.Mode);
+    }
+
+    [Fact]
+    public void PluggedIn_TheModesAreSentAsTheyAre()
+    {
+        var (ec, service, _, _) = CreateWithBatteryModes(Custom, battery: false);
+
+        service.ApplyProfile(new PowerProfile(PerformanceMode.Silent));
+
+        Assert.Equal(["0D02:01010500", "0D02:01020500"], ec.Writes.Select(Describe));
+    }
+
+    [Fact]
+    public void PluggingIn_SwitchesBatteryBalancedToBalanced()
+    {
+        // Both read as Balanced, but the EC holds different bytes.
+        var (ec, service, _, setBattery) = CreateWithBatteryModes(BatteryBalanced, battery: false);
+
+        Assert.Equal(PerformanceMode.Balanced, service.ReadState().Mode);
+        service.ApplyProfile(new PowerProfile(PerformanceMode.Balanced));
+
+        Assert.Equal(["0D02:01010000", "0D02:01020000"], ec.Writes.Select(Describe));
+    }
+
+    [Fact]
+    public void AlreadyInTheBatteryMode_NothingIsWritten()
+    {
+        var (ec, service, _, _) = CreateWithBatteryModes(BatterySaver);
+
+        service.ApplyProfile(new PowerProfile(PerformanceMode.Silent));
+
+        Assert.Empty(ec.Writes);
+    }
+
+    [Fact]
+    public void FirmwareThatDoesNotKeepThem_GetsThePlainModes_FromThenOn()
+    {
+        // Older firmware answers the write but stays in Silent.
+        var ec = new FakeEc();
+        ec.SetBothZones(Custom);
+        var stubborn = new ScriptedTransport((command, args) =>
+        {
+            var response = ec.Send(command, args);
+
+            if (command == RazerCommands.SetPerformanceMode && args[2] is BatterySaver or BatteryBalanced)
+                ec.ZoneMode[args[1] - 1] = args[2] == BatterySaver ? Silent : Balanced;
+
+            return response;
+        });
+        var (_, service, _, _) = CreateWithBatteryModes(transport: stubborn);
+
+        var state = service.ApplyProfile(new PowerProfile(PerformanceMode.Silent));
+
+        Assert.Equal(PerformanceMode.Silent, state.Mode);
+        Assert.False(service.FollowsPowerSource);
+
+        ec.Log.Clear();
+        service.ApplyProfile(new PowerProfile(PerformanceMode.Balanced));
+        Assert.Equal(["0D02:01010000", "0D02:01020000"], ec.Writes.Select(Describe));
+    }
+
+    [Fact]
+    public void FirmwareThatRefusesThem_GetsThePlainMode()
+    {
+        var ec = new FakeEc();
+        ec.SetBothZones(Custom);
+        var refusing = new ScriptedTransport((command, args) =>
+            command == RazerCommands.SetPerformanceMode && args[2] is BatterySaver or BatteryBalanced
+                ? throw new RazerCommandNotSupportedException(command)
+                : ec.Send(command, args));
+        var (_, service, _, _) = CreateWithBatteryModes(transport: refusing);
+
+        var state = service.ApplyProfile(new PowerProfile(PerformanceMode.Silent));
+
+        Assert.Equal(PerformanceMode.Silent, state.Mode);
+        Assert.Equal(new byte[] { Silent, Silent }, ec.ZoneMode);
+        Assert.False(service.FollowsPowerSource);
+    }
+
+    [Fact]
+    public void ALaptopWithoutThem_NeverGetsTheBatteryModes()
+    {
+        var ec = new FakeEc();
+        ec.SetBothZones(Custom);
+        var service = new PerformanceService(ec, onBattery: () => true);
+
+        service.ApplyProfile(new PowerProfile(PerformanceMode.Silent));
+
+        Assert.Equal(["0D02:01010500", "0D02:01020500"], ec.Writes.Select(Describe));
+        Assert.False(service.FollowsPowerSource);
+    }
+
+    [Theory]
+    [InlineData(BatterySaver, (int)PerformanceMode.Silent)]
+    [InlineData(BatteryBalanced, (int)PerformanceMode.Balanced)]
+    public void TheBatteryModes_ReadAsSilentAndBalanced_OnAnyLaptop(byte wire, int mode)
+    {
+        // Synapse may have left one; it shows as the mode it stands for.
+        var (_, service) = Create(wire);
+
+        Assert.Equal((PerformanceMode)mode, service.ReadState().Mode);
     }
 }

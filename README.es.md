@@ -31,7 +31,9 @@ temperaturas.
   CPU (Bajo a Turbo) y GPU (Bajo a Alto) de Personalizado. Cada fuente de
   energía guarda su propio modo, y al enchufar o desenchufar se cambia solo.
   Ventiladores al máximo, enchufado, en los modelos que lo tienen, y límite de
-  carga de la batería (60 a 99 %) en los controladores que lo aceptan.
+  carga de la batería (60 a 99 %) en los controladores que lo aceptan. En los
+  Blade de 2025 en adelante, con batería, Silencio y Equilibrado usan los modos
+  Battery Saver y Battery Balanced del firmware, como hace Synapse.
 - **Silencio de verdad**: Silencio también apaga el turbo de la CPU de
   Windows, que es lo que hace silencioso a un Blade 15 Base (2020);
   Equilibrado y Personalizado lo devuelven. Un interruptor experimental en
