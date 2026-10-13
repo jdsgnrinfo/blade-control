@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.3
 
 - **Battery modes on the 2025 and later Blades**: on battery, Silent is sent
   as the firmware's Battery Saver and Balanced as Battery Balanced, as Synapse
