@@ -10,6 +10,12 @@
 
 <p align="center"><a href="README.md">English</a> · <strong>Español</strong></p>
 
+<p align="center">
+  <a href="https://github.com/jdsgnrinfo/blade-control/releases/latest"><img src="https://img.shields.io/github/v/release/jdsgnrinfo/blade-control?style=for-the-badge&label=Release&color=2ea043" alt="Release"></a>
+  <a href="https://paypal.me/jotica96"><img src="https://img.shields.io/badge/PayPal-Donar-00457C?style=for-the-badge&logo=paypal&logoColor=white" alt="PayPal"></a>
+  <a href="https://discord.com/users/858481193153724436"><img src="https://img.shields.io/badge/Discord-byjota96-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord: byjota96" title="Discord: byjota96"></a>
+</p>
+
 Un centro de control ligero para portátiles Razer Blade, en una ventana
 completa de Windows. Cambia el modo de rendimiento, los ventiladores, la
 iluminación del teclado, la pantalla y los ajustes de batería hablando
