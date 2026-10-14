@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using BladeControl.Core.Diagnostics;
+using BladeControl.Core.Models;
 
 namespace BladeControl.Core.Hardware;
 
@@ -17,14 +18,23 @@ internal sealed record GpuStats(bool Asleep, double? Celsius, double? UsagePerce
 /// Reads the dedicated GPU's temperature, load and clocks. The temperature
 /// and the memory clock come from Windows (as for Task Manager), which never
 /// wakes a sleeping GPU. The load and the core clock only NVIDIA's driver
-/// library knows, and asking it would wake the GPU, so it is asked only while
-/// Windows says the GPU is already awake. Not thread-safe: one read at a time.
+/// library knows, and asking it once a second keeps the GPU awake: something
+/// waking it for a moment (a service, an app starting) was enough for the
+/// monitor to hold it awake for good, a few watts on battery. So the library
+/// is asked only while another app is using the GPU, and let go as soon as
+/// none is, so the GPU can fall asleep. Not thread-safe: one read at a time.
 /// </summary>
 internal sealed class GpuStatsReader : IDisposable
 {
+    // Who holds video memory on the GPU is looked up every few seconds, not every read.
+    private static readonly TimeSpan UsersCheckEvery = TimeSpan.FromSeconds(3);
+    private const int SystemProcessId = 4;
+
     private readonly NvidiaDriverLibrary _nvidia = new();
     private long? _adapterLuid;
     private bool _loggedFailure;
+    private DateTime _usersCheckedAt;
+    private bool _othersUseIt;
 
     public GpuStats Read()
     {
@@ -53,6 +63,14 @@ internal sealed class GpuStatsReader : IDisposable
                 return new GpuStats(Asleep: true, null, null, null, null);
             }
 
+            // Awake, but no other app is on it: let NVIDIA's library go, so the
+            // GPU can fall asleep, and show it idle.
+            if (!OthersUseIt(luid))
+            {
+                _nvidia.Dispose();
+                return new GpuStats(Asleep: false, celsius, 0, null, memoryMhz);
+            }
+
             var (coreMhz, usage) = _nvidia.Read();
             return new GpuStats(Asleep: false, celsius, usage, coreMhz, memoryMhz);
         }
@@ -69,6 +87,26 @@ internal sealed class GpuStatsReader : IDisposable
     }
 
     public void Dispose() => _nvidia.Dispose();
+
+    private bool OthersUseIt(long luid)
+    {
+        var now = DateTime.UtcNow;
+
+        if (now - _usersCheckedAt < UsersCheckEvery)
+            return _othersUseIt;
+
+        _usersCheckedAt = now;
+        _othersUseIt = SomeoneElseUses(DiscreteGpuReader.ReadProcessUsage([luid]), Environment.ProcessId);
+        return _othersUseIt;
+    }
+
+    /// <summary>
+    /// Whether an app other than this one holds video memory on the GPU.
+    /// Windows' System process keeps a little there whenever the GPU is
+    /// awake, so it does not count.
+    /// </summary>
+    internal static bool SomeoneElseUses(IEnumerable<GpuProcessUsage> usage, int thisProcessId) =>
+        usage.Any(process => process.ProcessId != thisProcessId && process.ProcessId != SystemProcessId && process.DedicatedBytes > 0);
 
     /// <summary>
     /// NVIDIA's management library (nvml.dll), installed with the driver. On a

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- **The Performance page no longer keeps the NVIDIA GPU awake.** Its system
+  monitor asked NVIDIA's driver library for the GPU's load every second, so
+  once anything woke the GPU, the monitor held it awake for good, with
+  Windows' System process busy on about a whole core. The library is now asked
+  only while another app is using the GPU and let go when none is.
+
 ## 0.1.3
 
 - **Battery modes on the 2025 and later Blades**: on battery, Silent is sent
