@@ -174,7 +174,7 @@ public partial class App : Application
 
         _tray = new TrayIcon();
         _tray.OpenRequested += (_, _) => ShowMainWindow();
-        _tray.MenuRequested += (_, _) => TrayMenuWindow.ShowAtPointer(ShowMainWindow, Quit);
+        _tray.MenuRequested += (_, _) => TrayMenuWindow.ShowAtPointer(ShowMainWindow, Quit, TrayModes());
         _viewModel!.Performance.ModeChanged += (_, mode) => Dispatcher.BeginInvoke(() => _tray?.ShowMode(mode));
 
         _showWindow = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
@@ -183,6 +183,23 @@ public partial class App : Application
         _trimTimer.Tick += (_, _) => BackgroundMemory.Trim();
 
         StartShortcuts();
+    }
+
+    // The modes in the tray menu: picked the way the mode shortcuts pick them,
+    // with the same notice, for the power source the laptop is on now.
+    private IReadOnlyList<TrayMenuMode> TrayModes()
+    {
+        var performance = _viewModel!.Performance;
+
+        TrayMenuMode Mode(PerformanceMode mode, string name) =>
+            new(name, performance.CurrentMode == mode, performance.CanPick(mode), () => _ = SwitchModeFromShortcutAsync(mode));
+
+        return
+        [
+            Mode(PerformanceMode.Silent, L.T("Silent")),
+            Mode(PerformanceMode.Balanced, L.T("Balanced")),
+            Mode(PerformanceMode.Custom, L.T("Custom"))
+        ];
     }
 
     // Fn+Del shows or hides the window; Ctrl+Shift+F1/F2/F3 switch mode, unless

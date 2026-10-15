@@ -18,10 +18,15 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Back" Background="Transparent" Padding="12,6,28,7">
+                        <!-- Room at the left for the modes' check mark, so every item lines up. -->
+                        <Border x:Name="Back" Background="Transparent" Padding="28,6,28,7">
                             <ContentPresenter VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
+                            <!-- A mode that cannot be picked now (Custom on battery). -->
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4" />
+                            </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Back" Property="Background" Value="#FF333333" />
                             </Trigger>
@@ -41,6 +46,7 @@
             <DropShadowEffect BlurRadius="14" ShadowDepth="3" Opacity="0.45" />
         </Border.Effect>
         <StackPanel x:Name="Items" MinWidth="150">
+            <!-- The performance modes go here, then a line (see TrayMenuWindow.AddModes). -->
             <Button Style="{StaticResource TrayItem}" Content="{ui:T 'Open Blade Control'}" Click="Open_Click" />
             <Border Height="1" Margin="8,3" Background="#FF2E2E2E" />
             <Button Style="{StaticResource TrayItem}" Content="{ui:T 'Exit'}" Click="Exit_Click" />

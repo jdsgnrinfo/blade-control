@@ -309,6 +309,13 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     /// mode for the power source the laptop is on now, as its button would,
     /// and how it went, for the notice.
     /// </summary>
+    /// <summary>The mode the laptop is in now, for the tray menu's check mark.</summary>
+    public PerformanceMode? CurrentMode => _state.Mode;
+
+    /// <summary>Whether a mode can be picked now: this laptop has it, and the power source allows it (Custom only plugged in).</summary>
+    public bool CanPick(PerformanceMode mode) =>
+        !_unsupportedModes.Contains(mode) && PowerProfileRules.IsModeAllowed(mode, IsPluggedIn);
+
     public async Task<(bool Applied, string Status)> SelectFromShortcutAsync(PerformanceMode mode)
     {
         if (_unsupportedModes.Contains(mode))

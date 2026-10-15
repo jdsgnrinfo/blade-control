@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- **Performance modes in the tray menu**: Silent, Balanced and Custom, with a
+  check on the one in use, switched as the mode shortcuts switch them and with
+  the same notice. Custom is greyed out on battery. The menu's text is 12 px.
 - **Opens faster**: from about 1.35 to 0.95 seconds on a Blade 15 Base (2020).
   The exe is compiled ahead of time and no longer compressed, so .NET does
   not unpack it at each start (450 ms down to 190). It is bigger on disk
