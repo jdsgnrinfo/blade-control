@@ -258,10 +258,40 @@ public partial class App : Application
         {
             window.Closing += (_, _) => _services.UpdateSettings(settings => settings with { Window = PlacementOf(window) });
             window.Closed += (_, _) => OnWindowClosed(window);
+            window.StateChanged += (_, _) => OnWindowStateChanged(window);
         }
 
+        _windowMinimized = false;
         window.Show();
         return window;
+    }
+
+    private bool _windowMinimized;
+
+    // Minimized counts as in the tray: nothing on screen to read sensors or
+    // draw for, so the reading stops and, a moment later, the RAM it used goes
+    // back to Windows. Restored, the open page starts over. Between normal and
+    // maximized nothing changes.
+    private void OnWindowStateChanged(MainWindow window)
+    {
+        var minimized = window.WindowState == WindowState.Minimized;
+
+        if (minimized == _windowMinimized)
+            return;
+
+        _windowMinimized = minimized;
+        _viewModel!.SetWindowShown(!minimized);
+
+        if (minimized)
+        {
+            _ = Dispatcher.BeginInvoke(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(2));
+
+                if (_windowMinimized && MainWindow == window)
+                    BackgroundMemory.Trim();
+            }, DispatcherPriority.ApplicationIdle);
+        }
     }
 
     // Closed to the tray: nothing is read each second any more, and once the
