@@ -274,6 +274,7 @@ internal sealed partial class SettingsViewModel : ObservableObject
         _services.SilentBoost.Restore();
         _services.LidClose.Restore();
         await _services.BatteryMode.RestoreAsync("of a reset");
+        await Task.Run(() => _services.WindowsColors.Apply(ColorProfile.Standard));
 
         var result = await _services.FactoryReset.RunAsync(_services.Settings);
 

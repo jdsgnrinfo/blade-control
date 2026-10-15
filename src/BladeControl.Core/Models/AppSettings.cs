@@ -94,7 +94,9 @@ internal sealed record AppSettings(
     // keyboard, Energy saver and fewer visual effects; all back when plugged in.
     bool BatteryMode = false,
     // What battery mode replaced, kept until it is put back, even across a restart.
-    BatteryModeSaved? BatteryModeSaved = null);
+    BatteryModeSaved? BatteryModeSaved = null,
+    // The color profile installed in Windows for the laptop screen, and what it replaced.
+    WindowsColorProfileState? WindowsColorProfile = null);
 
 /// <summary>The window's position and size in device-independent pixels, and whether it was maximized.</summary>
 internal sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool Maximized);

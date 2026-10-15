@@ -184,6 +184,9 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         AppLog.Info(applied ? $"Color profile: {profile}." : $"Color profile {profile} was not taken by every screen.");
         ProfileStatus = applied ? string.Empty : L.T("This screen does not take it");
         _services.UpdateSettings(settings => settings with { ColorProfile = ColorProfiles.ToSetting(profile) });
+
+        // Also in Windows, so the colors stay after a restart or sleep without the app.
+        _ = Task.Run(() => _services.WindowsColors.Apply(profile));
     }
 
     // ===== App profiles =====
@@ -581,6 +584,9 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         var profile = ColorProfiles.Parse(_services.Settings.ColorProfile);
         _colors.Apply(profile);
         ShowProfile(profile);
+
+        // A profile picked before this version, or changed in Windows since, is put in Windows too.
+        _ = Task.Run(() => _services.WindowsColors.Apply(profile));
 
         var saved = DisplayRefreshMode.Parse(_services.Settings.DisplayMode);
 

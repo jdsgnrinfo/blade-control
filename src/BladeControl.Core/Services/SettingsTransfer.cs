@@ -87,6 +87,7 @@ internal static class SettingsTransfer
             WindowScale = current.WindowScale,
             Window = current.Window,
             BatteryModeSaved = current.BatteryModeSaved,
+            WindowsColorProfile = current.WindowsColorProfile,
             SkippedUpdate = current.SkippedUpdate
         };
 
@@ -114,6 +115,7 @@ internal static class SettingsTransfer
             CustomCpuBoost = null,
             CustomGpuBoost = null,
             BatteryModeSaved = null,
+            WindowsColorProfile = null,
             SkippedUpdate = null
         };
 }

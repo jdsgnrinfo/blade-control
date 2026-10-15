@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- **Color profiles stay without the app**: the profile picked on the Display
+  page (Night light, Neutral, Contrast) is also installed in Windows as the
+  laptop screen's ICC profile, for your user only, so Windows keeps those
+  colors at sign-in, after sleep and with Blade Control closed. Standard takes
+  it out and puts back the screen's profile from before. No administrator
+  permission is needed. A game's colors from an app profile still last only
+  while the game runs.
+
 - **Battery mode**, a switch on the Performance page: on battery, Silent,
   the screen at 25% and the keyboard at 20% (never raised), 60 Hz when a
   fixed refresh rate is picked (Auto already does it), Windows' Energy
