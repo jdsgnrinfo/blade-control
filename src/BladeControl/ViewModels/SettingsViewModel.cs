@@ -25,13 +25,18 @@ internal sealed partial class SettingsViewModel : ObservableObject
     private readonly Action<string, bool> _report;
     private bool _loading;
 
-    public SettingsViewModel(AppServices services, Action<string, bool> report)
+    /// <param name="monitor">The Performance page's system monitor, whose switch is here.</param>
+    public SettingsViewModel(AppServices services, Action<string, bool> report, SystemMonitorViewModel monitor)
     {
         _services = services;
         _report = report;
+        Monitor = monitor;
         _languageIndex = Array.IndexOf(Languages, L.Current);
         _startAtLogin = ReadStartAtLogin();
     }
+
+    /// <summary>The system monitor, for its switch (bound to <see cref="SystemMonitorViewModel.IsEnabled"/>).</summary>
+    public SystemMonitorViewModel Monitor { get; }
 
     // ===== General =====
 

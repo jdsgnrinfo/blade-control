@@ -38,10 +38,11 @@ internal sealed partial class UsageGauge(string name, string firstLabel, string 
 /// The system monitor under Battery health, as in Razer Helper: how busy the
 /// CPU, the GPU and the RAM are, with the CPU's and GPU's temperature and
 /// clock, and the RAM's speed and what is free. Read once a second, only while
-/// the Performance page is open.
+/// the Performance page is open, and not at all once turned off in Settings.
 /// </summary>
-internal sealed class SystemMonitorViewModel : IDisposable
+internal sealed class SystemMonitorViewModel : ObservableObject, IDisposable
 {
+    private bool _pageOpen;
     private readonly AppServices _services;
     private readonly CpuStatsReader _cpuReader = new();
     private readonly GpuStatsReader _gpuReader = new();
@@ -65,14 +66,58 @@ internal sealed class SystemMonitorViewModel : IDisposable
 
     public IReadOnlyList<UsageGauge> Gauges { get; }
 
-    /// <summary>Reads now and once a second; the CPU's first read only primes its counters.</summary>
+    /// <summary>
+    /// The monitor is on (Settings, General). Off, its card is hidden and
+    /// nothing is read for it, NVIDIA's library included.
+    /// </summary>
+    public bool IsEnabled
+    {
+        get => _services.Settings.SystemMonitor;
+        set
+        {
+            if (value == IsEnabled)
+                return;
+
+            _services.UpdateSettings(settings => settings with { SystemMonitor = value });
+            OnPropertyChanged();
+
+            if (value && _pageOpen)
+                Begin();
+            else if (!value)
+                Halt();
+        }
+    }
+
+    /// <summary>The Performance page opened: reads now and once a second, if the monitor is on.</summary>
     public void Start()
+    {
+        _pageOpen = true;
+
+        if (IsEnabled)
+            Begin();
+    }
+
+    /// <summary>The page closed or the window went to the tray.</summary>
+    public void Stop()
+    {
+        _pageOpen = false;
+        Halt();
+    }
+
+    // The CPU's first read only primes its counters.
+    private void Begin()
     {
         StartRead();
         _timer.Start();
     }
 
-    public void Stop() => _timer.Stop();
+    // Lets go of NVIDIA's library too once the last read is done, so nothing
+    // here can keep the GPU awake while the monitor is not showing.
+    private void Halt()
+    {
+        _timer.Stop();
+        _read.ContinueWith(_ => _gpuReader.Dispose(), TaskScheduler.Default);
+    }
 
     public void Dispose()
     {

@@ -81,7 +81,10 @@ internal sealed record AppSettings(
     // The lid action that option replaced, kept until it is given back (the
     // monitor goes, the option is turned off, the app exits); null when the
     // lid action is the plan's own.
-    SavedPlanValue? LidActionBeforeKeepRunning = null);
+    SavedPlanValue? LidActionBeforeKeepRunning = null,
+    // On unless the user turns it off: the Performance page's system monitor
+    // (CPU, GPU and RAM). Off, its card goes and nothing is read for it.
+    bool SystemMonitor = true);
 
 /// <summary>The window's position and size in device-independent pixels, and whether it was maximized.</summary>
 internal sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool Maximized);

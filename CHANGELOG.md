@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **System monitor switch**: Settings, General turns the Performance page's
+  system monitor off; its card goes and nothing is read for it.
 - **The Performance page no longer keeps the NVIDIA GPU awake.** Its system
   monitor asked NVIDIA's driver library for the GPU's load every second, so
   once anything woke the GPU, the monitor held it awake for good, with

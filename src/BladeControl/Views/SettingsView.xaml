@@ -64,6 +64,21 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'System monitor'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap"
+                                       Text="{ui:T 'CPU, GPU and RAM use on the Performance page. Off, nothing is read for it, which saves a little battery.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding Monitor.IsEnabled}" />
+                    </Grid>
+
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
                             <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Performance mode shortcuts'}" />
                             <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" Text="{Binding ProfileShortcutsHint}" />
                         </StackPanel>

@@ -144,8 +144,9 @@
                 </StackPanel>
             </Border>
 
-            <!-- ===== System monitor: how busy the CPU, GPU and RAM are ===== -->
-            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+            <!-- ===== System monitor: how busy the CPU, GPU and RAM are; hidden once turned off in Settings ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top"
+                    Visibility="{Binding Monitor.IsEnabled, Converter={StaticResource Visible}}">
                 <StackPanel>
                     <Grid Margin="0,0,0,18" MinHeight="34">
                         <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'System monitor'}" VerticalAlignment="Center" />

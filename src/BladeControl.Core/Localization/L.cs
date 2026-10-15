@@ -214,6 +214,8 @@ internal static class L
 
         // Performance.
         ["System monitor"] = "Monitor del sistema",
+        ["CPU, GPU and RAM use on the Performance page. Off, nothing is read for it, which saves a little battery."] =
+            "El uso de CPU, GPU y RAM en la página Rendimiento. Desactivado, no se lee nada para él, lo que ahorra algo de batería.",
         ["Balanced"] = "Equilibrado",
         ["Gaming"] = "Juego",
         ["Custom"] = "Personalizado",
