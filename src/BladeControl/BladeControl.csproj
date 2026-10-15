@@ -32,7 +32,14 @@
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <!--
+      Not compressed: unpacking a compressed exe took .NET about 450 ms of each
+      start, against 190 ms without. The exe is bigger on disk (about 180 MB),
+      but the release zip compresses it anyway (75 MB against 69).
+    -->
+    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+    <!-- Compiled ahead of time, so starting does not wait for .NET to compile the app. -->
+    <PublishReadyToRun>true</PublishReadyToRun>
     <DebugType>none</DebugType>
   </PropertyGroup>
 

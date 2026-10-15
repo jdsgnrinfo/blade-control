@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- **Opens faster**: from about 1.35 to 0.95 seconds on a Blade 15 Base (2020).
+  The exe is compiled ahead of time and no longer compressed, so .NET does
+  not unpack it at each start (450 ms down to 190). It is bigger on disk
+  (about 180 MB), but the download barely changes (75 MB against 69).
+- **A minimized window counts as in the tray**: sensors stop being read and
+  its RAM goes back to Windows (from about 300 MB to 30).
+- The log records how long each part of starting took, and the memory left
+  each time the app releases it.
+
 ## 0.1.4
 
 - **Fewer sensor reads on battery**: the device panel reads every 5 seconds

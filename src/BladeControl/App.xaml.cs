@@ -87,12 +87,19 @@ public partial class App : Application
             args.SetObserved();
         };
 
+        // How long each part of starting takes, for the log: .NET's own start
+        // before this code runs, the services, the pages and the first drawing.
+        var beforeApp = DateTime.Now - System.Diagnostics.Process.GetCurrentProcess().StartTime;
+        var startup = System.Diagnostics.Stopwatch.StartNew();
+
         _services = new AppServices();
+        var servicesMs = startup.ElapsedMilliseconds;
 
         // The language has to be known before any text is made.
         L.Current = L.Resolve(_services.Settings.Language, CultureInfo.CurrentUICulture);
 
         _viewModel = new MainViewModel(_services);
+        var pagesMs = startup.ElapsedMilliseconds - servicesMs;
 
         // A screenshot run leaves the size and the tray to the open app.
         var screenshot = e.Args is ["--screenshot", ..];
@@ -103,6 +110,16 @@ public partial class App : Application
         // Started at sign-in ("--tray"): it waits in the tray, and the window opens from there.
         var inTray = !screenshot && e.Args.Contains(RunKeyStartupRegistration.TrayArgument);
         var window = inTray ? null : OpenWindow(keepPlacement: !screenshot);
+        var windowMs = startup.ElapsedMilliseconds - servicesMs - pagesMs;
+
+        void LogStartup(string end) => AppLog.Info(
+            $"Started: .NET {(long)beforeApp.TotalMilliseconds} ms, services {servicesMs} ms, pages {pagesMs} ms, " +
+            $"window {windowMs} ms, {end} {(long)(beforeApp.TotalMilliseconds + startup.ElapsedMilliseconds)} ms after launch.");
+
+        if (window is null)
+            LogStartup("in the tray");
+        else
+            window.ContentRendered += (_, _) => LogStartup("drawn");
 
         _ = _viewModel.Performance.StartAsync();
         _viewModel.Device.Start();
