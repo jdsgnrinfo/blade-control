@@ -85,7 +85,10 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     private readonly ColorProfileService _colors = new(new WindowsGammaRamps());
     private readonly FullscreenGuard _fullscreenGuard = new(new WindowsFullscreenDetector());
     private readonly DispatcherTimer _retryTimer = new() { Interval = TimeSpan.FromSeconds(10) };
-    private readonly DispatcherTimer _reapplyTimer = new() { Interval = TimeSpan.FromMilliseconds(1500) };
+    private static readonly TimeSpan FirstReapply = TimeSpan.FromMilliseconds(1500);
+    private static readonly TimeSpan SecondReapply = TimeSpan.FromMilliseconds(2500);
+    private readonly DispatcherTimer _reapplyTimer = new() { Interval = FirstReapply };
+    private readonly DisplayStateWatcher _screenWatcher = new();
     private readonly int _fastHz;
     private Task _rateChange = Task.CompletedTask;
     private DisplayRefreshMode? _selected;
@@ -123,14 +126,38 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
                 _ = ApplyRateTargetAsync();
         };
 
-        // Windows may reset the screens' ramps a moment after waking or a change of screen.
+        // Windows may reset the screens' ramps a moment after waking, a change of
+        // screen or the screen coming back on; it can do it again a little later,
+        // so the profile goes back on twice: after 1.5 seconds and after 4.
         _reapplyTimer.Tick += (_, _) =>
         {
-            _reapplyTimer.Stop();
             _colors.Reapply();
+
+            if (_reapplyTimer.Interval == SecondReapply)
+            {
+                _reapplyTimer.Stop();
+                _reapplyTimer.Interval = FirstReapply;
+            }
+            else
+            {
+                _reapplyTimer.Interval = SecondReapply;
+            }
         };
         SystemEvents.DisplaySettingsChanged += OnDisplayChanged;
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
+
+        // The screen turned off by the display timeout or a closed lid, and back on:
+        // Windows does not always keep the ramp, and sends no display change for it.
+        _screenWatcher.DisplayChanged += (_, on) =>
+        {
+            if (!on)
+                return;
+
+            if (_colors.Current != ColorProfile.Standard)
+                AppLog.Info($"The screen came back on; color profile {_colors.Current} goes back on.");
+
+            ReapplySoon();
+        };
         _gpuActivityTimer = new PacedTimer(services.PowerSource, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(10));
         _gpuActivityTimer.Tick += (_, _) => _ = ShowGpuActivityAsync();
         services.PowerSource.PowerSourceChanged += (_, _) =>
@@ -623,6 +650,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         SystemEvents.PowerModeChanged -= OnPowerModeChanged;
         _retryTimer.Stop();
         _reapplyTimer.Stop();
+        _screenWatcher.Dispose();
         _gpuActivityTimer.Stop();
 
         // Without the app watching for the monitor to go, the lid gets its own action back.
@@ -748,11 +776,18 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     private void OnDisplayChanged(object? sender, EventArgs e) =>
         Application.Current.Dispatcher.BeginInvoke(() =>
         {
-            _reapplyTimer.Stop();
-            _reapplyTimer.Start();
+            ReapplySoon();
             ShowResolution();
             ShowExternalDisplay();
         });
+
+    // The color profile back on in a moment, then once more (see the reapply timer).
+    private void ReapplySoon()
+    {
+        _reapplyTimer.Stop();
+        _reapplyTimer.Interval = FirstReapply;
+        _reapplyTimer.Start();
+    }
 
     private void OnPowerModeChanged(object? sender, PowerModeChangedEventArgs e)
     {

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- **The color profile comes back when the screen turns back on**: after the
+  display timeout or closing and opening the lid, Windows could leave the
+  screen without the profile while the app still showed it picked. The app
+  now puts it back on 1.5 and 4 seconds after the screen comes on.
+
 ## 0.1.6
 
 - **Fixed: the color profile could be changed only once** after opening the
