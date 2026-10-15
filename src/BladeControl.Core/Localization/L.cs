@@ -602,8 +602,6 @@ internal static class L
         ["Full charge now"] = "Carga completa hoy",
         ["What a full charge holds now, against what it held when new. Batteries lose a little every year."] =
             "Lo que guarda una carga completa hoy frente a cuando era nueva. Las baterías pierden un poco cada año.",
-        ["The charge limit is on the Performance page, under Battery health."] =
-            "El límite de carga está en la página Rendimiento, en Salud de la batería.",
 
         // Apps: a profile for each app or game.
         ["Apps"] = "Apps",

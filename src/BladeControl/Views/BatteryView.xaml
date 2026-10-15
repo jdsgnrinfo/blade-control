@@ -160,9 +160,6 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-
-                <ContentControl Style="{StaticResource NoteBox}" Margin="0,18,0,0"
-                                Content="{ui:T 'The charge limit is on the Performance page, under Battery health.'}" />
             </StackPanel>
         </Border>
     </ui:AdaptiveColumns>
