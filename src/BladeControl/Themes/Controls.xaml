@@ -357,18 +357,23 @@
         </Setter>
     </Style>
 
-    <!-- A performance mode: a tall tile with its icon in a disc above the name. Tag is the icon's geometry. -->
+    <!-- A performance mode: a tall tile with its icon in a disc above the name. Tag is the icon's geometry;
+         Padding shrinks the icon inside its 26 px box, for one that looks bigger than the others. -->
     <Style x:Key="ModeTile" TargetType="RadioButton" BasedOn="{StaticResource Tile}">
         <Setter Property="Height" Value="172" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
                     <StackPanel>
                         <Border Width="60" Height="60" CornerRadius="30" HorizontalAlignment="Center" Margin="0,0,0,14"
                                 Background="#26000000">
-                            <Path Width="26" Height="26" Style="{StaticResource IconPath}"
-                                  Data="{Binding Tag, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                            <Grid Width="26" Height="26">
+                                <Path Style="{StaticResource IconPath}"
+                                      Margin="{Binding Padding, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                      Data="{Binding Tag, RelativeSource={RelativeSource AncestorType=RadioButton}}" />
+                            </Grid>
                         </Border>
                         <TextBlock Text="{Binding}" HorizontalAlignment="Center" />
                     </StackPanel>
