@@ -6,7 +6,7 @@ namespace BladeControl.Core.Services;
 
 /// <summary>
 /// Battery mode's changes to Windows and the keyboard: while it is on and the
-/// laptop runs on battery, the screen at 25% and the keyboard at 10% (never
+/// laptop runs on battery, the screen at 25% and the keyboard at 20% (never
 /// raised), Energy saver on, and transparency, window and pointer shadows and
 /// window contents while dragging off. Plugging in, turning it off or closing
 /// the app puts back what it changed. What it replaced is saved with the
@@ -18,7 +18,7 @@ namespace BladeControl.Core.Services;
 internal sealed class BatteryModeService : IDisposable
 {
     public const int ScreenPercent = 25;
-    public const int KeyboardPercent = 10;
+    public const int KeyboardPercent = 20;
     private const uint EnergySaverAlways = 100;
 
     private readonly IPowerSource _power;

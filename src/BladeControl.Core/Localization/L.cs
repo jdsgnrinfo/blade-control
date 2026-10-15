@@ -529,8 +529,9 @@ internal static class L
 
         // Battery mode.
         ["Battery mode"] = "Modo batería",
-        ["On battery: Silent, the screen at 25% and the keyboard at 10%, Energy saver on, no transparency, window shadows or window contents while dragging, and an offer to close the apps keeping the NVIDIA GPU awake. Plugging in puts everything back."] =
-            "Con batería: Silencio, la pantalla al 25 % y el teclado al 10 %, Ahorro de energía activado, sin transparencias, sombras de ventana ni contenido al arrastrar ventanas, y te ofrece cerrar las apps que mantienen despierta la GPU NVIDIA. Al enchufar, todo vuelve a como estaba.",
+        ["Saves as much as it can on battery; plugging in puts everything back."] = "Ahorra al máximo con batería; al enchufar, todo vuelve a como estaba.",
+        ["On battery: Silent, the screen at 25% and the keyboard at 20%, Energy saver on, no transparency, window shadows or window contents while dragging, and an offer to close the apps keeping the NVIDIA GPU awake. Plugging in puts everything back."] =
+            "Con batería: Silencio, la pantalla al 25 % y el teclado al 20 %, Ahorro de energía activado, sin transparencias, sombras de ventana ni contenido al arrastrar ventanas, y te ofrece cerrar las apps que mantienen despierta la GPU NVIDIA. Al enchufar, todo vuelve a como estaba.",
 
         // Updates.
         ["Updates"] = "Actualizaciones",

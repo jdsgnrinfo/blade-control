@@ -100,8 +100,10 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,24,0">
                             <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Battery mode'}" />
-                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0" TextWrapping="Wrap"
-                                       Text="{ui:T 'On battery: Silent, the screen at 25% and the keyboard at 10%, Energy saver on, no transparency, window shadows or window contents while dragging, and an offer to close the apps keeping the NVIDIA GPU awake. Plugging in puts everything back.'}" />
+                            <!-- One line; everything it does is on the pointer. -->
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0" TextTrimming="CharacterEllipsis"
+                                       Text="{ui:T 'Saves as much as it can on battery; plugging in puts everything back.'}"
+                                       ToolTip="{ui:T 'On battery: Silent, the screen at 25% and the keyboard at 20%, Energy saver on, no transparency, window shadows or window contents while dragging, and an offer to close the apps keeping the NVIDIA GPU awake. Plugging in puts everything back.'}" />
                         </StackPanel>
                         <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding BatteryMode}" />
                     </Grid>
