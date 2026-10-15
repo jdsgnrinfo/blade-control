@@ -73,7 +73,8 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
 
     public string CpuText => Degrees(CpuCelsius);
 
-    public string GpuText => Degrees(GpuCelsius);
+    // An undetected dGPU (asleep, turned off or unread) shows 0° in either unit, not "--".
+    public string GpuText => GpuCelsius is null ? "0°" : Degrees(GpuCelsius);
 
     /// <summary>How far round the ring goes: 0 at 20 °C, full at 100 °C.</summary>
     public double CpuFraction => Fraction(CpuCelsius);
@@ -95,7 +96,7 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
 
     public string CpuAverageText => Degrees(Average(_cpuHistory.Select(sample => sample.Cpu)));
 
-    public string GpuAverageText => Degrees(Average(_gpuHistory.Select(sample => sample.Gpu)));
+    public string GpuAverageText => Average(_gpuHistory.Select(sample => sample.Gpu)) is { } average ? Degrees(average) : "0°";
 
     [ObservableProperty]
     private bool _hasFanSpeeds;
