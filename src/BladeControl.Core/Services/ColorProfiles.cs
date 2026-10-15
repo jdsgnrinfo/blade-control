@@ -41,7 +41,7 @@ internal static class ColorProfiles
         var (red, green, blue) = profile switch
         {
             ColorProfile.Warm => (1.00, 0.86, 0.73),
-            ColorProfile.Cool => (0.85, 0.95, 1.00),
+            ColorProfile.Cool => (0.90, 0.95, 1.00),
             _ => (1.00, 1.00, 1.00)
         };
 
@@ -133,29 +133,11 @@ internal sealed class ColorProfileService(IGammaRamps ramps)
     }
 
     // One of the app's own profiles, left on the screen when it last stopped
-    // without restoring it (a crash, or Windows loading the profile the app
-    // installed as the screen's ICC): the screen's own ramp was the straight one.
-    // Windows rounds a profile's table as it loads it, so close counts.
-    internal static bool IsOurs(ushort[] ramp) =>
+    // without restoring it (a crash, say): the screen's own ramp was the straight one.
+    private static bool IsOurs(ushort[] ramp) =>
         Enum.GetValues<ColorProfile>()
             .Where(profile => profile != ColorProfile.Standard)
-            .Any(profile => IsClose(ColorProfiles.Ramp(profile), ramp));
-
-    private const int RoundingAllowed = 256;
-
-    private static bool IsClose(ushort[] expected, ushort[] actual)
-    {
-        if (expected.Length != actual.Length)
-            return false;
-
-        for (var index = 0; index < expected.Length; index++)
-        {
-            if (Math.Abs(expected[index] - actual[index]) > RoundingAllowed)
-                return false;
-        }
-
-        return true;
-    }
+            .Any(profile => ColorProfiles.Ramp(profile).AsSpan().SequenceEqual(ramp));
 
     /// <summary>Gives every screen the app changed its own ramp back, keeping the chosen profile for next time.</summary>
     public void Restore()

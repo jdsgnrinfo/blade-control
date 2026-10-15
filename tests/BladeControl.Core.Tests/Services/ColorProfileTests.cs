@@ -171,24 +171,6 @@ public sealed class ColorProfileTests
     }
 
     [Fact]
-    public void AProfileWindowsLoadedFromTheAppsIcc_RoundedALittle_IsNotTakenForTheScreensOwn()
-    {
-        var screens = new FakeRamps();
-        var rounded = ColorProfiles.Ramp(ColorProfile.Cool);
-
-        for (var index = 0; index < rounded.Length; index++)
-            rounded[index] = (ushort)Math.Min(ushort.MaxValue, rounded[index] + 64);
-
-        screens.Screens[@"\\.\DISPLAY1"] = rounded;
-        var service = new ColorProfileService(screens);
-
-        service.Apply(ColorProfile.Warm);
-        service.Apply(ColorProfile.Standard);
-
-        Assert.Equal(ColorProfiles.Ramp(ColorProfile.Standard), screens.Screens[@"\\.\DISPLAY1"]);
-    }
-
-    [Fact]
     public void AScreenThatRefuses_IsReported()
     {
         var screens = new FakeRamps { Refuse = true };

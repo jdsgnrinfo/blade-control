@@ -184,29 +184,6 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         AppLog.Info(applied ? $"Color profile: {profile}." : $"Color profile {profile} was not taken by every screen.");
         ProfileStatus = applied ? string.Empty : L.T("This screen does not take it");
         _services.UpdateSettings(settings => settings with { ColorProfile = ColorProfiles.ToSetting(profile) });
-
-        // Also in Windows when that option is on, so the colors stay without the app.
-        if (_services.WindowsColors.Enabled)
-            _ = Task.Run(() => _services.WindowsColors.Apply(profile));
-    }
-
-    /// <summary>
-    /// The option to keep the color profile in Windows was turned on or off:
-    /// the profile goes in, or comes out, and the app sets its colors again,
-    /// since Windows resets the screen's ramp as a profile comes or goes.
-    /// </summary>
-    public async Task OnColorProfileInWindowsChangedAsync(bool on)
-    {
-        _services.WindowsColors.Enabled = on;
-        var saved = ColorProfiles.Parse(_services.Settings.ColorProfile);
-        await Task.Run(() => _services.WindowsColors.Apply(saved));
-        await ReapplyColorsLaterAsync();
-    }
-
-    private async Task ReapplyColorsLaterAsync()
-    {
-        await Task.Delay(700);
-        _colors.Reapply();
     }
 
     // ===== App profiles =====
@@ -602,17 +579,8 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
     public void Restore()
     {
         var profile = ColorProfiles.Parse(_services.Settings.ColorProfile);
-
-        // Windows first, before the app reads the screen's ramp as "how it was": with the option
-        // on, the profile goes in; off, one installed by 0.1.5 comes out and the screen is as it was.
-        var hadOneInWindows = _services.Settings.WindowsColorProfile is not null;
-        _services.WindowsColors.Apply(profile);
         _colors.Apply(profile);
         ShowProfile(profile);
-
-        // Windows resets the screen's ramp a moment after a profile comes out: the colors go back on after it.
-        if (hadOneInWindows && !_services.WindowsColors.Enabled)
-            _ = ReapplyColorsLaterAsync();
 
         var saved = DisplayRefreshMode.Parse(_services.Settings.DisplayMode);
 

@@ -58,8 +58,7 @@ temperaturas.
   teclado que se apaga con la pantalla, por inactividad o con poca batería.
 - **Pantalla**: la frecuencia de actualización de la pantalla interna (Auto
   sigue al cargador), un perfil de color (Estándar, Luz nocturna, Neutro,
-  Contraste) que se instala en Windows como perfil ICC de la pantalla, así que
-  se mantiene sin la app, si hay una pantalla externa
+  Contraste) que se mantiene al cerrar la app, si hay una pantalla externa
   conectada (con la opción de seguir funcionando con la tapa cerrada mientras
   lo está, enchufado) y *Solo gráficos integrados* (ver abajo), con si la GPU
   dedicada está despierta o dormida en ese momento y qué apps la usan.

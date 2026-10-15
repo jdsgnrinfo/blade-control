@@ -3,14 +3,9 @@
 ## Unreleased
 
 - **Fixed: the color profile could be changed only once** after opening the
-  app (seen on a Blade 16 2023). 0.1.5 installed the profile in Windows as
-  the screen's ICC profile, and on some laptops Windows then kept the colors
-  from changing. That is now an option in Settings, Experimental, off by
-  default: the app sets the colors itself, as in 0.1.4, and takes out a
-  profile 0.1.5 installed, putting the screen back as it was.
-- "Standard" no longer brings back a profile Windows had loaded from the
-  app's ICC profile.
-
+  app (seen on a Blade 16 2023). Color profiles work again as in 0.1.4: the
+  app sets them itself and no longer installs them in Windows as ICC
+  profiles. Neutral is back to 90% red.
 - **Razer Blade power plan**: plugged in, the CPU's speed rises as the load
   needs (Ideal) instead of straight to the top (Rocket). A plan installed
   before keeps its old value until it is installed again.

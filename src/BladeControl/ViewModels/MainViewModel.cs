@@ -40,7 +40,6 @@ internal sealed partial class MainViewModel : ObservableObject
             Display.OnBatteryModeChanged();
             _ = services.BatteryMode.SetEnabledAsync(on);
         };
-        Settings.ColorProfileInWindowsChanged += (_, on) => _ = Display.OnColorProfileInWindowsChangedAsync(on);
         Apps = new AppsViewModel(services, Performance, Display, Lighting, Report);
         Device = new DevicePanelViewModel(services);
 

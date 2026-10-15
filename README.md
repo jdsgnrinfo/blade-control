@@ -53,8 +53,8 @@ power plan and temperatures.
 - **Lighting**: keyboard and logo effects, color and brightness, and the
   keyboard going dark with the screen, when idle or on low battery.
 - **Display**: the internal screen's refresh rate (Auto follows the charger),
-  a color profile (Standard, Night light, Neutral, Contrast) installed in
-  Windows as the screen's ICC profile, so it stays without the app, whether an external display is connected (and an
+  a color profile (Standard, Night light, Neutral, Contrast) that stays on
+  after the app closes, whether an external display is connected (and an
   option to keep running with the lid closed while one is, plugged in), and
   *Integrated graphics only* (see below), with whether the dedicated GPU is
   awake or asleep right now and which apps are using it.

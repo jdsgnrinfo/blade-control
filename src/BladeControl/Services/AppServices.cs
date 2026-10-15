@@ -59,16 +59,6 @@ internal sealed class AppServices : IDisposable
             Settings.LidActionBeforeKeepRunning,
             saved => UpdateSettings(settings => settings with { LidActionBeforeKeepRunning = saved }));
 
-        // The Display page's color profile, also kept in Windows as the laptop screen's ICC profile when turned on (Settings, Experimental).
-        WindowsColors = new WindowsColorProfileService(
-            new DisplayColorProfiles(),
-            System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BladeControl", "Color profiles"),
-            Settings.WindowsColorProfile,
-            saved => UpdateSettings(settings => settings with { WindowsColorProfile = saved }))
-        {
-            Enabled = Settings.ColorProfileInWindows
-        };
-
         // Battery mode's Windows and keyboard changes; Silent and the GPU offer are the pages'.
         BatteryMode = new BatteryModeService(
             _powerSource,
@@ -123,8 +113,6 @@ internal sealed class AppServices : IDisposable
     public LidCloseOverride LidClose { get; }
 
     public BatteryModeService BatteryMode { get; }
-
-    public WindowsColorProfileService WindowsColors { get; }
 
     /// <summary>Starting with Windows, through the Run key.</summary>
     public IStartupRegistration StartupRegistration { get; }
