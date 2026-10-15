@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **Razer Blade power plan**: plugged in, the CPU's speed rises as the load
+  needs (Ideal) instead of straight to the top (Rocket). A plan installed
+  before keeps its old value until it is installed again.
+
 ## 0.1.5
 
 - **Color profiles stay without the app**: the profile picked on the Display
