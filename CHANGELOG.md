@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.1.6
 
 - **Fixed: the color profile could be changed only once** after opening the
-  app (seen on a Blade 16 2023). Color profiles work again as in 0.1.4: the
-  app sets them itself and no longer installs them in Windows as ICC
+  app (seen on a Blade 16 2023). Color profiles are handled exactly as in
+  0.1.4: the app sets them itself, they stay on when it closes until Windows
+  resets the screen, and they are no longer installed in Windows as ICC
   profiles. Neutral is back to 90% red.
 - **Razer Blade power plan**: plugged in, the CPU's speed rises as the load
   needs (Ideal) instead of straight to the top (Rocket). A plan installed
