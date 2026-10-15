@@ -156,6 +156,25 @@ internal sealed partial class SettingsViewModel : ObservableObject
         }
     }
 
+    /// <summary>The Display page's color profile also installed in Windows as the screen's ICC profile. Off by default.</summary>
+    public bool ColorProfileInWindows
+    {
+        get => _services.Settings.ColorProfileInWindows;
+        set
+        {
+            if (value == ColorProfileInWindows)
+                return;
+
+            _services.UpdateSettings(settings => settings with { ColorProfileInWindows = value });
+            AppLog.Info($"Keeping the color profile in Windows turned {(value ? "on" : "off")}.");
+            OnPropertyChanged();
+            ColorProfileInWindowsChanged?.Invoke(this, value);
+        }
+    }
+
+    /// <summary>The option above was turned on or off; the Display page puts the profile in Windows or takes it out.</summary>
+    public event EventHandler<bool>? ColorProfileInWindowsChanged;
+
     // ===== Maintenance =====
 
     public string Version { get; } = "Blade Control " + FormatVersion(Assembly.GetEntryAssembly()?.GetName().Version);

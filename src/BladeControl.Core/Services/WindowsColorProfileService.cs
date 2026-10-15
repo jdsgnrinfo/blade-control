@@ -24,14 +24,21 @@ internal sealed class WindowsColorProfileService(
     /// <summary>The file name the app gives a profile in Windows.</summary>
     public static string FileName(ColorProfile profile) => $"Blade Control {profile}.icm";
 
-    /// <summary>Puts <paramref name="profile"/> in Windows for the laptop screen, or for Standard what was there before. False when Windows refused.</summary>
+    /// <summary>
+    /// Whether the profile goes in Windows at all (Settings, Experimental). Off,
+    /// <see cref="Apply"/> only takes out one installed before and puts the screen
+    /// back as it was; the app then sets the colors on the graphics card alone.
+    /// </summary>
+    public bool Enabled { get; set; }
+
+    /// <summary>Puts <paramref name="profile"/> in Windows for the laptop screen, or for Standard (or while off) what was there before. False when Windows refused.</summary>
     public bool Apply(ColorProfile profile)
     {
         lock (_sync)
         {
             try
             {
-                if (profile == ColorProfile.Standard)
+                if (profile == ColorProfile.Standard || !Enabled)
                     RestoreLocked();
                 else
                     InstallLocked(profile);

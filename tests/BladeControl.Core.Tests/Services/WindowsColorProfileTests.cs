@@ -81,7 +81,7 @@ public sealed class WindowsColorProfileServiceTests : IDisposable
     private readonly FakeWindows _windows = new();
     private WindowsColorProfileState? _saved;
 
-    private WindowsColorProfileService Service() => new(_windows, _folder, _saved, state => _saved = state);
+    private WindowsColorProfileService Service(bool enabled = true) => new(_windows, _folder, _saved, state => _saved = state) { Enabled = enabled };
 
     public void Dispose()
     {
@@ -153,6 +153,29 @@ public sealed class WindowsColorProfileServiceTests : IDisposable
     }
 
     [Fact]
+    public void Off_NothingIsInstalled()
+    {
+        Assert.True(Service(enabled: false).Apply(ColorProfile.Warm));
+
+        Assert.Empty(_windows.Installed);
+        Assert.False(_windows.UsesMySettings);
+        Assert.Null(_saved);
+    }
+
+    [Fact]
+    public void Off_AProfileInstalledBefore_ComesOut_AndTheScreenIsAsItWas()
+    {
+        Service().Apply(ColorProfile.Cool);
+
+        Service(enabled: false).Apply(ColorProfile.Cool);
+
+        Assert.Empty(_windows.Installed);
+        Assert.Null(_windows.Default);
+        Assert.False(_windows.UsesMySettings);
+        Assert.Null(_saved);
+    }
+
+    [Fact]
     public void StandardWithNothingInstalled_ChangesNothing()
     {
         _windows.Default = "Other.icm";
@@ -189,8 +212,8 @@ public sealed class WindowsColorProfileUpdateTests : IDisposable
     {
         var windows = new CountingWindows();
         WindowsColorProfileState? saved = null;
-        new WindowsColorProfileService(windows, _folder, saved, state => saved = state).Apply(ColorProfile.Cool);
-        new WindowsColorProfileService(windows, _folder, saved, state => saved = state).Apply(ColorProfile.Cool);
+        new WindowsColorProfileService(windows, _folder, saved, state => saved = state) { Enabled = true }.Apply(ColorProfile.Cool);
+        new WindowsColorProfileService(windows, _folder, saved, state => saved = state) { Enabled = true }.Apply(ColorProfile.Cool);
 
         Assert.Equal(1, windows.Installs);
         Assert.Equal(0, windows.Removes);
@@ -201,13 +224,13 @@ public sealed class WindowsColorProfileUpdateTests : IDisposable
     {
         var windows = new CountingWindows();
         WindowsColorProfileState? saved = null;
-        new WindowsColorProfileService(windows, _folder, saved, state => saved = state).Apply(ColorProfile.Cool);
+        new WindowsColorProfileService(windows, _folder, saved, state => saved = state) { Enabled = true }.Apply(ColorProfile.Cool);
 
         // A copy written by an earlier version, with other values.
         var path = Path.Combine(_folder, WindowsColorProfileService.FileName(ColorProfile.Cool));
         File.WriteAllBytes(path, IccProfile.Build("old", ColorProfiles.Ramp(ColorProfile.Warm), DateTime.Now));
 
-        new WindowsColorProfileService(windows, _folder, saved, state => saved = state).Apply(ColorProfile.Cool);
+        new WindowsColorProfileService(windows, _folder, saved, state => saved = state) { Enabled = true }.Apply(ColorProfile.Cool);
 
         Assert.Equal(2, windows.Installs);
         Assert.Equal(1, windows.Removes);

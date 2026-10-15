@@ -96,7 +96,11 @@ internal sealed record AppSettings(
     // What battery mode replaced, kept until it is put back, even across a restart.
     BatteryModeSaved? BatteryModeSaved = null,
     // The color profile installed in Windows for the laptop screen, and what it replaced.
-    WindowsColorProfileState? WindowsColorProfile = null);
+    WindowsColorProfileState? WindowsColorProfile = null,
+    // Off unless turned on (Settings, Experimental): the Display page's color profile
+    // also installed in Windows as the screen's ICC profile. On some laptops (a Blade 16
+    // 2023) Windows then kept the colors from changing until the app restarted.
+    bool ColorProfileInWindows = false);
 
 /// <summary>The window's position and size in device-independent pixels, and whether it was maximized.</summary>
 internal sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool Maximized);

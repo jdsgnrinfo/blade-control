@@ -527,6 +527,11 @@ internal static class L
             "Blade Control es gratis y lo hago en mi tiempo libre. Si te resulta útil, puedes invitarme un café: me ayuda a seguir mejorándolo.",
         ["Buy me a coffee on PayPal"] = "Invítame un café en PayPal",
 
+        // Color profile in Windows (Settings, Experimental).
+        ["Keep the color profile in Windows"] = "Mantener el perfil de color en Windows",
+        ["Installs the Display page's color profile as the screen's ICC profile, so the colors stay with Blade Control closed. On some laptops the profile then stops changing until the app restarts."] =
+            "Instala el perfil de color de la página Pantalla como perfil ICC de la pantalla, así los colores se mantienen con Blade Control cerrado. En algunos portátiles el perfil deja de cambiar hasta reiniciar la app.",
+
         // Battery mode.
         ["Battery mode"] = "Modo batería",
         ["Saves as much as it can on battery; plugging in puts everything back."] = "Ahorra al máximo con batería; al enchufar, todo vuelve a como estaba.",

@@ -121,6 +121,21 @@
                         </StackPanel>
                         <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding SilentTurnsBoostOff}" />
                     </Grid>
+
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Keep the color profile in Windows'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap"
+                                       Text="{ui:T 'Installs the Display page\'s color profile as the screen\'s ICC profile, so the colors stay with Blade Control closed. On some laptops the profile then stops changing until the app restarts.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding ColorProfileInWindows}" />
+                    </Grid>
                 </StackPanel>
             </Border>
         </StackPanel>
