@@ -37,6 +37,7 @@ internal sealed partial class MainViewModel : ObservableObject
         Performance.BatteryModeChanged += (_, on) =>
         {
             Optimize.OnBatteryModeChanged(on);
+            Display.OnBatteryModeChanged();
             _ = services.BatteryMode.SetEnabledAsync(on);
         };
         Apps = new AppsViewModel(services, Performance, Display, Lighting, Report);

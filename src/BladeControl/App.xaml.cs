@@ -438,6 +438,8 @@ public partial class App : Application
         // Without the app nothing would put the screen, keyboard and Windows' effects back on plugging in.
         if (!restarting && app._services is { } services)
         {
+            app._viewModel?.Display.PutFixedRateBack();
+
             try
             {
                 await services.BatteryMode.RestoreAsync("Blade Control is exiting").WaitAsync(TimeSpan.FromSeconds(5));

@@ -138,6 +138,8 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
             {
                 if (_rateOverride is null && _selected?.IsAuto == true)
                     _ = ApplyAutoAsync();
+                else if (_services.Settings.BatteryMode)
+                    OnBatteryModeChanged(); // A fixed rate gives way to 60 Hz on battery, and comes back.
             });
 
         // A monitor may already be connected, or gone since a lid action was left changed.
@@ -227,6 +229,33 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         return applied;
     }
 
+    /// <summary>
+    /// Battery mode was turned on or off. With a fixed rate picked, it puts the
+    /// screen at 60 Hz on battery, as Auto would, and the picked rate back when
+    /// plugged in; Auto already does both.
+    /// </summary>
+    public void OnBatteryModeChanged()
+    {
+        if (_rateOverride is null && _selected is { IsAuto: false })
+            _ = ApplyRateTargetAsync();
+    }
+
+    /// <summary>As the app exits for good: the fixed rate battery mode replaced with 60 Hz goes back, as nothing would put it back later.</summary>
+    public void PutFixedRateBack()
+    {
+        if (_rateOverride is not null || _selected is not { IsAuto: false, FixedHz: int hz } || BatteryModeRate(hz) == hz)
+            return;
+
+        if (_display.GetInternalDisplayInfo()?.RefreshRateHz != hz && _display.TrySetInternalRefreshRate(hz, out var message) is var applied)
+            AppLog.Info(applied ? $"Refresh rate back to {hz} Hz as Blade Control exits." : $"Refresh rate {hz} Hz not taken on exit: {message}");
+    }
+
+    // A fixed rate, or 60 Hz in its place while battery mode is on and the laptop on battery.
+    private int? BatteryModeRate(int? fixedHz) =>
+        fixedHz is not null && _services.Settings.BatteryMode && _services.PowerSource.IsPluggedIn == false
+            ? DisplayRefreshMode.OnBatteryHz
+            : fixedHz;
+
     // The rate the screen should be at: an app's, else Auto's, else the fixed one picked.
     private async Task<bool> ApplyRateTargetAsync()
     {
@@ -236,7 +265,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
             return RateStatus.Length == 0;
         }
 
-        if ((_rateOverride ?? _selected?.FixedHz) is not int target)
+        if ((_rateOverride ?? BatteryModeRate(_selected?.FixedHz)) is not int target)
             return true;
 
         // Not under a game that already has the screen: tried again when it lets go.
@@ -250,7 +279,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
             return true;
 
         var (applied, message) = await SetRateAsync(target);
-        AppLog.Info(applied ? $"Refresh rate {target} Hz for an app profile." : $"Refresh rate {target} Hz not taken: {message}");
+        AppLog.Info(applied ? $"Refresh rate {target} Hz{(_rateOverride is null ? string.Empty : " for an app profile")}." : $"Refresh rate {target} Hz not taken: {message}");
         ShowResolution();
         return applied;
     }
@@ -561,6 +590,8 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
 
             if (saved.IsAuto)
                 _ = ApplyAutoAsync();
+            else if (_services.Settings.BatteryMode)
+                OnBatteryModeChanged(); // 60 Hz on battery, or the picked rate back after a crash left 60.
         }
         else
         {

@@ -3,7 +3,8 @@
 ## Unreleased
 
 - **Battery mode**, a switch on the Performance page: on battery, Silent,
-  the screen at 25% and the keyboard at 20% (never raised), Windows' Energy
+  the screen at 25% and the keyboard at 20% (never raised), 60 Hz when a
+  fixed refresh rate is picked (Auto already does it), Windows' Energy
   saver on, transparency, window and pointer shadows and window contents
   while dragging off, and an offer to close the apps keeping the NVIDIA GPU
   awake. Plugging in, turning it off or exiting puts everything back; a
