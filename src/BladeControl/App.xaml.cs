@@ -69,6 +69,10 @@ public partial class App : Application
         }
 
         AppLog.Info("Blade Control starting.");
+
+        // The files an update replaced, kept as ".old" while the previous copy ran.
+        if (System.IO.Path.GetDirectoryName(Environment.ProcessPath) is { } appFolder)
+            _ = Task.Run(() => UpdateInstaller.CleanUp(appFolder));
         // Every error nobody caught goes to the log; the user hears of it once.
         var errors = new UnhandledExceptionHandler(AppLog.Error, message => UI.Dialogs.Tell(message, "Blade Control"), AppLog.LogFilePath);
         DispatcherUnhandledException += (_, args) =>
@@ -176,6 +180,16 @@ public partial class App : Application
         _tray.OpenRequested += (_, _) => ShowMainWindow();
         _tray.MenuRequested += (_, _) => TrayMenuWindow.ShowAtPointer(ShowMainWindow, Quit, TrayModes());
         _viewModel!.Performance.ModeChanged += (_, mode) => Dispatcher.BeginInvoke(() => _tray?.ShowMode(mode));
+
+        // A newer version found on its own: a Windows notice, which opens Settings.
+        _viewModel.Settings.Updates.Found += (_, version) =>
+            _tray?.ShowNotice(L.F("Blade Control {0} is available", version), L.T("Open Settings to update."));
+        _tray.NoticeClicked += (_, _) =>
+        {
+            ShowMainWindow();
+            _viewModel.Page = AppPage.Settings;
+        };
+        _viewModel.Settings.Updates.Start();
 
         _showWindow = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
         _showWindowWait = ThreadPool.RegisterWaitForSingleObject(_showWindow, (_, _) => Dispatcher.BeginInvoke(ShowMainWindow), null, Timeout.Infinite, executeOnlyOnce: false);

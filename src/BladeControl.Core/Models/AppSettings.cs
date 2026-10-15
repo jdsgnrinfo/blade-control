@@ -84,7 +84,12 @@ internal sealed record AppSettings(
     SavedPlanValue? LidActionBeforeKeepRunning = null,
     // On unless the user turns it off: the Performance page's system monitor
     // (CPU, GPU and RAM). Off, its card goes and nothing is read for it.
-    bool SystemMonitor = true);
+    bool SystemMonitor = true,
+    // On unless the user turns it off: a look at GitHub for a newer version at
+    // startup and once a day.
+    bool CheckForUpdates = true,
+    // A version the user chose to skip ("0.1.5"): it is not offered again, a later one is.
+    string? SkippedUpdate = null);
 
 /// <summary>The window's position and size in device-independent pixels, and whether it was maximized.</summary>
 internal sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool Maximized);

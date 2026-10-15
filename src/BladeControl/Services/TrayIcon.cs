@@ -73,6 +73,19 @@ internal sealed class TrayIcon : IDisposable
         return power is null ? text : $"{text}\n{power}";
     }
 
+    /// <summary>The notice Windows showed for a new version was clicked.</summary>
+    public event EventHandler? NoticeClicked;
+
+    /// <summary>A Windows notice from the icon, for a newer version: a click on it raises <see cref="NoticeClicked"/>.</summary>
+    public void ShowNotice(string title, string text)
+    {
+        _icon.BalloonTipClicked -= OnNoticeClicked;
+        _icon.BalloonTipClicked += OnNoticeClicked;
+        _icon.ShowBalloonTip(8000, title, text, Forms.ToolTipIcon.None);
+    }
+
+    private void OnNoticeClicked(object? sender, EventArgs e) => NoticeClicked?.Invoke(this, EventArgs.Empty);
+
     /// <summary>The hover text names the mode; the logo stays as it is.</summary>
     public void ShowMode(PerformanceMode? mode)
     {

@@ -16,6 +16,10 @@ internal static class ExternalLinks
 
     public static void OpenProjectPage() => Open(ProjectUrl);
 
+    /// <summary>A release's page; anything not under this project's releases opens the list of releases instead.</summary>
+    public static void OpenReleasePage(string? url) =>
+        Open(url is not null && url.StartsWith(ProjectUrl + "/releases", StringComparison.OrdinalIgnoreCase) ? url : ProjectUrl + "/releases");
+
     /// <summary>The author's PayPal.me page, for anyone who wants to buy them a coffee.</summary>
     public const string DonationUrl = "https://paypal.me/jotica96";
 

@@ -85,7 +85,13 @@
                 <Button Style="{StaticResource IconButton}" Content="{StaticResource Icon.Refresh}" Command="{Binding RefreshCommand}"
                         ToolTip="{ui:T 'Read the laptop again'}" />
                 <RadioButton Style="{StaticResource IconTab}" Margin="6,0,0,0" IsChecked="{Binding IsSettings}" ToolTip="{ui:T 'Settings'}">
-                    <TextBlock Text="&#xE713;" FontFamily="{StaticResource Font.Symbols}" FontSize="12" />
+                    <!-- A green dot at the gear's corner while a newer version is offered. -->
+                    <Grid>
+                        <TextBlock Text="&#xE713;" FontFamily="{StaticResource Font.Symbols}" FontSize="12" />
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource Brush.Accent}" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                 Margin="0,-3,-5,0" IsHitTestVisible="False"
+                                 Visibility="{Binding Settings.Updates.HasUpdate, Converter={StaticResource Visible}}" />
+                    </Grid>
                 </RadioButton>
             </StackPanel>
         </Grid>

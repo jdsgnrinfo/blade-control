@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **Updates from the app**: Blade Control looks on GitHub for a newer version
+  10 seconds after starting and once a day (Settings, General turns it off),
+  and Settings has a button to look now. A newer version puts a green dot on
+  the Settings button and shows a Windows notice. Update downloads the
+  portable zip, checks it against its published SHA-256, puts it in the app's
+  folder and restarts; settings and profiles stay. Where the app cannot
+  update itself (a folder it may not write to, or any failure), the release's
+  page opens to download it by hand. A version can be skipped.
+
 - **Performance modes in the tray menu**: Silent, Balanced and Custom, with a
   check on the one in use, switched as the mode shortcuts switch them and with
   the same notice. Custom is greyed out on battery. The menu's text is 12 px.

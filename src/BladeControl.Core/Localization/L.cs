@@ -526,6 +526,38 @@ internal static class L
         ["Blade Control is free and made in my spare time. If it is useful to you, you can buy me a coffee: it helps me keep improving it."] =
             "Blade Control es gratis y lo hago en mi tiempo libre. Si te resulta útil, puedes invitarme un café: me ayuda a seguir mejorándolo.",
         ["Buy me a coffee on PayPal"] = "Invítame un café en PayPal",
+
+        // Updates.
+        ["Updates"] = "Actualizaciones",
+        ["Update"] = "Actualizar",
+        ["Check now"] = "Comprobar",
+        ["Checking..."] = "Comprobando...",
+        ["What is new"] = "Novedades",
+        ["Skip this version"] = "Omitir esta versión",
+        ["Not checked yet."] = "Aún no se ha comprobado.",
+        ["Automatic checking is off."] = "La comprobación automática está desactivada.",
+        ["Check for updates automatically"] = "Buscar actualizaciones automáticamente",
+        ["Looks on GitHub for a newer version when Blade Control starts and once a day. Nothing is downloaded until you choose to update."] =
+            "Busca en GitHub una versión más nueva al abrir Blade Control y una vez al día. No se descarga nada hasta que eliges actualizar.",
+        ["Version {0} was skipped. Check now to see it again."] = "Omitiste la versión {0}. Pulsa Comprobar para verla de nuevo.",
+        ["Could not reach GitHub to check. Is the PC online?"] = "No se pudo conectar con GitHub para comprobarlo. ¿Hay conexión a internet?",
+        ["Blade Control {0} is available"] = "Blade Control {0} está disponible",
+        ["You have {0}. Update downloads it, checks it and restarts Blade Control; your settings stay."] =
+            "Tienes la {0}. Actualizar la descarga, la verifica y reinicia Blade Control; tus ajustes se mantienen.",
+        ["Blade Control {0} is the latest version. Checked at {1}."] = "Blade Control {0} es la última versión. Comprobado a las {1}.",
+        ["Blade Control cannot update this copy by itself. Its page on GitHub opens now: download the zip of version {0} and replace this folder with it. Your settings stay."] =
+            "Blade Control no puede actualizar esta copia por sí sola. Ahora se abre su página en GitHub: descarga el zip de la versión {0} y reemplaza esta carpeta con él. Tus ajustes se mantienen.",
+        ["Update Blade Control"] = "Actualizar Blade Control",
+        ["Update to Blade Control {0}?"] = "¿Actualizar a Blade Control {0}?",
+        ["Update to Blade Control {0}? It downloads {1}."] = "¿Actualizar a Blade Control {0}? Se descargan {1}.",
+        ["Blade Control restarts when it is done. Your settings and profiles stay."] = "Blade Control se reinicia al terminar. Tus ajustes y perfiles se mantienen.",
+        ["Downloading... {0}%"] = "Descargando... {0}%",
+        ["The update could not be installed. Its page on GitHub is open to download it by hand."] =
+            "No se pudo instalar la actualización. Se abrió su página en GitHub para descargarla a mano.",
+        ["Updated. Restarting..."] = "Actualizado. Reiniciando...",
+        ["Blade Control was updated but could not restart itself. Please close it and open it again."] =
+            "Blade Control se actualizó pero no pudo reiniciarse. Ciérralo y vuelve a abrirlo.",
+        ["Open Settings to update."] = "Abre Ajustes para actualizar.",
         ["General"] = "General",
         ["Opens Blade Control when you sign in to Windows."] = "Abre Blade Control al iniciar sesión en Windows.",
         ["Keeps the window above other windows and games."] = "Mantiene la ventana por encima de otras ventanas y juegos.",

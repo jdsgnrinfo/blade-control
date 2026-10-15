@@ -31,12 +31,16 @@ internal sealed partial class SettingsViewModel : ObservableObject
         _services = services;
         _report = report;
         Monitor = monitor;
+        Updates = new UpdatesViewModel(services);
         _languageIndex = Array.IndexOf(Languages, L.Current);
         _startAtLogin = ReadStartAtLogin();
     }
 
     /// <summary>The system monitor, for its switch (bound to <see cref="SystemMonitorViewModel.IsEnabled"/>).</summary>
     public SystemMonitorViewModel Monitor { get; }
+
+    /// <summary>Looking for and installing a newer Blade Control.</summary>
+    public UpdatesViewModel Updates { get; }
 
     // ===== General =====
 

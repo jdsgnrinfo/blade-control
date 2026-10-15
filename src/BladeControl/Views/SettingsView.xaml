@@ -84,6 +84,21 @@
                         </StackPanel>
                         <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding ProfileShortcuts}" />
                     </Grid>
+
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Check for updates automatically'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap"
+                                       Text="{ui:T 'Looks on GitHub for a newer version when Blade Control starts and once a day. Nothing is downloaded until you choose to update.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding Updates.IsEnabled}" />
+                    </Grid>
                 </StackPanel>
             </Border>
 
@@ -118,7 +133,36 @@
                     <Grid Margin="0,0,0,12" MinHeight="34">
                         <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Maintenance'}" VerticalAlignment="Center" />
                     </Grid>
-    
+
+                    <!-- Updates: the version in use, or the newer one with Update, its page and Skip. -->
+                    <Grid Margin="0,6" DataContext="{Binding Updates}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{Binding Title}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap" Text="{Binding StatusText}" />
+                            <TextBlock Margin="0,8,0,0" FontSize="13" HorizontalAlignment="Left"
+                                       Visibility="{Binding HasUpdate, Converter={StaticResource Visible}}">
+                                <Hyperlink Style="{StaticResource NoteLink}" Command="{Binding OpenPageCommand}"><Run Text="{ui:T 'What is new'}" /></Hyperlink>
+                                <Run Text="   " />
+                                <Hyperlink Style="{StaticResource NoteLink}" Command="{Binding SkipCommand}"><Run Text="{ui:T 'Skip this version'}" /></Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                        <Grid Grid.Column="1" VerticalAlignment="Center" MinWidth="92">
+                            <Grid Visibility="{Binding IsBusy, Converter={StaticResource Hidden}}">
+                                <Button Style="{StaticResource ActionButton}" Content="{ui:T 'Check now'}" Command="{Binding CheckNowCommand}"
+                                        Visibility="{Binding HasUpdate, Converter={StaticResource Hidden}}" />
+                                <Button Style="{StaticResource ActionButton}" Content="{ui:T 'Update'}" Command="{Binding UpdateCommand}"
+                                        Visibility="{Binding HasUpdate, Converter={StaticResource Visible}}" />
+                            </Grid>
+                            <ui:MorphLoader Status="{Binding Status}" Visibility="{Binding IsBusy, Converter={StaticResource Visible}}" />
+                        </Grid>
+                    </Grid>
+
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+
                     <Grid Margin="0,6">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
