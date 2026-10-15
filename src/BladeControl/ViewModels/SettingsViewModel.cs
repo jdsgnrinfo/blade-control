@@ -273,6 +273,7 @@ internal sealed partial class SettingsViewModel : ObservableObject
         // away and the lid action the lid option changed come back.
         _services.SilentBoost.Restore();
         _services.LidClose.Restore();
+        await _services.BatteryMode.RestoreAsync("of a reset");
 
         var result = await _services.FactoryReset.RunAsync(_services.Settings);
 
@@ -287,7 +288,7 @@ internal sealed partial class SettingsViewModel : ObservableObject
     {
         if (AppRestart.Relaunch())
         {
-            App.Quit();
+            App.QuitForRestart();
             return;
         }
 

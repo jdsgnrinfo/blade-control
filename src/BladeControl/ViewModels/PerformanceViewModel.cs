@@ -173,6 +173,34 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Battery mode: on battery the laptop goes to Silent, whatever the battery
+    /// profile says, and the rest (screen, keyboard, Windows' effects, Energy
+    /// saver, the GPU offer) follows through <see cref="BatteryModeChanged"/>.
+    /// Plugging in applies the plugged-in profile again.
+    /// </summary>
+    public bool BatteryMode
+    {
+        get => _services.Settings.BatteryMode;
+        set
+        {
+            if (value == BatteryMode)
+                return;
+
+            _services.UpdateSettings(settings => settings with { BatteryMode = value });
+            AppLog.Info($"Battery mode turned {(value ? "on" : "off")}.");
+            OnPropertyChanged();
+            BatteryModeChanged?.Invoke(this, value);
+
+            // On battery now: Silent at once, or the battery profile back.
+            if (!IsPluggedIn && _appOverride is null)
+                _ = ApplyActiveProfileAsync();
+        }
+    }
+
+    /// <summary>Battery mode was turned on or off.</summary>
+    public event EventHandler<bool>? BatteryModeChanged;
+
     // ===== Battery health =====
 
     /// <summary>The controller really applies a charge limit (some older firmware only pretends to).</summary>
@@ -445,6 +473,10 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     {
         var own = _profiles[pluggedIn];
 
+        // Battery mode puts Silent in place of the battery profile's mode.
+        if (!pluggedIn && BatteryMode && !_unsupportedModes.Contains(PerformanceMode.Silent))
+            own = PowerProfileRules.Sanitize(own with { Mode = PerformanceMode.Silent }, pluggedIn: false);
+
         if (_appOverride?.Profile is not { Mode: { } mode } wanted)
             return (own, null);
 
@@ -500,7 +532,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         OnPropertyChanged(nameof(IsPluggedIn));
         RefreshAll();
 
-        if (AutoSwitchProfiles && IsPluggedIn != _appliedSource)
+        if ((AutoSwitchProfiles || BatteryMode) && IsPluggedIn != _appliedSource)
             _ = ApplyActiveProfileAsync();
         else if (!IsPluggedIn && _state.MaxFan == true)
             _ = SetMaxFanAsync(false); // Max is a plugged-in setting.
@@ -610,7 +642,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         {
             _reapplyRequested = false;
 
-            if (AutoSwitchProfiles && IsPluggedIn != _appliedSource)
+            if ((AutoSwitchProfiles || BatteryMode) && IsPluggedIn != _appliedSource)
                 await ApplyActiveProfileAsync();
             else if (_services.Performance.FollowsPowerSource && _state.Mode is PerformanceMode.Silent or PerformanceMode.Balanced)
                 await KeepModeAsync(_state.Mode.Value);

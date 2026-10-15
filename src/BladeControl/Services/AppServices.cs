@@ -59,6 +59,18 @@ internal sealed class AppServices : IDisposable
             Settings.LidActionBeforeKeepRunning,
             saved => UpdateSettings(settings => settings with { LidActionBeforeKeepRunning = saved }));
 
+        // Battery mode's Windows and keyboard changes; Silent and the GPU offer are the pages'.
+        BatteryMode = new BatteryModeService(
+            _powerSource,
+            new WindowsVisualEffects(),
+            new WindowsScreenBrightness(),
+            PowerPlanValue.EnergySaverThreshold(),
+            async () => Model is null ? null : await Lighting.ReadKeyboardBrightnessAsync(),
+            percent => Lighting.SetKeyboardBrightnessAsync(percent),
+            Settings.BatteryMode,
+            Settings.BatteryModeSaved,
+            saved => UpdateSettings(settings => settings with { BatteryModeSaved = saved }));
+
         StartupRegistration = new RunKeyStartupRegistration(Environment.ProcessPath ?? string.Empty);
         RazerSoftware = new RazerSoftwareManager(
             new RazerServiceManager(new WindowsServiceControl()),
@@ -100,6 +112,8 @@ internal sealed class AppServices : IDisposable
 
     public LidCloseOverride LidClose { get; }
 
+    public BatteryModeService BatteryMode { get; }
+
     /// <summary>Starting with Windows, through the Run key.</summary>
     public IStartupRegistration StartupRegistration { get; }
 
@@ -109,14 +123,21 @@ internal sealed class AppServices : IDisposable
     public FactoryReset FactoryReset { get; }
 
     /// <summary>Changes the settings and writes them to disk straight away.</summary>
+    // Battery mode saves from Windows' power events, off the interface thread.
+    private readonly Lock _settingsSync = new();
+
     public void UpdateSettings(Func<AppSettings, AppSettings> edit)
     {
-        Settings = edit(Settings);
-        _settingsService.Save(Settings);
+        lock (_settingsSync)
+        {
+            Settings = edit(Settings);
+            _settingsService.Save(Settings);
+        }
     }
 
     public void Dispose()
     {
+        BatteryMode.Dispose();
         _powerSource.Dispose();
         _transport.Dispose();
     }

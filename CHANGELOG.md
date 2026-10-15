@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- **Battery mode**, a switch on the Performance page: on battery, Silent,
+  the screen at 25% and the keyboard at 10% (never raised), Windows' Energy
+  saver on, transparency, window and pointer shadows and window contents
+  while dragging off, and an offer to close the apps keeping the NVIDIA GPU
+  awake. Plugging in, turning it off or exiting puts everything back; a
+  level changed by hand meanwhile stays as you set it, and what a crash left
+  is put back at the next start.
+
 - **Updates from the app**: Blade Control looks on GitHub for a newer version
   10 seconds after starting and once a day (Settings, General turns it off),
   and Settings has a button to look now. A newer version puts a green dot on

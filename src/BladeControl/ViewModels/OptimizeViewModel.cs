@@ -57,7 +57,7 @@ internal sealed partial class OptimizeViewModel : ObservableObject, IDisposable
             ConfirmCloseGpuAppsAsync,
             apps => closer.Close(apps, _services.Settings.NeverCloseApps))
         {
-            Enabled = services.Settings.CloseGpuAppsOnUnplug
+            Enabled = services.Settings.CloseGpuAppsOnUnplug || services.Settings.BatteryMode
         };
     }
 
@@ -84,10 +84,13 @@ internal sealed partial class OptimizeViewModel : ObservableObject, IDisposable
                 return;
 
             _services.UpdateSettings(settings => settings with { CloseGpuAppsOnUnplug = value });
-            _gpu.Enabled = value;
+            _gpu.Enabled = value || _services.Settings.BatteryMode;
             OnPropertyChanged();
         }
     }
+
+    /// <summary>Battery mode was turned on or off: it offers to close the GPU's apps on unplugging too.</summary>
+    public void OnBatteryModeChanged(bool on) => _gpu.Enabled = on || CloseGpuAppsOnUnplug;
 
     // ===== Page =====
 

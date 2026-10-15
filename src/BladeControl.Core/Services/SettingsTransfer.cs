@@ -85,7 +85,9 @@ internal static class SettingsTransfer
             PlanBeforeIdle = current.PlanBeforeIdle,
             LidActionBeforeKeepRunning = current.LidActionBeforeKeepRunning,
             WindowScale = current.WindowScale,
-            Window = current.Window
+            Window = current.Window,
+            BatteryModeSaved = current.BatteryModeSaved,
+            SkippedUpdate = current.SkippedUpdate
         };
 
         error = null;
@@ -110,6 +112,8 @@ internal static class SettingsTransfer
             Window = null,
             PerformanceMode = null,
             CustomCpuBoost = null,
-            CustomGpuBoost = null
+            CustomGpuBoost = null,
+            BatteryModeSaved = null,
+            SkippedUpdate = null
         };
 }

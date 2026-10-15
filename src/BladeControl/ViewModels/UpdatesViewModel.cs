@@ -225,7 +225,7 @@ internal sealed partial class UpdatesViewModel : ObservableObject
 
         if (AppRestart.Relaunch())
         {
-            App.Quit();
+            App.QuitForRestart();
             return;
         }
 

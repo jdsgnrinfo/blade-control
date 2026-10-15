@@ -91,6 +91,20 @@
                         </StackPanel>
                         <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding AutoSwitchProfiles}" />
                     </Grid>
+
+                    <!-- Battery mode: on battery, everything that saves power at once; plugged in, all back. -->
+                    <Grid Margin="0,24,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0">
+                            <TextBlock Style="{StaticResource Text.Body}" Text="{ui:T 'Battery mode'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,6,0,0" TextWrapping="Wrap"
+                                       Text="{ui:T 'On battery: Silent, the screen at 25% and the keyboard at 10%, Energy saver on, no transparency, window shadows or window contents while dragging, and an offer to close the apps keeping the NVIDIA GPU awake. Plugging in puts everything back.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding BatteryMode}" />
+                    </Grid>
                 </StackPanel>
             </Border>
 

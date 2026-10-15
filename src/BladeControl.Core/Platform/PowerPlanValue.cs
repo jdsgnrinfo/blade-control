@@ -31,6 +31,12 @@ internal sealed class PowerPlanValue(Guid group, Guid setting, params Guid[] als
     public static PowerPlanValue EfficiencyPreference() =>
         new(ProcessorGroup, new Guid("36687f9e-e3a5-4dbf-b1dc-15eb381c6863"), new Guid("36687f9e-e3a5-4dbf-b1dc-15eb381c6864"));
 
+    // GUID_ENERGY_SAVER_SUBGROUP.
+    private static readonly Guid EnergySaverGroup = new("de830923-a562-41af-a086-e3a2c6bad2da");
+
+    /// <summary>The battery level, 0 to 100, under which Energy saver turns on by itself: 100 keeps it on all the time on battery.</summary>
+    public static PowerPlanValue EnergySaverThreshold() => new(EnergySaverGroup, new Guid("e69653ca-cf7f-4f05-aa73-cb833fa90ad4"));
+
     /// <summary>What closing the lid does: 0 nothing, 1 sleep, 2 hibernate, 3 shut down.</summary>
     public static PowerPlanValue LidAction() => new(ButtonsGroup, new Guid("5ca83367-6e45-459f-a27b-476b1d01c936"));
 

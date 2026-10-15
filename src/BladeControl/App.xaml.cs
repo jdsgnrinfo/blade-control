@@ -142,6 +142,9 @@ public partial class App : Application
         {
             _viewModel.Display.Restore();
 
+            // Battery mode on battery, or what a previous run left put back.
+            _ = _services.BatteryMode.StartAsync();
+
             // Then the apps with a profile are watched for, on top of what was just put back.
             _viewModel.Apps.Start();
         }
@@ -406,7 +409,12 @@ public partial class App : Application
     }
 
     /// <summary>Ends the app: Exit in the tray menu, or a restart. The window closes for good and the tray icon goes.</summary>
-    public static async void Quit()
+    public static void Quit() => QuitAsync(restarting: false);
+
+    /// <summary>Ends the app for a new copy that starts now: battery mode stays as it is, for the new copy to carry on.</summary>
+    public static void QuitForRestart() => QuitAsync(restarting: true);
+
+    private static async void QuitAsync(bool restarting)
     {
         if (Current is not App app || app._quitting)
             return;
@@ -424,6 +432,19 @@ public partial class App : Application
             catch (Exception exception)
             {
                 AppLog.Error("Could not put back what an app profile changed before exiting.", exception);
+            }
+        }
+
+        // Without the app nothing would put the screen, keyboard and Windows' effects back on plugging in.
+        if (!restarting && app._services is { } services)
+        {
+            try
+            {
+                await services.BatteryMode.RestoreAsync("Blade Control is exiting").WaitAsync(TimeSpan.FromSeconds(5));
+            }
+            catch (Exception exception)
+            {
+                AppLog.Error("Could not put back what battery mode changed before exiting.", exception);
             }
         }
 

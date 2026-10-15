@@ -89,7 +89,12 @@ internal sealed record AppSettings(
     // startup and once a day.
     bool CheckForUpdates = true,
     // A version the user chose to skip ("0.1.5"): it is not offered again, a later one is.
-    string? SkippedUpdate = null);
+    string? SkippedUpdate = null,
+    // Off unless the user turns it on: on battery, Silent, a dim screen and
+    // keyboard, Energy saver and fewer visual effects; all back when plugged in.
+    bool BatteryMode = false,
+    // What battery mode replaced, kept until it is put back, even across a restart.
+    BatteryModeSaved? BatteryModeSaved = null);
 
 /// <summary>The window's position and size in device-independent pixels, and whether it was maximized.</summary>
 internal sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool Maximized);
