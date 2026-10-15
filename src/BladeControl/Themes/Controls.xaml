@@ -737,40 +737,7 @@
         </Setter>
     </Style>
 
-    <!-- A green arc going round, for as long as a job runs. -->
-    <Style x:Key="Spinner" TargetType="Path">
-        <Setter Property="Width" Value="22" />
-        <Setter Property="Height" Value="22" />
-        <Setter Property="Stretch" Value="Uniform" />
-        <Setter Property="Data" Value="M11,2 A9,9 0 1 1 2,11" />
-        <Setter Property="Stroke" Value="{StaticResource Brush.Accent}" />
-        <Setter Property="StrokeThickness" Value="2.4" />
-        <Setter Property="StrokeStartLineCap" Value="Round" />
-        <Setter Property="StrokeEndLineCap" Value="Round" />
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-        <Setter Property="RenderTransform">
-            <Setter.Value>
-                <RotateTransform />
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsVisible" Value="True">
-                <Trigger.EnterActions>
-                    <BeginStoryboard x:Name="Spin">
-                        <Storyboard>
-                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
-                                             From="0" To="360" Duration="0:0:0.9" RepeatBehavior="Forever" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </Trigger.EnterActions>
-                <Trigger.ExitActions>
-                    <StopStoryboard BeginStoryboardName="Spin" />
-                </Trigger.ExitActions>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <!-- An ActionRow: its title and the line under it, and its button, which gives way to the spinner while it works. -->
+    <!-- An ActionRow: its title and the line under it, and its button, which gives way to the loader while it works. -->
     <DataTemplate x:Key="ActionRowTemplate">
         <Grid Margin="0,6">
             <Grid.ColumnDefinitions>
@@ -784,7 +751,7 @@
             <Grid Grid.Column="1" VerticalAlignment="Center" MinWidth="92">
                 <Button Style="{StaticResource ActionButton}" Content="{Binding ButtonText}" Command="{Binding RunCommand}"
                         Visibility="{Binding IsBusy, Converter={StaticResource Hidden}}" />
-                <Path Style="{StaticResource Spinner}" Visibility="{Binding IsBusy, Converter={StaticResource Visible}}" />
+                <ui:MorphLoader Status="{Binding Status}" Visibility="{Binding IsBusy, Converter={StaticResource Visible}}" />
             </Grid>
         </Grid>
     </DataTemplate>

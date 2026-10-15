@@ -136,8 +136,8 @@
                             Content="{ui:T 'Find a program...'}" Command="{Binding BrowseCommand}" />
                 </Grid>
 
-                <Path Style="{StaticResource Spinner}" HorizontalAlignment="Center" Margin="0,12"
-                      Visibility="{Binding Scanning, Converter={StaticResource Visible}}" />
+                <ui:MorphLoader HorizontalAlignment="Center" Margin="0,12"
+                                Visibility="{Binding Scanning, Converter={StaticResource Visible}}" />
 
                 <!-- Its own scroll, so the settings at the right stay in view. -->
                 <ListBox x:Name="AppList" ItemsSource="{Binding AppsView}" SelectedItem="{Binding Selected}" ItemContainerStyle="{StaticResource AppItem}"

@@ -118,6 +118,7 @@ internal sealed partial class OptimizeViewModel : ObservableObject, IDisposable
         {
             AppLog.Error("Could not free up memory.", exception);
             Memory.Hint = L.T("Could not free up memory.");
+            Memory.Fail();
         }
     }
 
@@ -176,7 +177,10 @@ internal sealed partial class OptimizeViewModel : ObservableObject, IDisposable
                 MessageBoxButton.YesNoCancel);
 
             if (answer == MessageBoxResult.Cancel)
+            {
+                TemporaryFiles.Skip();
                 return;
+            }
 
             emptyBin = answer == MessageBoxResult.Yes;
         }
@@ -212,6 +216,7 @@ internal sealed partial class OptimizeViewModel : ObservableObject, IDisposable
         {
             AppLog.Error("Could not clean the temporary files.", exception);
             TemporaryFiles.Hint = L.T("Could not clean the temporary files.");
+            TemporaryFiles.Fail();
         }
 
         // Nothing is left to clean until the next scan.
@@ -257,6 +262,7 @@ internal sealed partial class OptimizeViewModel : ObservableObject, IDisposable
         {
             AppLog.Error("Could not clear the NVIDIA shader cache.", exception);
             ShaderCache.Hint = L.T("Could not clear the shader cache.");
+            ShaderCache.Fail();
         }
 
         ShaderCache.CanRun = false;
@@ -267,6 +273,12 @@ internal sealed partial class OptimizeViewModel : ObservableObject, IDisposable
     private async Task FreeUpGpuAsync()
     {
         var outcome = await _gpu.FreeUpAsync();
+
+        // Only closing apps earns the check; anything that left them open ends without a mark.
+        if (outcome == DgpuFreeUpOutcome.Failed)
+            FreeUpGpu.Fail();
+        else if (outcome != DgpuFreeUpOutcome.Closed)
+            FreeUpGpu.Skip();
 
         if (DgpuText.DescribeOutcome(outcome) is { } message)
             Dialogs.Tell(message, L.T("Free up GPU"));
@@ -382,19 +394,30 @@ internal sealed partial class OptimizeViewModel : ObservableObject, IDisposable
     private async Task StopOrStartRazerAsync()
     {
         if (_razerStatus is not { } status)
+        {
+            RazerSoftware.Skip();
             return;
+        }
 
         try
         {
             var outcome = status.NeedsStop ? await StopRazerAsync(status) : await StartRazerAsync(status);
 
-            if (outcome is { } message)
+            if (outcome is not { } message)
+                RazerSoftware.Skip();
+            else
+            {
                 _report(message.Text, message.IsError);
+
+                if (message.IsError)
+                    RazerSoftware.Fail();
+            }
         }
         catch (Exception exception)
         {
             AppLog.Error("Changing the Razer software failed.", exception);
             _report(L.T("Could not change the Razer software."), true);
+            RazerSoftware.Fail();
         }
 
         await ReadRazerSoftwareAsync();

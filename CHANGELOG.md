@@ -11,6 +11,9 @@
   (about 180 MB), but the download barely changes (75 MB against 69).
 - **A minimized window counts as in the tray**: sensors stop being read and
   its RAM goes back to Windows (from about 300 MB to 30).
+- **New loader**: three green dots bouncing in a wave instead of the turning
+  arc. On the Optimize page, when a job ends they turn into a green check, or
+  a red cross if it failed, for a moment before the button comes back.
 - **Pages switch at once**: they no longer fade in and rise when opened.
 - The log records how long each part of starting took, and the memory left
   each time the app releases it.
