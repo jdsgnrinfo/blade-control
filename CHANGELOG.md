@@ -6,7 +6,7 @@
   app (seen on a Blade 16 2023). Color profiles are handled exactly as in
   0.1.4: the app sets them itself, they stay on when it closes until Windows
   resets the screen, and they are no longer installed in Windows as ICC
-  profiles. Neutral is back to 90% red.
+  profiles. Neutral takes a little more red off: 85% instead of 90%.
 - **Razer Blade power plan**: plugged in, the CPU's speed rises as the load
   needs (Ideal) instead of straight to the top (Rocket). A plan installed
   before keeps its old value until it is installed again.

@@ -41,7 +41,7 @@ internal static class ColorProfiles
         var (red, green, blue) = profile switch
         {
             ColorProfile.Warm => (1.00, 0.86, 0.73),
-            ColorProfile.Cool => (0.90, 0.95, 1.00),
+            ColorProfile.Cool => (0.85, 0.95, 1.00),
             _ => (1.00, 1.00, 1.00)
         };
 
