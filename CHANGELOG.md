@@ -11,6 +11,7 @@
   (about 180 MB), but the download barely changes (75 MB against 69).
 - **A minimized window counts as in the tray**: sensors stop being read and
   its RAM goes back to Windows (from about 300 MB to 30).
+- **Pages switch at once**: they no longer fade in and rise when opened.
 - The log records how long each part of starting took, and the memory left
   each time the app releases it.
 
