@@ -22,7 +22,8 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
     private static readonly TimeSpan AverageWindow = TimeSpan.FromHours(1);
 
     private readonly AppServices _services;
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1) };
+    // Every second plugged in, every five on battery.
+    private readonly PacedTimer _timer;
     private readonly Queue<(DateTime At, double Cpu)> _cpuHistory = new();
     private readonly Queue<(DateTime At, double Gpu)> _gpuHistory = new();
     private bool _reading;
@@ -30,6 +31,7 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
     public DevicePanelViewModel(AppServices services)
     {
         _services = services;
+        _timer = new PacedTimer(services.PowerSource, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
 
         var (title, subtitle) = SplitName(services.Model?.Name);
         ModelTitle = title;

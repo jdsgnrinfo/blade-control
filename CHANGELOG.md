@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **Fewer sensor reads on battery**: the device panel reads every 5 seconds
+  instead of every second, the system monitor every 3, the Battery page every
+  5, the Display page's GPU line every 10, the app profiles' watch every 5 and
+  Silent's checks every 10. Plugged in, nothing changes. With the Performance
+  page open on battery, the app went from about 15% of a core to 4.5%.
 - **System monitor switch**: Settings, General turns the Performance page's
   system monitor off; its card goes and nothing is read for it.
 - **The Performance page no longer keeps the NVIDIA GPU awake.** Its system

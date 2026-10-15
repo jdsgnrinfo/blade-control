@@ -84,7 +84,8 @@ internal sealed partial class LightingViewModel : ObservableObject
     private readonly Action<string, bool> _report;
     private readonly bool _offersColor;
     private readonly DispatcherTimer _lightsOffTimer = new() { Interval = TimeSpan.FromSeconds(1) };
-    private readonly DispatcherTimer _brightnessWatch = new() { Interval = TimeSpan.FromSeconds(1) };
+    // Every second plugged in, every three on battery.
+    private readonly PacedTimer _brightnessWatch;
     private readonly DisplayStateWatcher _displayWatcher = new();
     private bool _busy;
     private (Func<Task> Change, string FailureMessage, bool ReadBack)? _queued;
@@ -97,6 +98,7 @@ internal sealed partial class LightingViewModel : ObservableObject
     {
         _services = services;
         _report = report;
+        _brightnessWatch = new PacedTimer(services.PowerSource, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(3));
         _offersColor = services.Model?.HasKeyboardColor == true;
 
         // Wave only where the keyboard has zones to move across.

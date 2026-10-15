@@ -21,7 +21,8 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     private readonly Action<string, bool> _report;
     private readonly Dictionary<bool, PowerProfile> _profiles;
     private readonly HashSet<PerformanceMode> _unsupportedModes = [];
-    private readonly DispatcherTimer _silentTimer = new() { Interval = TimeSpan.FromSeconds(2) };
+    // Every two seconds plugged in, every ten on battery.
+    private readonly PacedTimer _silentTimer;
     private PerformanceState _state = PerformanceState.Unknown;
     private bool? _appliedSource;
     private bool _busy;
@@ -33,6 +34,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     {
         _services = services;
         _report = report;
+        _silentTimer = new PacedTimer(services.PowerSource, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10));
         Monitor = new SystemMonitorViewModel(services);
 
         _profiles = new Dictionary<bool, PowerProfile>

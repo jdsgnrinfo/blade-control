@@ -46,7 +46,8 @@ internal sealed class SystemMonitorViewModel : ObservableObject, IDisposable
     private readonly AppServices _services;
     private readonly CpuStatsReader _cpuReader = new();
     private readonly GpuStatsReader _gpuReader = new();
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1) };
+    // Every second plugged in, every three on battery.
+    private readonly PacedTimer _timer;
     private Task _read = Task.CompletedTask;
     private int? _memoryMhz;
     private bool _memoryMhzRead;
@@ -54,6 +55,7 @@ internal sealed class SystemMonitorViewModel : ObservableObject, IDisposable
     public SystemMonitorViewModel(AppServices services)
     {
         _services = services;
+        _timer = new PacedTimer(services.PowerSource, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(3));
         Gauges =
         [
             new UsageGauge("CPU", L.T("Temperature"), L.T("Frequency")),

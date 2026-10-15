@@ -125,7 +125,8 @@ internal sealed partial class AppsViewModel : ObservableObject
     // Game mode's hold on the keyboard, while an app whose profile asks for it runs.
     private readonly GameModeHook _gameMode = new();
     private readonly Action<string, bool> _report;
-    private readonly DispatcherTimer _watch = new() { Interval = TimeSpan.FromSeconds(2) };
+    // Every two seconds plugged in, every five on battery: a profile comes on a few seconds after its app starts.
+    private readonly PacedTimer _watch;
     private readonly RunningPrograms _programs = new();
     private readonly KeyboardEffect?[] _effects;
     private readonly int?[] _rates;
@@ -150,6 +151,7 @@ internal sealed partial class AppsViewModel : ObservableObject
         _display = display;
         _lighting = lighting;
         _report = report;
+        _watch = new PacedTimer(services.PowerSource, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(5));
 
         foreach (var profile in services.Settings.AppProfiles ?? [])
             _profiles[profile.Path] = profile;

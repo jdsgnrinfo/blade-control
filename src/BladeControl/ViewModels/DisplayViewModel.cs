@@ -131,6 +131,7 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
         };
         SystemEvents.DisplaySettingsChanged += OnDisplayChanged;
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
+        _gpuActivityTimer = new PacedTimer(services.PowerSource, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(10));
         _gpuActivityTimer.Tick += (_, _) => _ = ShowGpuActivityAsync();
         services.PowerSource.PowerSourceChanged += (_, _) =>
             Application.Current.Dispatcher.BeginInvoke(() =>
@@ -371,7 +372,8 @@ internal sealed partial class DisplayViewModel : ObservableObject, IDisposable
 
     // ===== What the dedicated GPU is doing =====
 
-    private readonly DispatcherTimer _gpuActivityTimer = new() { Interval = TimeSpan.FromSeconds(3) };
+    // Every three seconds plugged in, every ten on battery.
+    private readonly PacedTimer _gpuActivityTimer;
     private bool _readingGpuActivity;
     private bool _gpuActivityProblemLogged;
 

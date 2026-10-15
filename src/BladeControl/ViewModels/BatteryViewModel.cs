@@ -31,7 +31,8 @@ internal sealed record BatteryFigure(string Name, string Value, string? Caption)
 internal sealed partial class BatteryViewModel : ObservableObject
 {
     private readonly AppServices _services;
-    private readonly DispatcherTimer _readTimer = new() { Interval = TimeSpan.FromSeconds(2) };
+    // Every two seconds plugged in, every five on battery.
+    private readonly PacedTimer _readTimer;
     private readonly DispatcherTimer _dayTimer = new() { Interval = TimeSpan.FromMinutes(1) };
     private BatteryDetails? _battery;
     private bool _reading;
@@ -40,6 +41,7 @@ internal sealed partial class BatteryViewModel : ObservableObject
     public BatteryViewModel(AppServices services)
     {
         _services = services;
+        _readTimer = new PacedTimer(services.PowerSource, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(5));
 
         _readTimer.Tick += async (_, _) => await ReadAsync();
         _dayTimer.Tick += async (_, _) => await ReadDayAsync();
