@@ -10,7 +10,8 @@
         <!-- An item: white words, a fill across the whole width under the pointer. -->
         <Style x:Key="TrayItem" TargetType="Button">
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="14.7" />
+            <!-- 16 px: Titillium draws smaller than Windows' own menu font at the same size. -->
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -18,7 +19,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Back" Background="Transparent" Padding="12,7,32,8">
+                        <Border x:Name="Back" Background="Transparent" Padding="14,8,36,9">
                             <ContentPresenter VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -40,7 +41,7 @@
         <Border.Effect>
             <DropShadowEffect BlurRadius="14" ShadowDepth="3" Opacity="0.45" />
         </Border.Effect>
-        <StackPanel x:Name="Items" MinWidth="170">
+        <StackPanel x:Name="Items" MinWidth="185">
             <Button Style="{StaticResource TrayItem}" Content="{ui:T 'Open Blade Control'}" Click="Open_Click" />
             <Border Height="1" Margin="8,3" Background="#FF2E2E2E" />
             <Button Style="{StaticResource TrayItem}" Content="{ui:T 'Exit'}" Click="Exit_Click" />
