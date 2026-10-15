@@ -197,8 +197,9 @@
             <Grid>
                 <!-- Nothing picked. -->
                 <StackPanel Visibility="{Binding ShowsEditor, Converter={StaticResource Hidden}}" Margin="0,40" HorizontalAlignment="Center">
-                    <TextBlock Text="&#xE71D;" FontFamily="{StaticResource Font.Symbols}" FontSize="26" HorizontalAlignment="Center"
-                               Foreground="{StaticResource Brush.TextMuted}" />
+                    <!-- Boxicons' category-alt (bx-category-alt), drawn on a 24 grid. -->
+                    <Path Width="20" Height="20" Stretch="Uniform" HorizontalAlignment="Center" Fill="{StaticResource Brush.Accent}"
+                          Data="M4 11h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1zm1-6h4v4H5V5zm15-2h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zm-1 6h-4V5h4v4zm-9 12a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6zm-5-6h4v4H5v-4zm13-2c-2.206 0-4 1.794-4 4s1.794 4 4 4 4-1.794 4-4-1.794-4-4-4zm0 6c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2z" />
                     <TextBlock Text="{ui:T 'No app'}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,16,0,0" />
                     <TextBlock Style="{StaticResource Text.Hint}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,6,0,0" MaxWidth="280"
                                Text="{ui:T 'Pick an app in the list to choose what changes while it runs.'}" />
