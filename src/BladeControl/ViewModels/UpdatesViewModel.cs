@@ -160,7 +160,7 @@ internal sealed partial class UpdatesViewModel : ObservableObject
         else
         {
             Title = L.T("Updates");
-            StatusText = L.F("Blade Control {0} is the latest version. Checked at {1}.", _current.ToString(3), DateTime.Now.ToString("t"));
+            StatusText = L.F("Blade Control {0} is the latest version. Checked at {1}.", _current.ToString(3), DateTime.Now.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture));
         }
     }
 
