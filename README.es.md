@@ -44,6 +44,11 @@ temperaturas.
   Windows, que es lo que hace silencioso a un Blade 15 Base (2020);
   Equilibrado y Personalizado lo devuelven. Un interruptor experimental en
   Ajustes lo desactiva.
+- **Modo batería**: un interruptor, y con batería el portátil pasa a
+  Silencio, la pantalla al 25 % y a 60 Hz, el teclado al 20 %, el Ahorro de
+  energía de Windows se activa y se quitan las transparencias y las sombras
+  de ventana, y te ofrece cerrar las apps que mantienen despierta la GPU
+  NVIDIA. Al enchufar, todo vuelve a como estaba.
 - **Apps**: un perfil para cada juego o app (modo, ventiladores, frecuencia,
   colores de pantalla, iluminación del teclado y modo juego, que bloquea la
   tecla Windows y, si se elige, Alt+Tab y Alt+F4) que se aplica mientras está
@@ -53,7 +58,8 @@ temperaturas.
   teclado que se apaga con la pantalla, por inactividad o con poca batería.
 - **Pantalla**: la frecuencia de actualización de la pantalla interna (Auto
   sigue al cargador), un perfil de color (Estándar, Luz nocturna, Neutro,
-  Contraste) que se mantiene al cerrar la app, si hay una pantalla externa
+  Contraste) que se instala en Windows como perfil ICC de la pantalla, así que
+  se mantiene sin la app, si hay una pantalla externa
   conectada (con la opción de seguir funcionando con la tapa cerrada mientras
   lo está, enchufado) y *Solo gráficos integrados* (ver abajo), con si la GPU
   dedicada está despierta o dormida en ese momento y qué apps la usan.
@@ -70,8 +76,11 @@ temperaturas.
   portátil; oculto con batería) y las temperaturas de CPU y GPU (azul, que pasa
   a rojo por encima de 60 °C) con la media de la última hora.
 - **Bandeja del sistema**: al cerrar la ventana la app sigue en la bandeja; un
-  clic en su icono la abre otra vez y Salir en su menú la cierra. Puede
-  iniciarse con Windows.
+  clic en su icono la abre otra vez, y su menú cambia el modo de rendimiento
+  o la cierra. Puede iniciarse con Windows.
+- **Actualizaciones**: la app busca en GitHub una versión más nueva una vez al
+  día y se actualiza con un clic: descarga la release, comprueba su SHA-256 y
+  se reinicia, conservando tus ajustes. Se puede desactivar en Ajustes.
 - **Atajos**, desde cualquier app o juego: **Fn+Supr** muestra u oculta la
   ventana, y **Ctrl+Shift+F1 / F2 / F3** cambian a Silencio, Equilibrado y
   Personalizado, con un pequeño aviso arriba a la derecha que nunca quita el

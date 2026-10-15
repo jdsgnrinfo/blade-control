@@ -41,6 +41,10 @@ power plan and temperatures.
 - **Silent really is quiet**: Silent also turns Windows' CPU boost off, which
   is what quiets a Blade 15 Base (2020); Balanced and Custom give it back.
   An experimental switch in Settings turns this off.
+- **Battery mode**: one switch, and on battery the laptop goes to Silent, the
+  screen to 25% and 60 Hz, the keyboard to 20%, Windows' Energy saver on, and
+  transparency and window shadows off, with an offer to close the apps
+  keeping the NVIDIA GPU awake. Plugging in puts everything back.
 - **Apps**: a profile for each game or app (mode, fans, refresh rate, screen
   colors, keyboard lighting and game mode, which blocks the Windows key and
   optionally Alt+Tab and Alt+F4) that goes on while it runs and is undone when
@@ -49,8 +53,8 @@ power plan and temperatures.
 - **Lighting**: keyboard and logo effects, color and brightness, and the
   keyboard going dark with the screen, when idle or on low battery.
 - **Display**: the internal screen's refresh rate (Auto follows the charger),
-  a color profile (Standard, Night light, Neutral, Contrast) that stays on
-  after the app closes, whether an external display is connected (and an
+  a color profile (Standard, Night light, Neutral, Contrast) installed in
+  Windows as the screen's ICC profile, so it stays without the app, whether an external display is connected (and an
   option to keep running with the lid closed while one is, plugged in), and
   *Integrated graphics only* (see below), with whether the dedicated GPU is
   awake or asleep right now and which apps are using it.
@@ -65,7 +69,11 @@ power plan and temperatures.
   its watts, or the laptop's own; hidden on battery), and CPU and GPU
   temperatures (blue, turning red past 60 °C) with the last hour's average.
 - **Tray**: closing the window keeps the app in the tray; a click on its icon
-  opens it again, and Exit in its menu ends it. It can start with Windows.
+  opens it again, and its menu switches the performance mode or ends the
+  app. It can start with Windows.
+- **Updates**: the app looks on GitHub for a newer version once a day, and
+  updates itself in one click: it downloads the release, checks its SHA-256
+  and restarts, keeping your settings. It can be turned off in Settings.
 - **Shortcuts**, from any app or game: **Fn+Del** shows or hides the window,
   and **Ctrl+Shift+F1 / F2 / F3** switch to Silent, Balanced and Custom, with a
   small notice at the top right that never takes the focus. The mode

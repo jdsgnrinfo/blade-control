@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.5
 
 - **Color profiles stay without the app**: the profile picked on the Display
   page (Night light, Neutral, Contrast) is also installed in Windows as the
@@ -11,7 +11,6 @@
   while the game runs.
 - **Neutral** takes a little more red off: 85% instead of 90%. A profile
   already in Windows is replaced with the new values.
-
 - **Battery mode**, a switch on the Performance page: on battery, Silent,
   the screen at 25% and the keyboard at 20% (never raised), 60 Hz when a
   fixed refresh rate is picked (Auto already does it), Windows' Energy
@@ -20,7 +19,6 @@
   awake. Plugging in, turning it off or exiting puts everything back; a
   level changed by hand meanwhile stays as you set it, and what a crash left
   is put back at the next start.
-
 - **Updates from the app**: Blade Control looks on GitHub for a newer version
   10 seconds after starting and once a day (Settings, General turns it off),
   and Settings has a button to look now. A newer version puts a green dot on
@@ -29,7 +27,6 @@
   folder and restarts; settings and profiles stay. Where the app cannot
   update itself (a folder it may not write to, or any failure), the release's
   page opens to download it by hand. A version can be skipped.
-
 - **Performance modes in the tray menu**: Silent, Balanced and Custom, with a
   check on the one in use, switched as the mode shortcuts switch them and with
   the same notice. Custom is greyed out on battery. The menu's text is 12 px.
@@ -45,6 +42,11 @@
 - **Pages switch at once**: they no longer fade in and rise when opened.
 - The log records how long each part of starting took, and the memory left
   each time the app releases it.
+- Smaller touches: the GPU temperature shows 0° when it cannot be read, the
+  information notes have a new mark and the GPU switch's warning is part of
+  its note, the tray menu's check and the Apps page's empty state have new
+  icons, Custom's icon is a little smaller, and the Battery page's health
+  card no longer points to the charge limit.
 
 ## 0.1.4
 
