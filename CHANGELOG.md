@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.4
 
 - **Fewer sensor reads on battery**: the device panel reads every 5 seconds
   instead of every second, the system monitor every 3, the Battery page every
