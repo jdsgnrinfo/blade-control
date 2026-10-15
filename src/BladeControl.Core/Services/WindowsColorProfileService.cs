@@ -49,8 +49,15 @@ internal sealed class WindowsColorProfileService(
     private void InstallLocked(ColorProfile profile)
     {
         var name = FileName(profile);
+        var ramp = ColorProfiles.Ramp(profile);
+        var path = Path.Combine(folder, name);
 
-        if (_saved?.Installed == name && windows.UsesMySettings && windows.GetDefault() == name)
+        // The copy written last time: the one in Windows, unless a newer version changed the profile's values.
+        var written = File.Exists(path) ? IccProfile.ReadVideoCardGamma(File.ReadAllBytes(path)) : null;
+        var upToDate = written is not null && written.AsSpan().SequenceEqual(ramp);
+        var installed = _saved?.Installed == name;
+
+        if (upToDate && installed && windows.UsesMySettings && windows.GetDefault() == name)
             return;
 
         // How the screen was before the app's first profile, kept until Standard.
@@ -59,14 +66,18 @@ internal sealed class WindowsColorProfileService(
         if (_saved is null && before.UsedMySettingsBefore)
             before = before with { DefaultBefore = windows.GetDefault() };
 
+        // Changed values: the old copy leaves Windows' folder first, as installing does not replace a file.
+        if (installed && !upToDate)
+            windows.Remove(name);
+
         Directory.CreateDirectory(folder);
-        var path = Path.Combine(folder, name);
-        File.WriteAllBytes(path, IccProfile.Build($"Blade Control {profile}", ColorProfiles.Ramp(profile), DateTime.Now));
+        File.WriteAllBytes(path, IccProfile.Build($"Blade Control {profile}", ramp, DateTime.Now));
+
         try
         {
             windows.Install(path);
         }
-        catch (System.ComponentModel.Win32Exception) when (_saved?.Installed == name)
+        catch (System.ComponentModel.Win32Exception) when (installed && upToDate)
         {
             // Already in Windows' color folder from before; it only needs to be the default again.
         }

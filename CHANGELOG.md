@@ -9,6 +9,8 @@
   it out and puts back the screen's profile from before. No administrator
   permission is needed. A game's colors from an app profile still last only
   while the game runs.
+- **Neutral** takes a little more red off: 85% instead of 90%. A profile
+  already in Windows is replaced with the new values.
 
 - **Battery mode**, a switch on the Performance page: on battery, Silent,
   the screen at 25% and the keyboard at 20% (never raised), 60 Hz when a

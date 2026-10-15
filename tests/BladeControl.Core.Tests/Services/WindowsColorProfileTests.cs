@@ -161,3 +161,57 @@ public sealed class WindowsColorProfileServiceTests : IDisposable
         Assert.Equal("Other.icm", _windows.Default);
     }
 }
+
+public sealed class WindowsColorProfileUpdateTests : IDisposable
+{
+    private readonly string _folder = Path.Combine(Path.GetTempPath(), "bc-icc-update-" + Guid.NewGuid().ToString("N"));
+
+    public void Dispose()
+    {
+        if (Directory.Exists(_folder))
+            Directory.Delete(_folder, recursive: true);
+    }
+
+    private sealed class CountingWindows : IDisplayColorProfiles
+    {
+        public bool UsesMySettings { get; set; }
+        public string? Default { get; set; }
+        public int Installs { get; private set; }
+        public int Removes { get; private set; }
+        public string? GetDefault() => Default;
+        public string Install(string path) { Installs++; return Path.GetFileName(path); }
+        public void SetDefault(string name) => Default = name;
+        public void Remove(string name) { Removes++; if (Default == name) Default = null; }
+    }
+
+    [Fact]
+    public void TheSameValues_AreNotInstalledAgain()
+    {
+        var windows = new CountingWindows();
+        WindowsColorProfileState? saved = null;
+        new WindowsColorProfileService(windows, _folder, saved, state => saved = state).Apply(ColorProfile.Cool);
+        new WindowsColorProfileService(windows, _folder, saved, state => saved = state).Apply(ColorProfile.Cool);
+
+        Assert.Equal(1, windows.Installs);
+        Assert.Equal(0, windows.Removes);
+    }
+
+    [Fact]
+    public void ChangedValues_ReplaceTheCopyInWindows()
+    {
+        var windows = new CountingWindows();
+        WindowsColorProfileState? saved = null;
+        new WindowsColorProfileService(windows, _folder, saved, state => saved = state).Apply(ColorProfile.Cool);
+
+        // A copy written by an earlier version, with other values.
+        var path = Path.Combine(_folder, WindowsColorProfileService.FileName(ColorProfile.Cool));
+        File.WriteAllBytes(path, IccProfile.Build("old", ColorProfiles.Ramp(ColorProfile.Warm), DateTime.Now));
+
+        new WindowsColorProfileService(windows, _folder, saved, state => saved = state).Apply(ColorProfile.Cool);
+
+        Assert.Equal(2, windows.Installs);
+        Assert.Equal(1, windows.Removes);
+        Assert.Equal(ColorProfiles.Ramp(ColorProfile.Cool), IccProfile.ReadVideoCardGamma(File.ReadAllBytes(path)));
+        Assert.Equal(WindowsColorProfileService.FileName(ColorProfile.Cool), windows.Default);
+    }
+}
