@@ -87,6 +87,10 @@ public partial class TrayMenuWindow : Window
         scale.BeginAnimation(ScaleTransform.ScaleYProperty, new DoubleAnimation(1, length) { EasingFunction = ease });
     }
 
+    // Boxicons' check (bx-check), drawn on a 24 grid.
+    private static readonly Geometry Check = Geometry.Parse(
+        "M10,15.586 L6.707,12.293 L5.293,13.707 L10,18.414 L19.707,8.707 L18.293,7.293 Z");
+
     // The modes at the top, each with a green check when it is the one in use,
     // then a line before Open and Exit.
     private void AddModes(IReadOnlyList<TrayMenuMode> modes)
@@ -101,12 +105,16 @@ public partial class TrayMenuWindow : Window
         {
             var mode = modes[index];
             var row = new System.Windows.Controls.DockPanel();
-            var check = new System.Windows.Controls.TextBlock
+            var check = new System.Windows.Shapes.Path
             {
-                Text = mode.Current ? "✓" : string.Empty,
-                Foreground = accent,
-                Width = 16,
-                Margin = new Thickness(-18, 0, 2, 0)
+                Data = Check,
+                Fill = accent,
+                Stretch = Stretch.Uniform,
+                Width = 10,
+                Height = 10,
+                VerticalAlignment = VerticalAlignment.Center,
+                Visibility = mode.Current ? Visibility.Visible : Visibility.Hidden,
+                Margin = new Thickness(-18, 0, 8, 0)
             };
             System.Windows.Controls.DockPanel.SetDock(check, System.Windows.Controls.Dock.Left);
             row.Children.Add(check);
