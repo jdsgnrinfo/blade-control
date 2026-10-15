@@ -171,12 +171,10 @@
 
                     <!-- What the switch does and its warnings, hidden until asked for. -->
                     <StackPanel Visibility="{Binding ShowGraphicsInfo, Converter={StaticResource Visible}}">
-                        <ContentControl Style="{StaticResource NoteBox}" Margin="0,16,0,0"
-                                        Content="{ui:T 'On, the dedicated GPU is turned off and everything runs on the integrated one: more battery and less heat. Off, Windows picks the GPU by itself, as usual.'}" />
-
-                        <ContentControl Style="{StaticResource WarningBox}" Margin="0,10,0,0">
+                        <ContentControl Style="{StaticResource NoteBox}" Margin="0,16,0,0">
                             <TextBlock TextWrapping="Wrap" LineHeight="20">
-                                <Run Text="{ui:T 'While it is on:'}" FontWeight="SemiBold" />
+                                <Run Text="{ui:T 'On, the dedicated GPU is turned off and everything runs on the integrated one: more battery and less heat. Off, Windows picks the GPU by itself, as usual.'}" />
+                                <LineBreak /><LineBreak /><Run Text="{ui:T 'While it is on:'}" FontWeight="SemiBold" />
                                 <LineBreak /><Run Text="{ui:T '- The HDMI and USB-C video ports show no picture: they run on the dedicated GPU.'}" />
                                 <LineBreak /><Run Text="{ui:T '- Games and 3D apps run much slower.'}" />
                                 <LineBreak /><Run Text="{ui:T '- It stays on after restarting, until you turn it off. A driver update may turn the GPU back on.'}" />

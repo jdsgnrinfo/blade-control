@@ -84,12 +84,15 @@
         <Setter Property="Margin" Value="0,24" />
     </Style>
 
-    <!-- An explanation in a framed box, with an icon at its left. Tag is the icon's geometry. -->
+    <!--
+        An explanation in a framed box, with an icon at its left. Tag is the icon's geometry, drawn as a line;
+        without one (a plain note) the icon is the information mark: a green disc with a dark exclamation.
+    -->
     <Style x:Key="NoteBox" TargetType="ContentControl">
         <Setter Property="Foreground" Value="{StaticResource Brush.TextSoft}" />
         <Setter Property="Background" Value="{StaticResource Brush.InfoBox}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Line}" />
-        <Setter Property="Tag" Value="{StaticResource Icon.Info}" />
+        <Setter Property="Tag" Value="{x:Null}" />
         <Setter Property="ui:Note.IconBrush" Value="{StaticResource Brush.TextSoft}" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Template">
@@ -102,9 +105,17 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Path Width="18" Height="18" VerticalAlignment="Top" Margin="0,2,14,0" Stretch="Uniform"
+                            <Path x:Name="Mark" Width="18" Height="18" VerticalAlignment="Top" Margin="0,2,14,0" Stretch="Uniform"
                                   Data="{TemplateBinding Tag}" Stroke="{TemplateBinding ui:Note.IconBrush}" StrokeThickness="1.8"
                                   StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                            <!-- The information mark, on a 24 grid. -->
+                            <Viewbox x:Name="InfoMark" Width="18" Height="18" VerticalAlignment="Top" Margin="0,1,14,0" Visibility="Collapsed">
+                                <Canvas Width="24" Height="24">
+                                    <Ellipse Width="24" Height="24" Fill="{StaticResource Brush.Accent}" />
+                                    <Path Fill="{StaticResource Brush.OnAccent}"
+                                          Data="M11,16.5 V14.6606 H13 V16.5 H11 Z M11.188,13.3336 L11.0171,7.5 H13 L12.8291,13.3336 H11.188 Z" />
+                                </Canvas>
+                            </Viewbox>
                             <ContentPresenter Grid.Column="1" VerticalAlignment="Center">
                                 <ContentPresenter.Resources>
                                     <Style TargetType="TextBlock">
@@ -115,6 +126,12 @@
                             </ContentPresenter>
                         </Grid>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Tag" Value="{x:Null}">
+                            <Setter TargetName="Mark" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="InfoMark" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
