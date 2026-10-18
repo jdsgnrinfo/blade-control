@@ -32,7 +32,7 @@
                                      Content="{ui:T 'Silent'}" ToolTip="{ui:T 'Quiet and cool, for light work and battery.'}" IsChecked="{Binding IsSilent}" IsEnabled="{Binding SilentOffered}" />
                         <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="4,0" Tag="{StaticResource Icon.Balanced}"
                                      Content="{ui:T 'Balanced'}" ToolTip="{ui:T 'Good performance with moderate fan noise, for everyday use and games.'}" IsChecked="{Binding IsBalanced}" IsEnabled="{Binding BalancedOffered}" />
-                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="8,0,0,0" Tag="{StaticResource Icon.Custom}" Padding="1.5"
+                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="8,0,0,0" Tag="{StaticResource Icon.Custom}"
                                      Content="{ui:T 'Custom'}" IsChecked="{Binding IsCustom}" IsEnabled="{Binding CustomOffered}"
                                      ToolTipService.ShowOnDisabled="True" ToolTip="{ui:T 'You choose the CPU and GPU levels. Plugged in only.'}" />
                     </UniformGrid>

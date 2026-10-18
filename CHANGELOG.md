@@ -16,6 +16,9 @@
   with the app's version, the laptop, Windows and the BIOS and firmware
   filled in, from a new report form that asks what happened, how to make it
   happen and for the log.
+- New icons for the performance modes: a fan for Silent, a gauge for
+  Balanced and faders for Custom, filled, on the Performance page and in the
+  mode shortcuts' notice.
 
 ## 0.1.6
 
