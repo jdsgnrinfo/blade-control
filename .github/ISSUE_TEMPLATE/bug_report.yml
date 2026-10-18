@@ -1,0 +1,54 @@
+name: Bug report
+description: Something in Blade Control does not work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Settings, Maintenance, Report a bug fills in your laptop and versions below.
+        Gracias por tomarte el tiempo. Puedes escribir en español.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What went wrong, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to make it happen
+      description: What you did before it happened, so it can be tried again.
+      placeholder: |
+        1. Open the Display page
+        2. Pick Night light
+        3. ...
+  - type: input
+    id: version
+    attributes:
+      label: Blade Control version
+      placeholder: "0.1.6"
+    validations:
+      required: true
+  - type: input
+    id: laptop
+    attributes:
+      label: Laptop
+      placeholder: "Razer Blade 15 Base (2020)"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows
+      placeholder: "Windows 11, build 26100"
+  - type: input
+    id: bios
+    attributes:
+      label: BIOS and controller firmware
+      placeholder: "BIOS 01.04, firmware 1.1"
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: Settings, Maintenance, Logs, Open. Drag bladecontrol.log here, or paste the lines from around when it happened.

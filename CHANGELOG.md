@@ -12,6 +12,10 @@
 - **Device panel**: the battery's watts no longer show beside its charge
   (they stay on the tray icon's hover), and the BIOS version shows under the
   firmware, with its date on hover.
+- **Report a bug**, in Settings, Maintenance: opens a bug report on GitHub
+  with the app's version, the laptop, Windows and the BIOS and firmware
+  filled in, from a new report form that asks what happened, how to make it
+  happen and for the log.
 
 ## 0.1.6
 

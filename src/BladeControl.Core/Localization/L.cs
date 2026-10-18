@@ -527,6 +527,12 @@ internal static class L
             "Blade Control es gratis y lo hago en mi tiempo libre. Si te resulta útil, puedes invitarme un café: me ayuda a seguir mejorándolo.",
         ["Buy me a coffee on PayPal"] = "Invítame un café en PayPal",
 
+        // Report a bug (Settings, Maintenance).
+        ["Report a bug"] = "Reportar un error",
+        ["Report"] = "Reportar",
+        ["Opens a report on GitHub with your laptop and versions filled in. Adding the log helps a lot."] =
+            "Abre un reporte en GitHub con tu portátil y las versiones ya rellenados. Adjuntar el log ayuda mucho.",
+
         // Temperatures in the device panel (Settings, Experimental).
         ["Temperatures in the device panel"] = "Temperaturas en el panel del portátil",
         ["The CPU and GPU temperatures with their last hour's average, under the laptop's picture. Off, they are not read."] =

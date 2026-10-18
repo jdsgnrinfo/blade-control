@@ -16,6 +16,22 @@ internal static class ExternalLinks
 
     public static void OpenProjectPage() => Open(ProjectUrl);
 
+    /// <summary>
+    /// A new issue on GitHub from the bug report form, with the fields it knows
+    /// filled in (form field id to value: version, laptop, windows, bios). Only
+    /// what the user sees and can change before sending; nothing personal.
+    /// </summary>
+    internal static string BugReportUrl(IEnumerable<KeyValuePair<string, string?>> fields)
+    {
+        var query = string.Join("&", fields
+            .Where(field => !string.IsNullOrWhiteSpace(field.Value))
+            .Select(field => $"{Uri.EscapeDataString(field.Key)}={Uri.EscapeDataString(field.Value!)}"));
+
+        return $"{ProjectUrl}/issues/new?template=bug_report.yml" + (query.Length > 0 ? "&" + query : string.Empty);
+    }
+
+    public static void OpenBugReport(IEnumerable<KeyValuePair<string, string?>> fields) => Open(BugReportUrl(fields));
+
     /// <summary>A release's page; anything not under this project's releases opens the list of releases instead.</summary>
     public static void OpenReleasePage(string? url) =>
         Open(url is not null && url.StartsWith(ProjectUrl + "/releases", StringComparison.OrdinalIgnoreCase) ? url : ProjectUrl + "/releases");

@@ -173,6 +173,28 @@ internal sealed partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private static void OpenDonation() => ExternalLinks.OpenDonation();
 
+    /// <summary>A new issue on GitHub, with this app's version, the laptop, Windows and the BIOS and firmware filled in.</summary>
+    [RelayCommand]
+    private void ReportBug()
+    {
+        var bios = BiosInfo.Version();
+        var firmware = Device.FirmwareText;
+        var versions = string.Join(", ", new[] { bios is null ? null : $"BIOS {bios}", firmware is null ? null : $"firmware {firmware}" }.OfType<string>());
+
+        ExternalLinks.OpenBugReport(new Dictionary<string, string?>
+        {
+            ["version"] = AppVersion,
+            ["laptop"] = _services.Model?.Name,
+            ["windows"] = WindowsVersionText(Environment.OSVersion.Version),
+            ["bios"] = versions
+        });
+        AppLog.Info("Opened the bug report page.");
+    }
+
+    // "Windows 11, build 26100": Windows 11 still reports itself as 10.0, its builds start at 22000.
+    internal static string WindowsVersionText(Version version) =>
+        $"Windows {(version.Major == 10 && version.Build >= 22000 ? 11 : version.Major)}, build {version.Build}";
+
     private const string SettingsFileFilter = "Blade Control (*.json)|*.json";
 
     /// <summary>Writes the settings to a file the user picks.</summary>
