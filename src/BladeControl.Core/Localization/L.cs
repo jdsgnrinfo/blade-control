@@ -530,8 +530,8 @@ internal static class L
         // Report a bug (Settings, Maintenance).
         ["Report a bug"] = "Reportar un error",
         ["Report"] = "Reportar",
-        ["Opens a report on GitHub with your laptop and versions filled in. Adding the log helps a lot."] =
-            "Abre un reporte en GitHub con tu portátil y las versiones ya rellenados. Adjuntar el log ayuda mucho.",
+        ["Opens a report on GitHub (attaching the log and your exact model helps)."] =
+            "Abre un reporte en GitHub (adjuntar el log y el modelo específico ayuda).",
 
         // Temperatures in the device panel (Settings, Experimental).
         ["Temperatures in the device panel"] = "Temperaturas en el panel del portátil",

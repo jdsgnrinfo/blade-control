@@ -217,7 +217,7 @@
                         <StackPanel Margin="0,0,20,0">
                             <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Report a bug'}" />
                             <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap"
-                                       Text="{ui:T 'Opens a report on GitHub with your laptop and versions filled in. Adding the log helps a lot.'}" />
+                                       Text="{ui:T 'Opens a report on GitHub (attaching the log and your exact model helps).'}" />
                         </StackPanel>
                         <Button Grid.Column="1" Style="{StaticResource ActionButton}" Content="{ui:T 'Report'}" Command="{Binding ReportBugCommand}"
                                 VerticalAlignment="Center" />
