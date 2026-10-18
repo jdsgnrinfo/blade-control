@@ -527,6 +527,11 @@ internal static class L
             "Blade Control es gratis y lo hago en mi tiempo libre. Si te resulta útil, puedes invitarme un café: me ayuda a seguir mejorándolo.",
         ["Buy me a coffee on PayPal"] = "Invítame un café en PayPal",
 
+        // Temperatures in the device panel (Settings, Experimental).
+        ["Temperatures in the device panel"] = "Temperaturas en el panel del portátil",
+        ["The CPU and GPU temperatures with their last hour's average, under the laptop's picture. Off, they are not read."] =
+            "Las temperaturas de la CPU y la GPU con su promedio de la última hora, bajo la foto del portátil. Desactivado, no se leen.",
+
         // Battery mode.
         ["Battery mode"] = "Modo batería",
         ["Saves as much as it can on battery; plugging in puts everything back."] = "Ahorra al máximo con batería; al enchufar, todo vuelve a como estaba.",

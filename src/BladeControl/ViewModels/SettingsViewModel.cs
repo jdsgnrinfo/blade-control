@@ -26,11 +26,12 @@ internal sealed partial class SettingsViewModel : ObservableObject
     private bool _loading;
 
     /// <param name="monitor">The Performance page's system monitor, whose switch is here.</param>
-    public SettingsViewModel(AppServices services, Action<string, bool> report, SystemMonitorViewModel monitor)
+    public SettingsViewModel(AppServices services, Action<string, bool> report, SystemMonitorViewModel monitor, DevicePanelViewModel device)
     {
         _services = services;
         _report = report;
         Monitor = monitor;
+        Device = device;
         Updates = new UpdatesViewModel(services);
         _languageIndex = Array.IndexOf(Languages, L.Current);
         _startAtLogin = ReadStartAtLogin();
@@ -38,6 +39,9 @@ internal sealed partial class SettingsViewModel : ObservableObject
 
     /// <summary>The system monitor, for its switch (bound to <see cref="SystemMonitorViewModel.IsEnabled"/>).</summary>
     public SystemMonitorViewModel Monitor { get; }
+
+    /// <summary>The device panel, for its temperatures switch under Experimental (bound to <see cref="DevicePanelViewModel.ShowTemperatures"/>).</summary>
+    public DevicePanelViewModel Device { get; }
 
     /// <summary>Looking for and installing a newer Blade Control.</summary>
     public UpdatesViewModel Updates { get; }

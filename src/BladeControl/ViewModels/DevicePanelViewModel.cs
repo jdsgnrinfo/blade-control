@@ -71,6 +71,21 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
         set => UseFahrenheit = !value;
     }
 
+    /// <summary>The temperatures section, off unless turned on in Settings, Experimental. Off, nothing is read for it.</summary>
+    public bool ShowTemperatures
+    {
+        get => _services.Settings.ShowTemperatures;
+        set
+        {
+            if (value == ShowTemperatures)
+                return;
+
+            _services.UpdateSettings(settings => settings with { ShowTemperatures = value });
+            AppLog.Info($"The device panel's temperatures turned {(value ? "on" : "off")}.");
+            OnPropertyChanged();
+        }
+    }
+
     public string CpuText => Degrees(CpuCelsius);
 
     // An undetected dGPU (asleep, turned off or unread) shows 0° in either unit, not "--".
@@ -180,10 +195,13 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
             if (askCharger)
                 _chargerReadAt = DateTime.UtcNow;
 
+            // The temperatures are only read while their section shows (Settings, Experimental).
+            var readTemperatures = ShowTemperatures;
+
             var (cpu, gpu, fans, battery, firmware, charger) = await Task.Run(async () =>
             {
-                var ec = Safe("EC temperatures", _services.EcTemperatures.Read);
-                var gpuTemperature = Safe("GPU temperature", _services.GpuTemperature.ReadCelsius) ?? ec?.GpuCelsius;
+                var ec = readTemperatures ? Safe("EC temperatures", _services.EcTemperatures.Read) : null;
+                var gpuTemperature = readTemperatures ? Safe("GPU temperature", _services.GpuTemperature.ReadCelsius) ?? ec?.GpuCelsius : null;
                 var fanReading = HasFanSpeeds ? await _services.FanTelemetry.ReadAsync() : null;
                 var batteryReading = Safe("Battery power", BatteryReader.Read);
                 var firmwareVersion = knowFirmware ? null : Safe("firmware version", _services.FirmwareVersion.Read);
@@ -205,11 +223,14 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
             BatteryPowerText = power?.Value;
             BatteryPowerHint = power?.Caption;
 
-            var now = DateTime.UtcNow;
-            Record(_cpuHistory, now, cpu);
-            Record(_gpuHistory, now, gpu);
-            CpuCelsius = cpu;
-            GpuCelsius = gpu;
+            if (readTemperatures)
+            {
+                var now = DateTime.UtcNow;
+                Record(_cpuHistory, now, cpu);
+                Record(_gpuHistory, now, gpu);
+                CpuCelsius = cpu;
+                GpuCelsius = gpu;
+            }
 
             if (HasFanSpeeds && !_services.FanTelemetry.IsSupported)
                 HasFanSpeeds = false;

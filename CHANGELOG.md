@@ -6,6 +6,9 @@
   display timeout or closing and opening the lid, Windows could leave the
   screen without the profile while the app still showed it picked. The app
   now puts it back on 1.5 and 4 seconds after the screen comes on.
+- **Temperatures in the device panel are now an option**, in Settings,
+  Experimental, off by default. Off, the CPU and GPU temperatures are not
+  shown under the laptop's picture and not read.
 
 ## 0.1.6
 

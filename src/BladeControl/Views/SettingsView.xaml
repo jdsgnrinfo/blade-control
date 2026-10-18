@@ -121,6 +121,21 @@
                         </StackPanel>
                         <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding SilentTurnsBoostOff}" />
                     </Grid>
+
+                    <Border Style="{StaticResource Separator}" Margin="0,12" />
+
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Style="{StaticResource Text.Body}" FontSize="14" Text="{ui:T 'Temperatures in the device panel'}" />
+                            <TextBlock Style="{StaticResource Text.Hint}" Margin="0,4,0,0" TextWrapping="Wrap"
+                                       Text="{ui:T 'The CPU and GPU temperatures with their last hour\'s average, under the laptop\'s picture. Off, they are not read.'}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="1" Style="{StaticResource Switch}" IsChecked="{Binding Device.ShowTemperatures}" />
+                    </Grid>
                 </StackPanel>
             </Border>
         </StackPanel>

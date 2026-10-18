@@ -94,7 +94,10 @@ internal sealed record AppSettings(
     // keyboard, Energy saver and fewer visual effects; all back when plugged in.
     bool BatteryMode = false,
     // What battery mode replaced, kept until it is put back, even across a restart.
-    BatteryModeSaved? BatteryModeSaved = null);
+    BatteryModeSaved? BatteryModeSaved = null,
+    // Off unless turned on (Settings, Experimental): the device panel's CPU and GPU
+    // temperatures. Off, their section goes and nothing is read for it.
+    bool ShowTemperatures = false);
 
 /// <summary>The window's position and size in device-independent pixels, and whether it was maximized.</summary>
 internal sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool Maximized);

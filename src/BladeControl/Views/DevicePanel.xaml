@@ -56,48 +56,50 @@
                     <TextBlock Text="{Binding ChargerText}" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" FontWeight="SemiBold"
                                Foreground="{StaticResource Brush.TextMuted}" />
                 </Grid>
-                <Border Style="{StaticResource Separator}" Margin="0,24" />
             </StackPanel>
 
-            <!-- Temperatures. -->
-            <Grid Margin="0,0,0,18">
-                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Temperatures'}" VerticalAlignment="Center" />
-                <Border Style="{StaticResource SegmentStrip}" Padding="2">
-                    <StackPanel Orientation="Horizontal">
-                        <RadioButton Style="{StaticResource Segment}" GroupName="Unit" Padding="8,2,8,3" Content="&#x00B0;C" IsChecked="{Binding UseCelsius}" />
-                        <RadioButton Style="{StaticResource Segment}" GroupName="Unit" Padding="8,2,8,3" Content="&#x00B0;F" IsChecked="{Binding UseFahrenheit}" />
-                    </StackPanel>
-                </Border>
-            </Grid>
+            <!-- Temperatures: off unless turned on in Settings, Experimental; nothing is read for them while hidden. -->
+            <StackPanel Visibility="{Binding ShowTemperatures, Converter={StaticResource Visible}}">
+                <Border Style="{StaticResource Separator}" Margin="0,24" />
+                <Grid Margin="0,0,0,18">
+                    <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Temperatures'}" VerticalAlignment="Center" />
+                    <Border Style="{StaticResource SegmentStrip}" Padding="2">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Style="{StaticResource Segment}" GroupName="Unit" Padding="8,2,8,3" Content="&#x00B0;C" IsChecked="{Binding UseCelsius}" />
+                            <RadioButton Style="{StaticResource Segment}" GroupName="Unit" Padding="8,2,8,3" Content="&#x00B0;F" IsChecked="{Binding UseFahrenheit}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
-            <UniformGrid Columns="2">
-                <StackPanel>
-                    <Grid Width="80" Height="80">
-                        <ui:RingGauge Fraction="{Binding CpuFraction}" Thickness="7" ArcBrush="{Binding CpuArcStart}" ArcEndBrush="{Binding CpuArcEnd}" TrackBrush="{StaticResource Brush.Tile}" />
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="{Binding CpuText}" FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center" />
-                            <TextBlock Text="CPU" FontSize="11" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
-                        </StackPanel>
-                    </Grid>
-                    <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource Brush.TextMuted}">
-                        <Run Text="{ui:T 'Last 1 h avg.'}" />
-                        <Run Text="{Binding CpuAverageText, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" FontWeight="SemiBold" />
-                    </TextBlock>
-                </StackPanel>
-                <StackPanel>
-                    <Grid Width="80" Height="80">
-                        <ui:RingGauge Fraction="{Binding GpuFraction}" Thickness="7" ArcBrush="{Binding GpuArcStart}" ArcEndBrush="{Binding GpuArcEnd}" TrackBrush="{StaticResource Brush.Tile}" />
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="{Binding GpuText}" FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center" />
-                            <TextBlock Text="GPU" FontSize="11" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
-                        </StackPanel>
-                    </Grid>
-                    <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource Brush.TextMuted}">
-                        <Run Text="{ui:T 'Last 1 h avg.'}" />
-                        <Run Text="{Binding GpuAverageText, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" FontWeight="SemiBold" />
-                    </TextBlock>
-                </StackPanel>
-            </UniformGrid>
+                <UniformGrid Columns="2">
+                    <StackPanel>
+                        <Grid Width="80" Height="80">
+                            <ui:RingGauge Fraction="{Binding CpuFraction}" Thickness="7" ArcBrush="{Binding CpuArcStart}" ArcEndBrush="{Binding CpuArcEnd}" TrackBrush="{StaticResource Brush.Tile}" />
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding CpuText}" FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                <TextBlock Text="CPU" FontSize="11" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource Brush.TextMuted}">
+                            <Run Text="{ui:T 'Last 1 h avg.'}" />
+                            <Run Text="{Binding CpuAverageText, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" FontWeight="SemiBold" />
+                        </TextBlock>
+                    </StackPanel>
+                    <StackPanel>
+                        <Grid Width="80" Height="80">
+                            <ui:RingGauge Fraction="{Binding GpuFraction}" Thickness="7" ArcBrush="{Binding GpuArcStart}" ArcEndBrush="{Binding GpuArcEnd}" TrackBrush="{StaticResource Brush.Tile}" />
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding GpuText}" FontSize="17" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                <TextBlock Text="GPU" FontSize="11" Foreground="{StaticResource Brush.TextMuted}" HorizontalAlignment="Center" Margin="0,-4,0,0" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource Brush.TextMuted}">
+                            <Run Text="{ui:T 'Last 1 h avg.'}" />
+                            <Run Text="{Binding GpuAverageText, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" FontWeight="SemiBold" />
+                        </TextBlock>
+                    </StackPanel>
+                </UniformGrid>
+            </StackPanel>
 
             <!-- Fans, where the controller reports their speed. -->
             <StackPanel Visibility="{Binding HasFanSpeeds, Converter={StaticResource Visible}}">
