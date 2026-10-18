@@ -9,6 +9,9 @@
 - **Temperatures in the device panel are now an option**, in Settings,
   Experimental, off by default. Off, the CPU and GPU temperatures are not
   shown under the laptop's picture and not read.
+- **Device panel**: the battery's watts no longer show beside its charge
+  (they stay on the tray icon's hover), and the BIOS version shows under the
+  firmware, with its date on hover.
 
 ## 0.1.6
 

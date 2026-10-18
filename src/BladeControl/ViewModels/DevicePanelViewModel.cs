@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using BladeControl.Core.Diagnostics;
 using BladeControl.Core.Hardware;
 using BladeControl.Core.Localization;
+using BladeControl.Core.Platform;
 using BladeControl.Core.Services;
 using BladeControl.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -135,16 +136,12 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
 
     public double BatteryFraction => (BatteryPercent ?? 0) / 100.0;
 
-    /// <summary>The power going out of the battery or into it ("12.4 W"), beside the percentage; null without a figure.</summary>
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasBatteryPower))]
-    private string? _batteryPowerText;
+    /// <summary>The BIOS version as Windows recorded it at startup ("01.04"), with its date on hover; null when Windows does not say.</summary>
+    public string? BiosText { get; } = BiosInfo.Version();
 
-    /// <summary>Whether that power is going out ("Using") or in ("Charging"), on hover.</summary>
-    [ObservableProperty]
-    private string? _batteryPowerHint;
+    public string? BiosDate { get; } = BiosInfo.Date();
 
-    public bool HasBatteryPower => BatteryPowerText is not null;
+    public bool HasBios => BiosText is not null;
 
     /// <summary>The controller's firmware version ("1.1"), read once; null until the laptop says.</summary>
     [ObservableProperty]
@@ -198,15 +195,14 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
             // The temperatures are only read while their section shows (Settings, Experimental).
             var readTemperatures = ShowTemperatures;
 
-            var (cpu, gpu, fans, battery, firmware, charger) = await Task.Run(async () =>
+            var (cpu, gpu, fans, firmware, charger) = await Task.Run(async () =>
             {
                 var ec = readTemperatures ? Safe("EC temperatures", _services.EcTemperatures.Read) : null;
                 var gpuTemperature = readTemperatures ? Safe("GPU temperature", _services.GpuTemperature.ReadCelsius) ?? ec?.GpuCelsius : null;
                 var fanReading = HasFanSpeeds ? await _services.FanTelemetry.ReadAsync() : null;
-                var batteryReading = Safe("Battery power", BatteryReader.Read);
                 var firmwareVersion = knowFirmware ? null : Safe("firmware version", _services.FirmwareVersion.Read);
                 var chargerIn = askCharger ? Safe("charger", _services.Charger.Read) : null;
-                return ((double?)ec?.CpuCelsius, gpuTemperature, fanReading, batteryReading, firmwareVersion, chargerIn);
+                return ((double?)ec?.CpuCelsius, gpuTemperature, fanReading, firmwareVersion, chargerIn);
             });
 
             if (firmware is not null)
@@ -218,10 +214,6 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
                 ChargerText = null;
             else if (charger is not null)
                 ChargerText = charger;
-
-            var power = battery is null ? null : BatteryDetailsText.PowerParts(battery);
-            BatteryPowerText = power?.Value;
-            BatteryPowerHint = power?.Caption;
 
             if (readTemperatures)
             {

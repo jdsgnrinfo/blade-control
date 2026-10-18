@@ -62,12 +62,13 @@ power plan and temperatures.
   Windows' own battery report, and the battery's health.
 - **Optimize**: freeing memory, temporary files and the shader cache, the
   apps keeping the dedicated GPU awake, hibernation, and Razer's own software.
-- **Device panel**: the laptop's picture and model, battery and the watts
-  going in or out (also on the tray icon's hover), Windows' power plan
-  (with a "Razer Blade" plan to install: performance plugged in, battery life
-  on battery), the controller's firmware version, the charger in (USB-C and
-  its watts, or the laptop's own; hidden on battery), and CPU and GPU
-  temperatures (blue, turning red past 60 °C) with the last hour's average.
+- **Device panel**: the laptop's picture and model, battery (its watts on
+  the tray icon's hover), Windows' power plan (with a "Razer Blade" plan to
+  install: performance plugged in, battery life on battery), the
+  controller's firmware and the BIOS versions, and the charger in (USB-C and
+  its watts, or the laptop's own; hidden on battery). CPU and GPU
+  temperatures with the last hour's average can be turned on in Settings,
+  Experimental.
 - **Tray**: closing the window keeps the app in the tray; a click on its icon
   opens it again, and its menu switches the performance mode or ends the
   app. It can start with Windows.

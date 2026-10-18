@@ -67,13 +67,13 @@ temperaturas.
 - **Optimizar**: liberar memoria, archivos temporales y la caché de shaders,
   las apps que mantienen despierta la GPU dedicada, la hibernación y el
   software de Razer.
-- **Panel del portátil**: la foto y el modelo, la batería y los vatios que
-  entran o salen (también al pasar el ratón por el icono de la bandeja), el
-  plan de energía de Windows (con un plan "Razer Blade" para instalar:
-  rendimiento enchufado, duración con batería), la versión del firmware del
-  controlador, el cargador conectado (USB-C y sus vatios, o el del propio
-  portátil; oculto con batería) y las temperaturas de CPU y GPU (azul, que pasa
-  a rojo por encima de 60 °C) con la media de la última hora.
+- **Panel del portátil**: la foto y el modelo, la batería (sus vatios al pasar
+  el ratón por el icono de la bandeja), el plan de energía de Windows (con un
+  plan "Razer Blade" para instalar: rendimiento enchufado, duración con
+  batería), las versiones del firmware del controlador y de la BIOS, y el
+  cargador conectado (USB-C y sus vatios, o el del propio portátil; oculto con
+  batería). Las temperaturas de CPU y GPU con la media de la última hora se
+  pueden activar en Ajustes, Experimental.
 - **Bandeja del sistema**: al cerrar la ventana la app sigue en la bandeja; un
   clic en su icono la abre otra vez, y su menú cambia el modo de rendimiento
   o la cierra. Puede iniciarse con Windows.

@@ -2,9 +2,28 @@ using Microsoft.Win32;
 
 namespace BladeControl.Core.Platform;
 
-/// <summary>The BIOS version and date as Windows records them at startup, for the log.</summary>
+/// <summary>The BIOS version and date as Windows records them at startup, for the log and the device panel.</summary>
 internal static class BiosInfo
 {
+    /// <summary>The version alone ("01.04"), or null when Windows does not say.</summary>
+    public static string? Version() => Read("BIOSVersion");
+
+    /// <summary>The release date ("06/03/2020"), or null when Windows does not say.</summary>
+    public static string? Date() => Read("BIOSReleaseDate");
+
+    private static string? Read(string name)
+    {
+        try
+        {
+            using var key = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\BIOS");
+            return key?.GetValue(name) is string value && !string.IsNullOrWhiteSpace(value) ? value.Trim() : null;
+        }
+        catch (Exception exception) when (exception is System.Security.SecurityException or UnauthorizedAccessException or IOException)
+        {
+            return null;
+        }
+    }
+
     /// <summary>"1.07 (12/05/2025)", or "unknown" when Windows does not say.</summary>
     public static string Describe()
     {
