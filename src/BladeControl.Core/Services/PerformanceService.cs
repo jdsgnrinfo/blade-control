@@ -17,7 +17,8 @@ internal sealed class PerformanceService(
     IRazerTransport transport,
     MaxFanMethod maxFanMethod = MaxFanMethod.ControllerFlag,
     bool mayHaveBatteryModes = false,
-    Func<bool>? onBattery = null)
+    Func<bool>? onBattery = null,
+    byte? performanceWire = null)
 {
     private const byte FanModeAuto = 0x00;
     private const byte FanModeManual = 0x01;
@@ -255,11 +256,12 @@ internal sealed class PerformanceService(
         return null;
     }
 
-    /// <summary>The mode a byte from the EC stands for: the battery modes show as Silent and Balanced.</summary>
+    /// <summary>The mode a byte from the EC stands for: the battery modes show as Silent and Balanced, Gaming as Performance.</summary>
     internal static PerformanceMode? Decode(byte wire) => wire switch
     {
         BatterySaverWire => PerformanceMode.Silent,
         BatteryBalancedWire => PerformanceMode.Balanced,
+        (byte)PerformanceMode.Gaming => PerformanceMode.Performance,
         _ => Enum.IsDefined((PerformanceMode)wire) ? (PerformanceMode)wire : null
     };
 
@@ -271,8 +273,14 @@ internal sealed class PerformanceService(
             {
                 PerformanceMode.Silent => BatterySaverWire,
                 PerformanceMode.Balanced => BatteryBalancedWire,
-                _ => (byte)mode
+                _ => PlainWire(mode)
             }
+            : PlainWire(mode);
+
+    // A mode's own byte: Performance is this model's, 1 (Gaming) on the 2020 Blades.
+    private byte PlainWire(PerformanceMode mode) =>
+        mode is PerformanceMode.Performance or PerformanceMode.Gaming
+            ? performanceWire ?? (byte)PerformanceMode.Performance
             : (byte)mode;
 
     private byte ReadZoneMode(byte zone)
@@ -289,7 +297,7 @@ internal sealed class PerformanceService(
     {
         var wire = WireFor(mode);
 
-        if (wire == (byte)mode)
+        if (wire == PlainWire(mode))
         {
             WriteMode(wire, mode.ToString());
             return;

@@ -5,6 +5,7 @@ using BladeControl.Core.Models;
 using BladeControl.Core.Services;
 using BladeControl.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace BladeControl.ViewModels;
 
@@ -44,6 +45,10 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         };
 
         _editingPluggedIn = IsPluggedIn;
+
+        // A laptop with no known high-performance mode never gets Performance sent.
+        if (!HasPerformanceMode)
+            _unsupportedModes.Add(PerformanceMode.Performance);
         _chargeLimit = BatteryLimitRange.Normalize(services.Settings.BatteryChargeLimit ?? 80);
         _chargeLimitOn = services.Settings.BatteryChargeLimit is int saved && saved < BatteryLimitRange.NoLimit;
 
@@ -56,8 +61,12 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         {
             _services.SilentBoost.Recheck();
             _services.LidClose.Recheck();
+            _services.CpuTuning.Recheck();
         };
         _silentTimer.Start();
+
+        _services.CpuTuning.Recheck();
+        RefreshCpu();
     }
 
     /// <summary>The system monitor, under Battery health.</summary>
@@ -100,6 +109,20 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     public bool IsBalanced { get => ShownMode == PerformanceMode.Balanced; set => Pick(value, PerformanceMode.Balanced); }
 
     public bool IsCustom { get => ShownMode == PerformanceMode.Custom; set => Pick(value, PerformanceMode.Custom); }
+
+    public bool IsPerformance { get => ShownMode == PerformanceMode.Performance; set => Pick(value, PerformanceMode.Performance); }
+
+    /// <summary>Only the models known to have a high-performance mode show it (see RazerLaptopModel.PerformanceWire).</summary>
+    public bool HasPerformanceMode => _services.Model?.PerformanceWire is not null;
+
+    /// <summary>Plugged-in only, like Custom.</summary>
+    public bool PerformanceOffered => HasPerformanceMode && IsModeOffered(PerformanceMode.Performance);
+
+    /// <summary>Three mode tiles, or four with Performance.</summary>
+    public int ModeColumns => HasPerformanceMode ? 4 : 3;
+
+    /// <summary>The page's width from which its cards go side by side: four tiles need about 130 px each.</summary>
+    public double ColumnsMinimumWidth => HasPerformanceMode ? 1200 : 940;
 
     public bool SilentOffered => IsModeOffered(PerformanceMode.Silent);
 
@@ -172,6 +195,136 @@ internal sealed partial class PerformanceViewModel : ObservableObject
                 _ = ApplyActiveProfileAsync();
         }
     }
+
+    // ===== The Processor card: EPP, core parking, frequency scaling and turbo boost, for each power source, in every mode =====
+
+    private bool _cpuEditingPluggedIn = true;
+    private readonly Dictionary<CpuSetting, double> _cpuValues = Enum.GetValues<CpuSetting>().ToDictionary(setting => setting, _ => 0.0);
+    private bool _hasCpuSettings;
+
+    /// <summary>Which power source the sliders show: the card's "Plugged In | On Battery" switch.</summary>
+    public bool CpuEditingPluggedIn
+    {
+        get => _cpuEditingPluggedIn;
+        set
+        {
+            if (SetProperty(ref _cpuEditingPluggedIn, value))
+                RefreshCpu();
+        }
+    }
+
+    public bool CpuEditingOnBattery
+    {
+        get => !_cpuEditingPluggedIn;
+        set => CpuEditingPluggedIn = !value;
+    }
+
+    /// <summary>False when the active plan's processor settings cannot be read; the sliders are then off.</summary>
+    public bool HasCpuSettings => _hasCpuSettings;
+
+    public double EppValue { get => _cpuValues[CpuSetting.Epp]; set => SetCpu(CpuSetting.Epp, value); }
+
+    public double CoreParkingValue { get => _cpuValues[CpuSetting.CoreParking]; set => SetCpu(CpuSetting.CoreParking, value); }
+
+    public double FrequencyScalingValue { get => _cpuValues[CpuSetting.FrequencyScaling]; set => SetCpu(CpuSetting.FrequencyScaling, value); }
+
+    public double TurboBoostValue { get => _cpuValues[CpuSetting.TurboBoost]; set => SetCpu(CpuSetting.TurboBoost, value); }
+
+    /// <summary>
+    /// Turbo boost is the mode's to decide in Silent while Silent turns the
+    /// boost off (Settings, Experimental); otherwise its slider shows.
+    /// </summary>
+    public bool ShowTurboBoost =>
+        !(_services.Settings.SilentTurnsBoostOff && ModeFor(_cpuEditingPluggedIn) == PerformanceMode.Silent);
+
+    private PerformanceMode? ModeFor(bool pluggedIn) => pluggedIn == IsPluggedIn
+        ? _state.Mode ?? _profiles[pluggedIn].Mode
+        : _profiles[pluggedIn].Mode;
+
+    private void SetCpu(CpuSetting setting, double value)
+    {
+        if (_cpuValues[setting] == value)
+            return;
+
+        _cpuValues[setting] = value;
+        OnPropertyChanged(PropertyFor(setting));
+    }
+
+    private static string PropertyFor(CpuSetting setting) => setting switch
+    {
+        CpuSetting.Epp => nameof(EppValue),
+        CpuSetting.CoreParking => nameof(CoreParkingValue),
+        CpuSetting.FrequencyScaling => nameof(FrequencyScalingValue),
+        _ => nameof(TurboBoostValue)
+    };
+
+    /// <summary>Reads the active plan again: each slider shows the chosen value, or the plan's own until one is chosen.</summary>
+    public void RefreshCpu()
+    {
+        var chosen = _services.CpuTuning.For(_cpuEditingPluggedIn);
+        _hasCpuSettings = false;
+
+        foreach (var setting in Enum.GetValues<CpuSetting>())
+        {
+            var plan = _services.CpuTuning.ReadPlan(setting, _cpuEditingPluggedIn);
+            _hasCpuSettings |= plan is not null;
+            SetCpu(setting, chosen.Get(setting) ?? plan ?? CpuTuning.Minimum(setting));
+        }
+
+        OnPropertyChanged(nameof(HasCpuSettings));
+        OnPropertyChanged(nameof(ShowTurboBoost));
+    }
+
+    /// <summary>A slider was let go: keeps its value for that power source and writes it.</summary>
+    public void CommitCpu(CpuSetting setting)
+    {
+        var value = CpuTuning.Snap(setting, _cpuValues[setting]);
+        var forPluggedIn = _cpuEditingPluggedIn;
+
+        if (_services.CpuTuning.Set(setting, forPluggedIn, value))
+        {
+            SaveCpu();
+            _report(L.F(forPluggedIn ? "{0} plugged in: {1}%." : "{0} on battery: {1}%.", CpuName(setting), value), false);
+        }
+        else
+            _report(L.T("Windows did not accept the processor setting."), true);
+
+        RefreshCpu();
+    }
+
+    /// <summary>Forgets this power source's processor settings and gives the plan the Razer Blade values.</summary>
+    [RelayCommand]
+    private void ResetCpu()
+    {
+        var forPluggedIn = _cpuEditingPluggedIn;
+
+        if (_services.CpuTuning.Reset(forPluggedIn))
+            _report(forPluggedIn ? L.T("Processor settings plugged in reset.") : L.T("Processor settings on battery reset."), false);
+        else
+            _report(L.T("Windows did not accept the processor setting."), true);
+
+        SaveCpu();
+        RefreshCpu();
+    }
+
+    private void SaveCpu()
+    {
+        var tuning = _services.CpuTuning;
+        _services.UpdateSettings(settings => settings with
+        {
+            CpuPluggedIn = tuning.PluggedIn.HasAny() ? tuning.PluggedIn : null,
+            CpuOnBattery = tuning.OnBattery.HasAny() ? tuning.OnBattery : null
+        });
+    }
+
+    private static string CpuName(CpuSetting setting) => setting switch
+    {
+        CpuSetting.Epp => L.T("EPP"),
+        CpuSetting.CoreParking => L.T("Core parking"),
+        CpuSetting.FrequencyScaling => L.T("Frequency scaling"),
+        _ => L.T("Turbo boost")
+    };
+
 
     /// <summary>
     /// Battery mode: on battery the laptop goes to Silent, whatever the battery
@@ -254,6 +407,8 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     {
         if (_busy)
             return;
+
+        RefreshCpu();
 
         SetBusy(true);
 

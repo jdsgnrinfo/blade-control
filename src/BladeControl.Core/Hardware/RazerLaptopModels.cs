@@ -13,7 +13,7 @@ internal static class RazerLaptopModels
 {
     public static readonly IReadOnlyList<RazerLaptopModel> Known =
     [
-        new RazerLaptopModel(0x029F, "Razer Blade 16 (2023)", Verified: true),
+        new RazerLaptopModel(0x029F, "Razer Blade 16 (2023)", Verified: true, PerformanceWire: 0x02), // Performance: razer-ctl, on this model.
 
         // Community-reported product ids, not verified on this app: the
         // command set is the one documented for the Blade 16 (2023) above,
@@ -62,6 +62,7 @@ internal static class RazerLaptopModels
             MaxFan: MaxFanMethod.ManualFan,
             HasKeyboardColor: true,
             HasFanSpeeds: false,
-            HasWaveEffect: false),
+            HasWaveEffect: false,
+            PerformanceWire: 0x01),
     ];
 }

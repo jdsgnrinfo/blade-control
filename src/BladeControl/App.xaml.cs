@@ -211,10 +211,13 @@ public partial class App : Application
         TrayMenuMode Mode(PerformanceMode mode, string name) =>
             new(name, performance.CurrentMode == mode, performance.CanPick(mode), () => _ = SwitchModeFromShortcutAsync(mode));
 
+        var hasPerformance = performance.HasPerformanceMode;
+
         return
         [
             Mode(PerformanceMode.Silent, L.T("Silent")),
             Mode(PerformanceMode.Balanced, L.T("Balanced")),
+            .. hasPerformance ? new[] { Mode(PerformanceMode.Performance, L.T("Performance")) } : [],
             Mode(PerformanceMode.Custom, L.T("Custom"))
         ];
     }

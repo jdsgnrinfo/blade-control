@@ -104,9 +104,9 @@ public class PowerProfileRulesTests
     }
 
     [Theory]
-    [InlineData(true, (byte)PerformanceMode.Balanced)]
+    [InlineData(true, (byte)PerformanceMode.Performance)]
     [InlineData(false, (byte)PerformanceMode.Balanced)]
-    public void Sanitize_TurnsASavedGamingProfileIntoBalanced(bool pluggedIn, byte expectedByte)
+    public void Sanitize_TurnsASavedGamingProfileIntoPerformance_PluggedInOnly(bool pluggedIn, byte expectedByte)
     {
         var stored = new PowerProfile(PerformanceMode.Gaming, CpuBoost.High, GpuBoost.Medium);
 

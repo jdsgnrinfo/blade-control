@@ -7,7 +7,7 @@
         <!-- An app's own icon, or the first letter of its name on a tile when it has none. -->
         <DataTemplate x:Key="AppIconTemplate">
             <Grid>
-                <Border x:Name="Letter" Background="{StaticResource Brush.Tile}" CornerRadius="6" Visibility="Collapsed">
+                <Border x:Name="Letter" Background="{StaticResource Brush.Tile}" CornerRadius="8" Visibility="Collapsed">
                     <Viewbox Margin="5">
                         <TextBlock Text="{Binding Name, Converter={x:Static ui:FirstLetterConverter.Instance}}" FontWeight="Bold"
                                    Foreground="{StaticResource Brush.Accent}" />
@@ -157,7 +157,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                                         <!-- Its app is running and its profile is on. -->
-                                        <Border Background="{StaticResource Brush.AccentDim}" CornerRadius="8" Padding="7,1,7,2" Margin="8,0,0,0"
+                                        <Border Background="{StaticResource Brush.AccentDim}" CornerRadius="10" Padding="7,1,7,2" Margin="8,0,0,0"
                                                 VerticalAlignment="Center" Visibility="{Binding IsRunning, Converter={StaticResource Visible}}">
                                             <TextBlock Text="{ui:T 'Active'}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.Accent}" />
                                         </Border>

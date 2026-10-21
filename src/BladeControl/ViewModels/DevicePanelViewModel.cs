@@ -10,6 +10,7 @@ using BladeControl.Core.Platform;
 using BladeControl.Core.Services;
 using BladeControl.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace BladeControl.ViewModels;
 
@@ -71,6 +72,23 @@ internal sealed partial class DevicePanelViewModel : ObservableObject
         get => !UseFahrenheit;
         set => UseFahrenheit = !value;
     }
+
+    /// <summary>The panel folded to a thin strip with only its button, as it was left.</summary>
+    public bool IsCollapsed
+    {
+        get => _services.Settings.DevicePanelCollapsed;
+        private set
+        {
+            if (value == IsCollapsed)
+                return;
+
+            _services.UpdateSettings(settings => settings with { DevicePanelCollapsed = value });
+            OnPropertyChanged();
+        }
+    }
+
+    [RelayCommand]
+    private void ToggleCollapsed() => IsCollapsed = !IsCollapsed;
 
     /// <summary>The temperatures section, off unless turned on in Settings, Experimental. Off, nothing is read for it.</summary>
     public bool ShowTemperatures

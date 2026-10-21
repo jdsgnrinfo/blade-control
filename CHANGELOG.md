@@ -1,7 +1,25 @@
 # Changelog
 
-## Unreleased
+## 0.1.7
 
+- **Processor card** on the Performance page, with a value for plugged in and
+  one for on battery, kept in every mode and in whatever power plan is
+  active: EPP (energy performance preference: lower is faster, higher saves
+  battery), core parking, frequency scaling (a cap on the CPU's speed) and
+  turbo boost, in steps of 10. Each has a tooltip. Until a slider is moved,
+  the plan's own value is left; the reset button puts back the Razer Blade
+  plan's values. Choosing a value sets Windows' power mode to Balanced, since
+  Best performance and Best power efficiency replace the plan's processor
+  settings with their own. With Silent turning the boost off (Settings,
+  Experimental), the turbo slider hides while that source is in Silent.
+- **Performance mode**, plugged in only, on the laptops known to have one:
+  the Blade 15 Base (2020), where it is Synapse's Gaming, and the Blade 16
+  (2023). It shows as a fourth tile, in the tray menu and on the Apps page.
+  A saved Gaming profile now comes back as Performance.
+- **The laptop panel can be folded** to a thin strip with the button at its
+  corner, and stays as it was left. It is a little narrower too: 240 px.
+- With four mode tiles, the Performance page puts its cards side by side
+  only when the tiles have room, so they never turn narrow.
 - **The color profile comes back when the screen turns back on**: after the
   display timeout or closing and opening the lid, Windows could leave the
   screen without the profile while the app still showed it picked. The app
@@ -17,8 +35,10 @@
   filled in, from a new report form that asks what happened, how to make it
   happen and for the log.
 - New icons for the performance modes: a fan for Silent, a gauge for
-  Balanced and faders for Custom, filled, on the Performance page and in the
-  mode shortcuts' notice.
+  Balanced, a bolt for Performance and faders for Custom, filled.
+- Smaller touches: the page tabs are more compact (12 px text), rounder
+  corners on cards and controls, the "Plugged In | On Battery" switches and
+  °C/°F evenly spaced, and no Off/100% labels under the keyboard brightness.
 
 ## 0.1.6
 

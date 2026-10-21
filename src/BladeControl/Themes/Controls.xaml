@@ -228,17 +228,17 @@
     <Style x:Key="SubTab" TargetType="RadioButton">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{StaticResource Brush.TextMuted}" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="16,6,16,7" />
-        <Setter Property="Margin" Value="0,0,4,0" />
+        <Setter Property="Padding" Value="12,5,12,6" />
+        <Setter Property="Margin" Value="0,0,2,0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="GroupName" Value="SubTab" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
-                    <Border x:Name="Back" Background="Transparent" CornerRadius="18" Padding="{TemplateBinding Padding}">
+                    <Border x:Name="Back" Background="Transparent" CornerRadius="14.5" Padding="{TemplateBinding Padding}">
                         <Grid>
                             <ContentPresenter VerticalAlignment="Center" />
                             <ContentPresenter x:Name="Lit" VerticalAlignment="Center" Opacity="0"
@@ -305,6 +305,27 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{StaticResource Brush.TextDisabled}" />
                             <Setter TargetName="Back" Property="Background" Value="Transparent" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- IconButton with a filled icon instead of a line one. -->
+    <Style x:Key="FillIconButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Back" Background="{TemplateBinding Background}" CornerRadius="{StaticResource Radius.Control}">
+                        <Path Width="12" Height="12" Data="{TemplateBinding Content}" Style="{StaticResource IconPath}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TileHover}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Back" Property="Background" Value="{StaticResource Brush.TilePressed}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -410,7 +431,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
-                    <Border x:Name="Back" Background="Transparent" CornerRadius="3" Padding="{TemplateBinding Padding}">
+                    <Border x:Name="Back" Background="Transparent" CornerRadius="6" Padding="{TemplateBinding Padding}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
@@ -429,8 +450,9 @@
 
     <Style x:Key="SegmentStrip" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource Brush.Tile}" />
-        <Setter Property="CornerRadius" Value="{StaticResource Radius.Control}" />
-        <Setter Property="Padding" Value="3" />
+        <!-- The segments' radius plus the padding, so the corners run parallel. -->
+        <Setter Property="CornerRadius" Value="8.5" />
+        <Setter Property="Padding" Value="2.5" />
         <Setter Property="HorizontalAlignment" Value="Right" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
@@ -587,7 +609,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
                     <Border x:Name="Back" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="2"
-                            CornerRadius="6">
+                            CornerRadius="8">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
@@ -640,7 +662,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBoxItem">
-                    <Border x:Name="Back" Background="Transparent" Padding="{TemplateBinding Padding}" CornerRadius="3">
+                    <Border x:Name="Back" Background="Transparent" Padding="{TemplateBinding Padding}" CornerRadius="6">
                         <ContentPresenter />
                     </Border>
                     <ControlTemplate.Triggers>
@@ -691,7 +713,7 @@
                                     MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="260">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                                     <Grid x:Name="HighlightHost">
-                                        <Border x:Name="Highlight" Background="{StaticResource Brush.TileHover}" CornerRadius="3" Opacity="0"
+                                        <Border x:Name="Highlight" Background="{StaticResource Brush.TileHover}" CornerRadius="6" Opacity="0"
                                                 HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False" />
                                         <ItemsPresenter />
                                     </Grid>

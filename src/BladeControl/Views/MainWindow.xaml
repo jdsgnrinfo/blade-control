@@ -109,7 +109,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="280" />
+                    <ColumnDefinition x:Name="PanelColumn" Width="240" />
                 </Grid.ColumnDefinitions>
 
                 <views:PerformanceView DataContext="{Binding Performance}"

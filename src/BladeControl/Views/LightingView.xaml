@@ -27,10 +27,6 @@
                     <TextBlock Text="{Binding KeyboardBrightness, StringFormat={}{0}%}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
                 </Grid>
                 <ui:SpringSlider Minimum="0" Maximum="100" Format="{}{0}%" Value="{Binding KeyboardBrightness}" Committed="KeyboardBrightness_Commit" />
-                <Grid Margin="0,4,0,0">
-                    <TextBlock Style="{StaticResource Text.Scale}" Text="{ui:T 'Off'}" />
-                    <TextBlock Style="{StaticResource Text.Scale}" Text="100%" HorizontalAlignment="Right" />
-                </Grid>
 
                 <Border Style="{StaticResource Separator}" Margin="0,22,0,14" />
 

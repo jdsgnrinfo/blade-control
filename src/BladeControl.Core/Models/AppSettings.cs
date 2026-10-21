@@ -97,7 +97,14 @@ internal sealed record AppSettings(
     BatteryModeSaved? BatteryModeSaved = null,
     // Off unless turned on (Settings, Experimental): the device panel's CPU and GPU
     // temperatures. Off, their section goes and nothing is read for it.
-    bool ShowTemperatures = false);
+    bool ShowTemperatures = false,
+    // The Performance page's processor settings (EPP, core parking, frequency
+    // scaling, turbo boost) for each power source, kept in every power plan
+    // and mode; a null value leaves the plan's own.
+    CpuValues? CpuPluggedIn = null,
+    CpuValues? CpuOnBattery = null,
+    // The laptop panel at the window's right folded to a thin strip, as it was left.
+    bool DevicePanelCollapsed = false);
 
 /// <summary>The window's position and size in device-independent pixels, and whether it was maximized.</summary>
 internal sealed record WindowPlacement(double Left, double Top, double Width, double Height, bool Maximized);

@@ -31,6 +31,17 @@ internal sealed class PowerPlanValue(Guid group, Guid setting, params Guid[] als
     public static PowerPlanValue EfficiencyPreference() =>
         new(ProcessorGroup, new Guid("36687f9e-e3a5-4dbf-b1dc-15eb381c6863"), new Guid("36687f9e-e3a5-4dbf-b1dc-15eb381c6864"));
 
+    /// <summary>The share of cores kept unparked, 0 to 100 %, with its twin for a hybrid CPU's efficient cores.</summary>
+    public static PowerPlanValue CoreParking() =>
+        new(ProcessorGroup, new Guid("0cc5b647-c1df-4637-891a-dec35c318583"), new Guid("0cc5b647-c1df-4637-891a-dec35c318584"));
+
+    /// <summary>The maximum processor state, 0 to 100 %, with its twin for a hybrid CPU's efficient cores.</summary>
+    public static PowerPlanValue MaximumState() =>
+        new(ProcessorGroup, new Guid("bc5038f7-23e0-4960-96da-33abaf5935ec"), new Guid("bc5038f7-23e0-4960-96da-33abaf5935ed"));
+
+    /// <summary>The processor boost policy, 0 to 100 %: how much of the turbo is used.</summary>
+    public static PowerPlanValue BoostPolicy() => new(ProcessorGroup, new Guid("45bcc044-d885-43e2-8605-ee0ec6e96b59"));
+
     // GUID_ENERGY_SAVER_SUBGROUP.
     private static readonly Guid EnergySaverGroup = new("de830923-a562-41af-a086-e3a2c6bad2da");
 

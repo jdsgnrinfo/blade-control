@@ -47,29 +47,45 @@ public class PerformanceServiceTests
     }
 
     [Fact]
-    public void ApplyProfile_Gaming_WritesByteOneToBothZones()
+    public void ApplyProfile_Performance_OnA2020Blade_WritesGamingsByteOneToBothZones()
     {
-        // Gaming is wire byte 1, as a Blade 15 Base (2020) reads it back.
-        var (ec, service) = Create(Balanced);
+        // The 2020 Blades' Performance is Gaming, wire byte 1, read back as Performance.
+        var ec = new FakeEc();
+        ec.SetBothZones(Balanced);
+        var service = new PerformanceService(ec, performanceWire: 0x01);
 
-        var state = service.ApplyProfile(new PowerProfile(PerformanceMode.Gaming));
+        var state = service.ApplyProfile(new PowerProfile(PerformanceMode.Performance));
 
-        Assert.Equal(PerformanceMode.Gaming, state.Mode);
+        Assert.Equal(PerformanceMode.Performance, state.Mode);
         Assert.Equal(
             ["0D02:01010100", "0D02:01020100"],
             ec.Writes.Select(Describe));
     }
 
     [Fact]
+    public void ApplyProfile_Performance_OnA2023Blade_WritesByteTwo()
+    {
+        var ec = new FakeEc();
+        ec.SetBothZones(Balanced);
+        var service = new PerformanceService(ec, performanceWire: 0x02);
+
+        var state = service.ApplyProfile(new PowerProfile(PerformanceMode.Performance));
+
+        Assert.Equal(PerformanceMode.Performance, state.Mode);
+        Assert.Equal(
+            ["0D02:01010200", "0D02:01020200"],
+            ec.Writes.Select(Describe));
+    }
+
+    [Fact]
     public void ApplyProfile_AModeTheFirmwareDoesNotTake_ReportsTheModeItStayedIn()
     {
-        // Gaming is offered on every model; one whose firmware echoes the
-        // write without acting on it must come back as still in Balanced, so
-        // the Performance section can mark Gaming as not supported.
+        // A firmware that echoes the write without acting on it must come
+        // back as still in Balanced, so the page can mark the mode as not supported.
         var (ec, service) = Create(Balanced);
         ec.IgnoreModeWrites = true;
 
-        var state = service.ApplyProfile(new PowerProfile(PerformanceMode.Gaming));
+        var state = service.ApplyProfile(new PowerProfile(PerformanceMode.Performance));
 
         Assert.Equal(PerformanceMode.Balanced, state.Mode);
     }
@@ -85,7 +101,6 @@ public class PerformanceServiceTests
     }
 
     [Theory]
-    [InlineData(2)]   // Performance: real to the EC, not offered on this model
     [InlineData(7)]   // Hyperboost
     [InlineData(200)]
     public void ReadState_ReportsNoModeForAValueThisAppDoesNotOffer(byte wireMode)

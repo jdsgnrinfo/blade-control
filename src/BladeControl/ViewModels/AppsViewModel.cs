@@ -112,7 +112,8 @@ internal sealed record ColorOption(string Name, Brush? Swatch);
 /// </summary>
 internal sealed partial class AppsViewModel : ObservableObject
 {
-    private static readonly PerformanceMode?[] Modes = [null, PerformanceMode.Silent, PerformanceMode.Balanced, PerformanceMode.Custom];
+    // Performance only on the laptops known to have it.
+    private readonly PerformanceMode?[] Modes;
     private static readonly bool?[] Fans = [null, false, true];
     private static readonly ColorProfile?[] Colors = [null, ColorProfile.Standard, ColorProfile.Warm, ColorProfile.Cool, ColorProfile.Contrast];
     private static readonly int?[] Brightnesses = [null, 25, 50, 75, 100];
@@ -163,7 +164,10 @@ internal sealed partial class AppsViewModel : ObservableObject
         _effects = [null, .. lighting.OfferedEffects.Select(effect => (KeyboardEffect?)effect)];
         _rates = [null, .. display.FixedRates.Select(hertz => (int?)hertz)];
 
-        ModeOptions = [L.T("No change"), L.T("Silent"), L.T("Balanced"), L.T("Custom")];
+        Modes = services.Model?.PerformanceWire is not null
+            ? [null, PerformanceMode.Silent, PerformanceMode.Balanced, PerformanceMode.Performance, PerformanceMode.Custom]
+            : [null, PerformanceMode.Silent, PerformanceMode.Balanced, PerformanceMode.Custom];
+        ModeOptions = [L.T("No change"), .. Modes.Skip(1).Select(mode => L.T(mode!.Value.ToString()))];
         CpuOptions = [L.T("Low"), L.T("Medium"), L.T("High"), L.T("Boost")];
         GpuOptions = [L.T("Low"), L.T("Medium"), L.T("High")];
         FanOptions = [L.T("No change"), L.T("Automatic"), L.T("Maximum")];

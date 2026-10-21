@@ -28,7 +28,8 @@ internal sealed class AppServices : IDisposable
             _transport,
             MaxFanMethod,
             Model?.MayHaveBatteryModes == true,
-            () => _powerSource.IsPluggedIn == false);
+            () => _powerSource.IsPluggedIn == false,
+            Model?.PerformanceWire);
         FanTelemetry = new FanTelemetryService(_transport);
         EcTemperatures = new EcTemperatureService(_transport);
         FirmwareVersion = new FirmwareVersionService(_transport);
@@ -70,6 +71,19 @@ internal sealed class AppServices : IDisposable
             Settings.BatteryMode,
             Settings.BatteryModeSaved,
             saved => UpdateSettings(settings => settings with { BatteryModeSaved = saved }));
+
+        CpuTuning = new CpuTuning(
+            setting => setting switch
+            {
+                CpuSetting.Epp => PowerPlanValue.EfficiencyPreference(),
+                CpuSetting.CoreParking => PowerPlanValue.CoreParking(),
+                CpuSetting.FrequencyScaling => PowerPlanValue.MaximumState(),
+                _ => PowerPlanValue.BoostPolicy()
+            },
+            new WindowsPowerMode(),
+            () => _powerSource.IsPluggedIn != false,
+            Settings.CpuPluggedIn,
+            Settings.CpuOnBattery);
 
         StartupRegistration = new RunKeyStartupRegistration(Environment.ProcessPath ?? string.Empty);
         RazerSoftware = new RazerSoftwareManager(
@@ -113,6 +127,9 @@ internal sealed class AppServices : IDisposable
     public LidCloseOverride LidClose { get; }
 
     public BatteryModeService BatteryMode { get; }
+
+    /// <summary>The Processor card's settings for each power source.</summary>
+    public CpuTuning CpuTuning { get; }
 
     /// <summary>Starting with Windows, through the Run key.</summary>
     public IStartupRegistration StartupRegistration { get; }

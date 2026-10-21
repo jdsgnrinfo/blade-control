@@ -16,6 +16,7 @@ public partial class MainWindow : Window
         Panel.RenderTransform = _panelShift;
         StateChanged += (_, _) => ShowWindowState();
         Loaded += (_, _) => ShowWindowState(); // It may open maximized, as it was left.
+        Panel.DataContextChanged += (_, _) => FollowPanel();
         SourceInitialized += (_, _) => RoundCorners();
         ShowWindowState();
         FitToScreen();
@@ -24,6 +25,22 @@ public partial class MainWindow : Window
     private void PageScroll_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e) => KeepPanelInView();
 
     private void Panel_SizeChanged(object sender, SizeChangedEventArgs e) => KeepPanelInView();
+
+    // The laptop panel's column: its full width, or a strip as wide as its button when folded.
+    private void FollowPanel()
+    {
+        if (Panel.DataContext is not ViewModels.DevicePanelViewModel device)
+            return;
+
+        void Fit() => PanelColumn.Width = new GridLength(device.IsCollapsed ? 43 : 240);
+
+        device.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(device.IsCollapsed))
+                Fit();
+        };
+        Fit();
+    }
 
     // The laptop's panel is sticky: it moves down by as much as the page has
     // scrolled, so it stays in view while the cards go by. A panel taller than

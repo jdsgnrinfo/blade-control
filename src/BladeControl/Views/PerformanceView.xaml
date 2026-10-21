@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="clr-namespace:BladeControl.UI">
 
-    <!-- Two cards side by side, or one under the other in a narrow window. -->
-    <ui:AdaptiveColumns>
+    <!-- Two cards side by side, or one under the other in a narrow window: with four mode tiles the two columns need more room, so the tiles never get narrow. -->
+    <ui:AdaptiveColumns MinimumColumnsWidth="{Binding ColumnsMinimumWidth}">
 
         <!-- Power mode. -->
         <StackPanel>
@@ -27,12 +27,17 @@
                         </Border>
                     </Grid>
     
-                    <UniformGrid Columns="3">
-                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="0,0,8,0" Tag="{StaticResource Icon.Silent}"
+                    <!-- Three tiles, or four on a laptop with Performance, always in one row; even gaps, flush with the card's edges. -->
+                    <UniformGrid Columns="{Binding ModeColumns}" Margin="-5,0">
+                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="5,0" Tag="{StaticResource Icon.Silent}"
                                      Content="{ui:T 'Silent'}" ToolTip="{ui:T 'Quiet and cool, for light work and battery.'}" IsChecked="{Binding IsSilent}" IsEnabled="{Binding SilentOffered}" />
-                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="4,0" Tag="{StaticResource Icon.Balanced}"
+                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="5,0" Padding="-2,-3,-2,3" Tag="{StaticResource Icon.Balanced}"
                                      Content="{ui:T 'Balanced'}" ToolTip="{ui:T 'Good performance with moderate fan noise, for everyday use and games.'}" IsChecked="{Binding IsBalanced}" IsEnabled="{Binding BalancedOffered}" />
-                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="8,0,0,0" Tag="{StaticResource Icon.Custom}"
+                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="5,0" Tag="{StaticResource Icon.Performance}"
+                                     Content="{ui:T 'Performance'}" IsChecked="{Binding IsPerformance}" IsEnabled="{Binding PerformanceOffered}"
+                                     Visibility="{Binding HasPerformanceMode, Converter={StaticResource Visible}}"
+                                     ToolTipService.ShowOnDisabled="True" ToolTip="{ui:T 'The most CPU and GPU power, with louder fans, for games and heavy work. Plugged in only.'}" />
+                        <RadioButton Style="{StaticResource ModeTile}" GroupName="Mode" Margin="5,0" Tag="{StaticResource Icon.Custom}"
                                      Content="{ui:T 'Custom'}" IsChecked="{Binding IsCustom}" IsEnabled="{Binding CustomOffered}"
                                      ToolTipService.ShowOnDisabled="True" ToolTip="{ui:T 'You choose the CPU and GPU levels. Plugged in only.'}" />
                     </UniformGrid>
@@ -112,12 +117,75 @@
 
         </StackPanel>
 
-        <!-- Battery health, and the system monitor under it. -->
+        <!-- The processor, battery health, and the system monitor under them. -->
         <StackPanel>
-            <!-- ===== Battery health ===== -->
+            <!-- ===== Processor: EPP, core parking, frequency scaling and turbo boost, for each power source, kept in every mode ===== -->
             <Border Style="{StaticResource Card}" VerticalAlignment="Top">
                 <StackPanel>
                     <!-- As tall as Power mode's header, so the two titles line up. -->
+                    <Grid Margin="0,0,0,18" MinHeight="34">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Processor'}" VerticalAlignment="Center"
+                                   TextWrapping="Wrap" Margin="0,0,12,0" />
+                        <Button Grid.Column="1" Style="{StaticResource IconButton}" Content="{StaticResource Icon.Refresh}" Margin="0,0,8,0"
+                                Command="{Binding ResetCpuCommand}" ToolTip="{ui:T 'Reset to the Razer Blade plan values'}" />
+                        <Border Grid.Column="2" Style="{StaticResource SegmentStrip}">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton Style="{StaticResource Segment}" GroupName="CpuSource" Content="{ui:T 'Plugged In'}" IsChecked="{Binding CpuEditingPluggedIn}" />
+                                <RadioButton Style="{StaticResource Segment}" GroupName="CpuSource" Content="{ui:T 'On Battery'}" IsChecked="{Binding CpuEditingOnBattery}" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- One slider under another; the last one loses its gap. -->
+                    <StackPanel Margin="0,0,0,-18" IsEnabled="{Binding HasCpuSettings}">
+                        <StackPanel Margin="0,0,0,18">
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'EPP'}" VerticalAlignment="Center" Background="Transparent"
+                                           ToolTip="{ui:T 'Energy performance preference: how eagerly the CPU speeds up. Lower favors speed, higher favors battery life and cooler temperatures.'}" />
+                                <TextBlock Text="{Binding EppValue, StringFormat={}{0:0}%}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
+                            </Grid>
+                            <ui:SpringSlider Tag="Epp" Format="{}{0}%" Minimum="0" Maximum="100" Step="10"
+                                             Value="{Binding EppValue}" Committed="CpuSlider_Commit" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,18">
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Core parking'}" VerticalAlignment="Center" Background="Transparent"
+                                           ToolTip="{ui:T 'The share of cores kept awake. Less lets Windows put idle cores to sleep, saving power; 100% keeps them all ready.'}" />
+                                <TextBlock Text="{Binding CoreParkingValue, StringFormat={}{0:0}%}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
+                            </Grid>
+                            <ui:SpringSlider Tag="CoreParking" Format="{}{0}%" Minimum="0" Maximum="100" Step="10"
+                                             Value="{Binding CoreParkingValue}" Committed="CpuSlider_Commit" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,18">
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Frequency scaling'}" VerticalAlignment="Center" Background="Transparent"
+                                           ToolTip="{ui:T 'The highest speed the CPU may reach, as a share of its maximum. Lower caps the speed and keeps it cooler.'}" />
+                                <TextBlock Text="{Binding FrequencyScalingValue, StringFormat={}{0:0}%}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
+                            </Grid>
+                            <ui:SpringSlider Tag="FrequencyScaling" Format="{}{0}%" Minimum="10" Maximum="100" Step="10"
+                                             Value="{Binding FrequencyScalingValue}" Committed="CpuSlider_Commit" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,18" Visibility="{Binding ShowTurboBoost, Converter={StaticResource Visible}}">
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Turbo boost'}" VerticalAlignment="Center" Background="Transparent"
+                                           ToolTip="{ui:T 'How much of the turbo the CPU uses above its base speed. 0% keeps it at the base speed, quieter and cooler.'}" />
+                                <TextBlock Text="{Binding TurboBoostValue, StringFormat={}{0:0}%}" HorizontalAlignment="Right" FontSize="14" FontWeight="SemiBold" />
+                            </Grid>
+                            <ui:SpringSlider Tag="TurboBoost" Format="{}{0}%" Minimum="0" Maximum="100" Step="10"
+                                             Value="{Binding TurboBoostValue}" Committed="CpuSlider_Commit" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Battery health ===== -->
+            <Border Style="{StaticResource Card}" VerticalAlignment="Top">
+                <StackPanel>
                     <Grid Margin="0,0,0,26" MinHeight="34">
                         <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Battery health'}" VerticalAlignment="Center" />
                     </Grid>

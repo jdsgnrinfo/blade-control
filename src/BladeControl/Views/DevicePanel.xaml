@@ -3,8 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="clr-namespace:BladeControl.UI">
 
+    <Grid>
+    <!-- Folded: a thin strip with only the button that opens it again. -->
+    <Border Style="{StaticResource Card}" Padding="8" VerticalAlignment="Top"
+            Visibility="{Binding IsCollapsed, Converter={StaticResource Visible}}">
+        <Button Style="{StaticResource FillIconButton}" Width="27" Height="27" Content="{StaticResource Icon.PanelLayout}" Command="{Binding ToggleCollapsedCommand}"
+                ToolTip="{ui:T 'Show the laptop panel'}" />
+    </Border>
+
     <!-- The laptop: its picture and name, temperatures, fans and battery. -->
-    <Border Style="{StaticResource Card}">
+    <Border Style="{StaticResource Card}" Visibility="{Binding IsCollapsed, Converter={StaticResource Hidden}}">
+        <Grid>
         <StackPanel>
             <Image Source="{Binding Picture}" Height="120" Margin="0,16,0,16" RenderOptions.BitmapScalingMode="HighQuality"
                    Visibility="{Binding HasPicture, Converter={StaticResource Visible}}" />
@@ -66,7 +75,7 @@
                 <Border Style="{StaticResource Separator}" Margin="0,24" />
                 <Grid Margin="0,0,0,18">
                     <TextBlock Style="{StaticResource Text.Label}" Text="{ui:T 'Temperatures'}" VerticalAlignment="Center" />
-                    <Border Style="{StaticResource SegmentStrip}" Padding="2">
+                    <Border Style="{StaticResource SegmentStrip}">
                         <StackPanel Orientation="Horizontal">
                             <RadioButton Style="{StaticResource Segment}" GroupName="Unit" Padding="8,2,8,3" Content="&#x00B0;C" IsChecked="{Binding UseCelsius}" />
                             <RadioButton Style="{StaticResource Segment}" GroupName="Unit" Padding="8,2,8,3" Content="&#x00B0;F" IsChecked="{Binding UseFahrenheit}" />
@@ -120,5 +129,11 @@
                 </UniformGrid>
             </StackPanel>
         </StackPanel>
+
+            <!-- Folds the panel to a strip, in the card's corner. -->
+            <Button Style="{StaticResource FillIconButton}" Width="27" Height="27" Content="{StaticResource Icon.PanelLayout}" Command="{Binding ToggleCollapsedCommand}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-10,-8,0" ToolTip="{ui:T 'Hide the laptop panel'}" />
+        </Grid>
     </Border>
+    </Grid>
 </UserControl>

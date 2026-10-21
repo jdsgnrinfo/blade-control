@@ -217,6 +217,7 @@ internal static class L
         ["CPU, GPU and RAM use on the Performance page. Off, nothing is read for it, which saves a little battery."] =
             "El uso de CPU, GPU y RAM en la página Rendimiento. Desactivado, no se lee nada para él, lo que ahorra algo de batería.",
         ["Balanced"] = "Equilibrado",
+        ["The most CPU and GPU power, with louder fans, for games and heavy work. Plugged in only."] = "La máxima potencia de CPU y GPU, con ventiladores más altos, para juegos y trabajo pesado. Solo enchufado.",
         ["Gaming"] = "Juego",
         ["Custom"] = "Personalizado",
         ["Speed"] = "Velocidad",
@@ -539,7 +540,24 @@ internal static class L
             "Las temperaturas de la CPU y la GPU con su promedio de la última hora, bajo la foto del portátil. Desactivado, no se leen.",
 
         // Battery mode.
+        ["Show the laptop panel"] = "Mostrar el panel del portátil",
+        ["Hide the laptop panel"] = "Ocultar el panel del portátil",
         ["Battery mode"] = "Modo batería",
+        ["Processor"] = "Procesador",
+        ["EPP"] = "EPP",
+        ["Energy performance preference: how eagerly the CPU speeds up. Lower favors speed, higher favors battery life and cooler temperatures."] = "Preferencia de rendimiento energético: qué tan rápido sube la frecuencia de la CPU. Más bajo prioriza la velocidad; más alto, la batería y temperaturas más bajas.",
+        ["The share of cores kept awake. Less lets Windows put idle cores to sleep, saving power; 100% keeps them all ready."] = "El porcentaje de núcleos que se mantienen despiertos. Con menos, Windows duerme los núcleos sin uso y ahorra energía; al 100 % todos quedan listos.",
+        ["The highest speed the CPU may reach, as a share of its maximum. Lower caps the speed and keeps it cooler."] = "La velocidad más alta que puede alcanzar la CPU, como porcentaje de su máximo. Más bajo limita la velocidad y la mantiene más fresca.",
+        ["How much of the turbo the CPU uses above its base speed. 0% keeps it at the base speed, quieter and cooler."] = "Cuánto turbo usa la CPU por encima de su velocidad base. Al 0 % se queda en la velocidad base, más silenciosa y fresca.",
+        ["Core parking"] = "Aparcamiento de núcleos",
+        ["Frequency scaling"] = "Escalado de frecuencia",
+        ["Turbo boost"] = "Turbo boost",
+        ["Reset to the Razer Blade plan values"] = "Restablecer los valores del plan Razer Blade",
+        ["{0} plugged in: {1}%."] = "{0} enchufado: {1} %.",
+        ["{0} on battery: {1}%."] = "{0} con batería: {1} %.",
+        ["Processor settings plugged in reset."] = "Ajustes del procesador enchufado restablecidos.",
+        ["Processor settings on battery reset."] = "Ajustes del procesador con batería restablecidos.",
+        ["Windows did not accept the processor setting."] = "Windows no aceptó el ajuste del procesador.",
         ["Saves as much as it can on battery; plugging in puts everything back."] = "Ahorra al máximo con batería; al enchufar, todo vuelve a como estaba.",
         ["On battery: Silent, the screen at 25% and 60 Hz, the keyboard at 20%, Energy saver on, no transparency, window shadows or window contents while dragging, and an offer to close the apps keeping the NVIDIA GPU awake. Plugging in puts everything back."] =
             "Con batería: Silencio, la pantalla al 25 % y a 60 Hz, el teclado al 20 %, Ahorro de energía activado, sin transparencias, sombras de ventana ni contenido al arrastrar ventanas, y te ofrece cerrar las apps que mantienen despierta la GPU NVIDIA. Al enchufar, todo vuelve a como estaba.",

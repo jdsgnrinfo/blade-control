@@ -74,6 +74,7 @@ public partial class ModeToastWindow : Window
         {
             PerformanceMode.Silent => "Icon.Silent",
             PerformanceMode.Custom => "Icon.Custom",
+            PerformanceMode.Performance => "Icon.Performance",
             _ => "Icon.Balanced"
         });
         ModeIcon.Fill = applied ? accent : (Brush)FindResource("Brush.TextMuted");

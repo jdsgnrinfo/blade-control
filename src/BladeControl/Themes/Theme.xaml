@@ -60,7 +60,7 @@
     <FontFamily x:Key="Font.Symbols">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
 
     <!-- Sizes. -->
-    <CornerRadius x:Key="Radius.Card">6</CornerRadius>
-    <CornerRadius x:Key="Radius.Control">4</CornerRadius>
+    <CornerRadius x:Key="Radius.Card">8</CornerRadius>
+    <CornerRadius x:Key="Radius.Control">6</CornerRadius>
     <Thickness x:Key="Padding.Card">16</Thickness>
 </ResourceDictionary>

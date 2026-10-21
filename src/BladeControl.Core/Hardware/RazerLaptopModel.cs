@@ -42,6 +42,11 @@ namespace BladeControl.Core.Hardware;
 /// modes there. Whether this laptop's firmware has them is checked the first
 /// time one is set (see <see cref="Services.PerformanceService"/>).
 /// </param>
+/// <param name="PerformanceWire">
+/// The byte of this model's high-performance mode, where it is known to have
+/// one: 1 on the 2020 Blades (Synapse's Gaming), 2 on the 2023 Blades
+/// (Performance). Null leaves the Performance mode out. Plugged in only.
+/// </param>
 internal sealed record RazerLaptopModel(
     int ProductId,
     string Name,
@@ -51,4 +56,5 @@ internal sealed record RazerLaptopModel(
     bool HasKeyboardColor = false,
     bool HasFanSpeeds = true,
     bool HasWaveEffect = true,
-    bool MayHaveBatteryModes = false);
+    bool MayHaveBatteryModes = false,
+    byte? PerformanceWire = null);

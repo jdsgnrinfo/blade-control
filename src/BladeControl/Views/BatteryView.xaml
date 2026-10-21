@@ -53,7 +53,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="{StaticResource Brush.Tile}" CornerRadius="6" Padding="12,10" Margin="0,0,8,8">
+                                    <Border Background="{StaticResource Brush.Tile}" CornerRadius="8" Padding="12,10" Margin="0,0,8,8">
                                         <StackPanel>
                                             <TextBlock Text="{Binding Name}" Style="{StaticResource Text.Scale}" FontWeight="Normal" />
                                             <TextBlock Text="{Binding Value}" Margin="0,4,0,0" FontSize="16" FontWeight="SemiBold"
