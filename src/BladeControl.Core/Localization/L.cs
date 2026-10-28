@@ -550,6 +550,7 @@ internal static class L
         ["The highest speed the CPU may reach, as a share of its maximum. Lower caps the speed and keeps it cooler."] = "La velocidad más alta que puede alcanzar la CPU, como porcentaje de su máximo. Más bajo limita la velocidad y la mantiene más fresca.",
         ["How much of the turbo the CPU uses above its base speed. 0% keeps it at the base speed, quieter and cooler."] = "Cuánto turbo usa la CPU por encima de su velocidad base. Al 0 % se queda en la velocidad base, más silenciosa y fresca.",
         ["Core parking"] = "Aparcamiento de núcleos",
+        ["These settings only change the Razer Blade power plan. Pick it in the laptop panel to use them; your other plans are left as they are."] = "Estos ajustes solo cambian el plan de energía Razer Blade. Elígelo en el panel del portátil para usarlos; tus otros planes no se tocan.",
         ["Frequency scaling"] = "Escalado de frecuencia",
         ["Turbo boost"] = "Turbo boost",
         ["Reset to the Razer Blade plan values"] = "Restablecer los valores del plan Razer Blade",

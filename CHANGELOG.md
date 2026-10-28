@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.8
+
+- **The Processor card only changes the Razer Blade power plan.** With
+  another plan active (Windows' own or one you made), nothing is written to
+  it and Windows' power mode is left alone: the sliders are greyed out and a
+  note says to pick the Razer Blade plan. Your choices come back on their own
+  once it is active again.
+
 ## 0.1.7
 
 - **Processor card** on the Performance page, with a value for plugged in and

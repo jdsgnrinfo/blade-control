@@ -8,7 +8,7 @@
     <UseWPF>true</UseWPF>
     <!-- Only for the tray icon (NotifyIcon). -->
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>0.1.7</Version>
+    <Version>0.1.8</Version>
     <!-- The name Windows shows: Task Manager, the startup apps, the file's properties. -->
     <Product>Blade Control</Product>
     <AssemblyTitle>Blade Control</AssemblyTitle>

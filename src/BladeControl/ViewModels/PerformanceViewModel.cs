@@ -62,6 +62,10 @@ internal sealed partial class PerformanceViewModel : ObservableObject
             _services.SilentBoost.Recheck();
             _services.LidClose.Recheck();
             _services.CpuTuning.Recheck();
+
+            // The plan was switched (the laptop panel, Windows): the card follows.
+            if (_services.CpuTuning.IsOnRazerBladePlan() != _onRazerBladePlan)
+                RefreshCpu();
         };
         _silentTimer.Start();
 
@@ -201,6 +205,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     private bool _cpuEditingPluggedIn = true;
     private readonly Dictionary<CpuSetting, double> _cpuValues = Enum.GetValues<CpuSetting>().ToDictionary(setting => setting, _ => 0.0);
     private bool _hasCpuSettings;
+    private bool _onRazerBladePlan;
 
     /// <summary>Which power source the sliders show: the card's "Plugged In | On Battery" switch.</summary>
     public bool CpuEditingPluggedIn
@@ -219,8 +224,14 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         set => CpuEditingPluggedIn = !value;
     }
 
-    /// <summary>False when the active plan's processor settings cannot be read; the sliders are then off.</summary>
-    public bool HasCpuSettings => _hasCpuSettings;
+    /// <summary>
+    /// The sliders work only on the Razer Blade power plan and when its settings
+    /// can be read: a plan the user made or tuned is left as it is.
+    /// </summary>
+    public bool HasCpuSettings => _hasCpuSettings && _onRazerBladePlan;
+
+    /// <summary>Another power plan is active: the card says the settings wait for the Razer Blade plan.</summary>
+    public bool ShowCpuPlanNote => !_onRazerBladePlan;
 
     public double EppValue { get => _cpuValues[CpuSetting.Epp]; set => SetCpu(CpuSetting.Epp, value); }
 
@@ -263,6 +274,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
     {
         var chosen = _services.CpuTuning.For(_cpuEditingPluggedIn);
         _hasCpuSettings = false;
+        _onRazerBladePlan = _services.CpuTuning.IsOnRazerBladePlan();
 
         foreach (var setting in Enum.GetValues<CpuSetting>())
         {
@@ -272,6 +284,7 @@ internal sealed partial class PerformanceViewModel : ObservableObject
         }
 
         OnPropertyChanged(nameof(HasCpuSettings));
+        OnPropertyChanged(nameof(ShowCpuPlanNote));
         OnPropertyChanged(nameof(ShowTurboBoost));
     }
 

@@ -132,7 +132,7 @@
                         <TextBlock Style="{StaticResource Text.CardTitle}" Text="{ui:T 'Processor'}" VerticalAlignment="Center"
                                    TextWrapping="Wrap" Margin="0,0,12,0" />
                         <Button Grid.Column="1" Style="{StaticResource IconButton}" Content="{StaticResource Icon.Refresh}" Margin="0,0,8,0"
-                                Command="{Binding ResetCpuCommand}" ToolTip="{ui:T 'Reset to the Razer Blade plan values'}" />
+                                Command="{Binding ResetCpuCommand}" IsEnabled="{Binding HasCpuSettings}" ToolTip="{ui:T 'Reset to the Razer Blade plan values'}" />
                         <Border Grid.Column="2" Style="{StaticResource SegmentStrip}">
                             <StackPanel Orientation="Horizontal">
                                 <RadioButton Style="{StaticResource Segment}" GroupName="CpuSource" Content="{ui:T 'Plugged In'}" IsChecked="{Binding CpuEditingPluggedIn}" />
@@ -140,6 +140,11 @@
                             </StackPanel>
                         </Border>
                     </Grid>
+
+                    <!-- Only the Razer Blade plan takes these; another plan is the user's own. -->
+                    <ContentControl Style="{StaticResource NoteBox}" Margin="0,0,0,18"
+                                    Visibility="{Binding ShowCpuPlanNote, Converter={StaticResource Visible}}"
+                                    Content="{ui:T 'These settings only change the Razer Blade power plan. Pick it in the laptop panel to use them; your other plans are left as they are.'}" />
 
                     <!-- One slider under another; the last one loses its gap. -->
                     <StackPanel Margin="0,0,0,-18" IsEnabled="{Binding HasCpuSettings}">

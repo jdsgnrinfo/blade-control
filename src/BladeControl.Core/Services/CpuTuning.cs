@@ -15,11 +15,13 @@ internal interface IPowerMode
 /// <summary>
 /// The processor settings of the Performance page (EPP, core parking,
 /// frequency scaling, turbo boost), one set for each power source, in steps
-/// of 10. Once chosen they are kept in whatever power plan is active, in every
-/// mode: <see cref="Recheck"/> writes them back when a plan is switched or
-/// installed. Windows' power mode is kept on Balanced too, since Best
-/// performance and Best power efficiency replace the plan's processor
-/// settings with their own. Unchosen, nothing is touched.
+/// of 10. They only ever go to the Razer Blade power plan, in every mode:
+/// another plan, one the user made or tuned, is left as it is, and the
+/// choices wait until the Razer Blade plan is active again
+/// (<see cref="Recheck"/> runs every few seconds). Windows' power mode is
+/// kept on Balanced too, since Best performance and Best power efficiency
+/// replace the plan's processor settings with their own. Unchosen, nothing
+/// is touched.
 /// </summary>
 internal sealed class CpuTuning(
     Func<CpuSetting, IPowerPlanValue> planValue,
@@ -63,6 +65,20 @@ internal sealed class CpuTuning(
 
     public CpuValues For(bool forPluggedIn) => forPluggedIn ? PluggedIn : OnBattery;
 
+    /// <summary>Whether the active power plan is the Razer Blade plan, the only one these settings touch.</summary>
+    public bool IsOnRazerBladePlan()
+    {
+        try
+        {
+            return planValue(CpuSetting.Epp).Read().Scheme == RazerBladePlan.Id;
+        }
+        catch (Exception exception)
+        {
+            AppLog.Error("Could not read the active power plan.", exception);
+            return false;
+        }
+    }
+
     /// <summary>The active plan's value, snapped to the steps, or null when it cannot be read.</summary>
     public int? ReadPlan(CpuSetting setting, bool forPluggedIn)
     {
@@ -100,6 +116,9 @@ internal sealed class CpuTuning(
         else
             OnBattery = new CpuValues();
 
+        if (!IsOnRazerBladePlan())
+            return true;
+
         var done = true;
 
         foreach (var setting in Enum.GetValues<CpuSetting>())
@@ -129,6 +148,10 @@ internal sealed class CpuTuning(
     /// <summary>Writes the chosen values into the active plan where it has others, and keeps the power mode on Balanced. False when that failed.</summary>
     public bool Recheck()
     {
+        // Another plan is the user's own: nothing is written to it, and the power mode is left too.
+        if (!IsOnRazerBladePlan())
+            return true;
+
         var done = true;
 
         foreach (var setting in Enum.GetValues<CpuSetting>())

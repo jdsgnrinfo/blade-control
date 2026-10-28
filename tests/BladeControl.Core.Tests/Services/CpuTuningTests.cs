@@ -8,13 +8,13 @@ public sealed class CpuTuningTests
     private static readonly Guid Plan = new("e1811cef-6588-4a28-876f-cc20c84725f8");
 
     // One plan setting, starting at the Razer Blade plan's values.
-    private sealed class Value(uint pluggedIn, uint onBattery) : IPowerPlanValue
+    private sealed class Value(uint pluggedIn, uint onBattery, Func<Guid> scheme) : IPowerPlanValue
     {
         public uint PluggedIn { get; private set; } = pluggedIn;
         public uint OnBattery { get; private set; } = onBattery;
         public int Writes { get; private set; }
 
-        public SavedPlanValue Read() => new(Plan, PluggedIn, OnBattery);
+        public SavedPlanValue Read() => new(scheme(), PluggedIn, OnBattery);
 
         public void Write(Guid scheme, uint pluggedIn, uint onBattery)
         {
@@ -35,8 +35,14 @@ public sealed class CpuTuningTests
 
     private sealed class Rig
     {
-        public Dictionary<CpuSetting, Value> Values { get; } = Enum.GetValues<CpuSetting>()
-            .ToDictionary(setting => setting, setting => new Value(CpuTuning.Default(setting).PluggedIn, CpuTuning.Default(setting).OnBattery));
+        public Rig() =>
+            Values = Enum.GetValues<CpuSetting>()
+                .ToDictionary(setting => setting, setting => new Value(CpuTuning.Default(setting).PluggedIn, CpuTuning.Default(setting).OnBattery, () => ActivePlan));
+
+        public Dictionary<CpuSetting, Value> Values { get; }
+
+        /// <summary>The active power plan: the Razer Blade plan unless a test changes it.</summary>
+        public Guid ActivePlan { get; set; } = Plan;
 
         public Mode Mode { get; } = new();
 
@@ -124,5 +130,32 @@ public sealed class CpuTuningTests
         Assert.Equal(20u, rig.Values[CpuSetting.Epp].PluggedIn);
         Assert.Equal(100u, rig.Values[CpuSetting.CoreParking].PluggedIn);
         Assert.Equal(100u, rig.Values[CpuSetting.Epp].OnBattery);
+    }
+
+    [Fact]
+    public void Another_power_plan_is_left_alone_and_gets_nothing()
+    {
+        var rig = new Rig { ActivePlan = Guid.NewGuid() };
+        var tuning = rig.Tuning(pluggedIn: new CpuValues(Epp: 60));
+
+        Assert.True(tuning.Recheck());
+        Assert.True(tuning.Set(CpuSetting.CoreParking, forPluggedIn: true, 40));
+        Assert.True(tuning.Reset(forPluggedIn: false));
+
+        Assert.All(rig.Values.Values, value => Assert.Equal(0, value.Writes));
+        Assert.False(rig.Mode.Balanced);
+    }
+
+    [Fact]
+    public void Choices_made_on_another_plan_apply_once_the_Razer_Blade_plan_is_back()
+    {
+        var rig = new Rig { ActivePlan = Guid.NewGuid() };
+        var tuning = rig.Tuning();
+        tuning.Set(CpuSetting.Epp, forPluggedIn: true, 60);
+
+        rig.ActivePlan = Plan;
+        tuning.Recheck();
+
+        Assert.Equal(60u, rig.Values[CpuSetting.Epp].PluggedIn);
     }
 }
