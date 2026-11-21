@@ -23,7 +23,7 @@ internal static class RazerLaptopModels
         new RazerLaptopModel(0x028A, "Razer Blade 15 (2022)", Verified: false),
         new RazerLaptopModel(0x029D, "Razer Blade 14 (2023) Mercury", Verified: false),
         new RazerLaptopModel(0x02B7, "Razer Blade 16 (2024)", Verified: false),
-        new RazerLaptopModel(0x02C6, "Razer Blade 16 (2025)", Verified: false, MayHaveBatteryModes: true),
+        new RazerLaptopModel(0x02C6, "Razer Blade 16 (2025)", Verified: true, MayHaveBatteryModes: true, PerformanceWire: 0x02), // Confirmed by a user on their own RZ09-0528, Performance and the battery modes included.
 
         // The other Blades from 2021 on, by the product ids OpenRazer's
         // keyboard driver lists for them. Same command set, same caveat: not

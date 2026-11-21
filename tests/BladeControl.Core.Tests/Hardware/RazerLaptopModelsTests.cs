@@ -25,4 +25,20 @@ public class RazerLaptopModelsTests
             RazerLaptopModels.Known,
             model => model is { ProductId: 0x029F, Name: "Razer Blade 16 (2023)", Verified: true });
     }
+
+    [Fact]
+    public void ListsTheVerifiedBlade16_2025()
+    {
+        Assert.Contains(
+            RazerLaptopModels.Known,
+            model => model is { ProductId: 0x02C6, Name: "Razer Blade 16 (2025)", Verified: true });
+    }
+
+    [Fact]
+    public void GivesTheBlade16_2025ItsPerformanceMode()
+    {
+        Assert.Contains(
+            RazerLaptopModels.Known,
+            model => model is { ProductId: 0x02C6, Name: "Razer Blade 16 (2025)", PerformanceWire: 0x02 });
+    }
 }

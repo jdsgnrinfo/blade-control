@@ -144,8 +144,8 @@ activo.
 
 ## Portátiles compatibles
 
-Probado en un **Razer Blade 15 Base (2020)**, un **Razer Blade 14 (2025)** y un
-**Razer Blade 16 (2023)**.
+Probado en un **Razer Blade 15 Base (2020)**, un **Razer Blade 14 (2025)**, un
+**Razer Blade 16 (2023)** y un **Razer Blade 16 (2025)**.
 Reconoce todos los Razer Blade desde 2021 (Blade 14, 15, 16, 17 y 18,
 incluidos los modelos de 2025 y 2026). Usan los mismos comandos y deberían
 funcionar; si el firmware de un portátil no tiene un comando, lo rechaza sin
